@@ -1,0 +1,25 @@
+처음 Math클래스 추가..
++,-,*,/,%,(,),',',[,],{,} 눌렀을때, 키코드가 초기화 안됨... 0으로 안바뀜 리스트선택시 많이 지워지는 경우가 있음..스페이스를 눌러야함...이거 고쳐야함...시급...
+java.lang.Object
+java.lang.Class
+java.lang.StringBuffer
+java.lang.Math
+java.lang.Integer
+java.lang.Long
+java.lang.Double
+java.lang.Float
+java.lang.Short
+java.lang.Byte
+java.lang.Character
+java.lang.Boolean
+java.lang.Enum
+java.lang.Throwable
+java.lang.Exception
+java.lang.RuntimeException
+java.lang.Error
+java.lang.Thread
+java.lang.Runnable
+java.lang.AutoCloseable
+java.lang.Iterable
+java.lang.Comparable
+java.lang.Record

@@ -1,0 +1,7 @@
+package AJEStruct;
+
+class varSave 
+{
+	String ClassName;
+	String varName;
+}
