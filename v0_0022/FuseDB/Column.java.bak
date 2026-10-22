@@ -1,0 +1,19 @@
+package FuseDB;
+
+public static class Column {
+	public String name;
+    public String type;
+    public boolean primaryKey;
+    public boolean notNull;
+    public boolean unique;
+
+    public Column copy() {
+        Column c = new Column();
+        c.name = this.name;
+        c.type = this.type;
+        c.primaryKey = this.primaryKey;
+        c.notNull = this.notNull;
+        c.unique = this.unique;
+        return c;
+    }
+}

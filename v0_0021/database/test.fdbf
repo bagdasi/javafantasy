@@ -1,0 +1,15 @@
+table test [ 
+{ columnName = num , columnType = int , primarykey = yes , notnull = no , unique = no } 
+{ columnName = str , columnType = String , primarykey = no , notnull = no , unique = no } 
+] 
+data:
+{ num : 0 , str : 테스트0 } 
+{ num : 1 , str : 테스트1 } 
+{ num : 2 , str : 테스트2 } 
+{ num : 3 , str : 테스트3 } 
+{ num : 4 , str : 테스트4 } 
+{ num : 5 , str : 테스트5 } 
+{ num : 6 , str : 테스트6 } 
+{ num : 7 , str : 테스트7 } 
+{ num : 8 , str : 테스트8 } 
+{ num : 9 , str : 테스트9 } 

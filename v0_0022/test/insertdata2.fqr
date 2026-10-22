@@ -1,0 +1,1 @@
+insert into test ( name , age , num ) values ( ddd , 33 , 1 )

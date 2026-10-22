@@ -1,0 +1,2 @@
+create view viewtest { select * from test }
+show view viewtest
