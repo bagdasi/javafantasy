@@ -1,0 +1,201 @@
+biggest
+flying
+cat / cats
+
+dog / dogs
+
+book / books
+
+car / cars
+
+tree / trees
+
+house / houses
+
+child / children
+
+mouse / mice
+
+foot / feet
+
+tooth / teeth
+
+person / people
+
+man / men
+
+woman / women
+
+city / cities
+
+difficulty / difficulties
+
+box / boxes
+
+class / classes
+
+candy / candies
+
+story / stories
+
+phone / phones
+
+computer / computers
+
+table / tables
+
+chair / chairs
+
+river / rivers
+
+mountain / mountains
+
+student / students
+
+teacher / teachers
+
+friend / friends
+
+enemy / enemies
+
+animal / animals
+
+big / bigger / biggest
+
+small / smaller / smallest
+
+fast / faster / fastest
+
+slow / slower / slowest
+
+great / greater / greatest
+
+long / longer / longest
+
+short / shorter / shortest
+
+high / higher / highest
+
+low / lower / lowest
+
+bright / brighter / brightest
+
+dark / darker / darkest
+
+strong / stronger / strongest
+
+weak / weaker / weakest
+
+rich / richer / richest
+
+poor / poorer / poorest
+
+warm / warmer / warmest
+
+cold / colder / coldest
+
+young / younger / youngest
+
+old / older / oldest
+
+clean / cleaner / cleanest
+
+dirty / dirtier / dirtiest
+
+happy / happier / happiest
+
+angry / angrier / angriest
+
+easy / easier / easiest
+
+heavy / heavier / heaviest
+
+friendly / friendlier / friendliest
+
+lovely / lovelier / loveliest
+
+noisy / noisier / noisiest
+
+quiet / quieter / quietest
+
+simple / simpler / simplest
+
+run / ran / running
+
+walk / walked / walking
+
+eat / ate / eating
+
+drink / drank / drinking
+
+go / went / going
+
+come / came / coming
+
+see / saw / seeing
+
+hear / heard / hearing
+
+make / made / making
+
+take / took / taking
+
+give / gave / giving
+
+find / found / finding
+
+keep / kept / keeping
+
+write / wrote / writing
+
+read / read / reading
+
+speak / spoke / speaking
+
+drive / drove / driving
+
+sleep / slept / sleeping
+
+sit / sat / sitting
+
+stand / stood / standing
+
+build / built / building
+
+break / broke / breaking
+
+choose / chose / choosing
+
+cut / cut / cutting
+
+draw / drew / drawing
+
+fall / fell / falling
+
+feel / felt / feeling
+
+fly / flew / flying
+
+grow / grew / growing
+
+hold / held / holding
+
+know / knew / knowing
+
+leave / left / leaving
+
+lose / lost / losing
+
+meet / met / meeting
+
+pay / paid / paying
+
+send / sent / sending
+
+teach / taught / teaching
+
+think / thought / thinking
+
+win / won / winning
+
+work / worked / working
