@@ -1,0 +1,329 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.*;
+
+import java.util.*;
+import java.nio.*;
+import java.nio.channels.*;
+
+class QPCv0_0021
+{
+	public static QPCv0_0021 qpc;
+	public static String imagefilePath = "";
+	public static String qpfilePath = "";
+	
+	public static void main(String[] args) 
+	{
+		qpc = new QPCv0_0021();
+		// JFrame 생성
+        JFrame frame = new JFrame("qp파일변경앱");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(500, 300);
+        frame.setLayout(null); // 절대 위치 배치
+
+        // "이미지파일" JLabel 생성
+        JLabel imageLabel = new JLabel("이미지파일");
+        imageLabel.setFont(new Font("Serif", Font.PLAIN, 15));
+        imageLabel.setBounds(20, 20, 80, 25);
+        frame.add(imageLabel);
+
+        // JTextField 생성
+        JTextField imageTextField = new JTextField();
+        imageTextField.setFont(new Font("Serif", Font.PLAIN, 15));
+        imageTextField.setBounds(110, 20, 250, 25);
+        frame.add(imageTextField);
+
+        // "..." 버튼 생성 (chooseBtn1)
+        JButton chooseBtn1 = new JButton("...");
+        chooseBtn1.setFont(new Font("Serif", Font.PLAIN, 15));
+        chooseBtn1.setBounds(370, 20, 50, 25);
+        frame.add(chooseBtn1);
+
+        // "qp파일" JLabel 생성
+        JLabel qpLabel = new JLabel("qp파일");
+        qpLabel.setFont(new Font("Serif", Font.PLAIN, 15));
+        qpLabel.setBounds(20, 60, 80, 25);
+        frame.add(qpLabel);
+
+        // JTextField 생성
+        JTextField qpTextField = new JTextField();
+        qpTextField.setFont(new Font("Serif", Font.PLAIN, 15));
+        qpTextField.setBounds(110, 60, 250, 25);
+        frame.add(qpTextField);
+
+        // "..." 버튼 생성 (chooseBtn2)
+        JButton chooseBtn2 = new JButton("...");
+        chooseBtn2.setFont(new Font("Serif", Font.PLAIN, 15));
+        chooseBtn2.setBounds(370, 60, 50, 25);
+        frame.add(chooseBtn2);
+		
+		// "정보" 버튼 생성
+        JButton inforBtn = new JButton("정보");
+        inforBtn.setFont(new Font("Serif", Font.PLAIN, 15));
+        inforBtn.setBounds(30, 120, 100, 30);
+        frame.add(inforBtn);
+        // "변경하기" 버튼 생성
+        JButton changeBtn = new JButton("변경하기");
+        changeBtn.setFont(new Font("Serif", Font.PLAIN, 15));
+        changeBtn.setBounds(150, 120, 100, 30);
+        frame.add(changeBtn);
+
+        // "종료하기" 버튼 생성
+        JButton exitBtn = new JButton("종료하기");
+        exitBtn.setFont(new Font("Serif", Font.PLAIN, 15));
+        exitBtn.setBounds(270, 120, 100, 30);
+        frame.add(exitBtn);
+
+        // 버튼 이벤트 리스너 추가
+        // chooseBtn1 이벤트
+        chooseBtn1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //JOptionPane.showMessageDialog(frame, "이미지파일 선택 버튼 클릭됨!");
+				// JFileChooser 생성
+                JFileChooser fileChooser = new JFileChooser();
+
+                // 파일 필터 설정 ("bmp", "png", "jpg", "jpeg", "gif"만 표시)
+                FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                        "Image Files (bmp, png, jpg, jpeg, gif)", "bmp", "png", "jpg", "jpeg", "gif");
+                fileChooser.setFileFilter(filter);
+
+                // 파일 선택 다이얼로그 열기
+				fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+                int returnValue = fileChooser.showOpenDialog(frame);
+
+                // 파일 선택 결과 확인
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    // 선택된 파일 경로와 이름을 텍스트 필드에 설정
+                    imageTextField.setText(selectedFile.getAbsolutePath());
+					imagefilePath = "";
+					imagefilePath = selectedFile.getAbsolutePath();
+                }
+            }
+        });
+
+        // chooseBtn2 이벤트
+        chooseBtn2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //OptionPane.showMessageDialog(frame, "qp파일 선택 버튼 클릭됨!");
+				// JFileChooser 생성
+				JFileChooser fileChooser = new JFileChooser();
+
+				// ".qp" 파일만 보이도록 파일 필터 설정
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("QP Files (.qp)", "qp");
+				fileChooser.setFileFilter(filter);
+
+				// 파일 선택 다이얼로그 열기
+				fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+				int returnValue = fileChooser.showSaveDialog(frame);
+
+				if (returnValue == JFileChooser.APPROVE_OPTION) {
+					// 파일 선택됨
+					File selectedFile = fileChooser.getSelectedFile();
+
+					// 선택된 파일의 확장자가 ".qp"인지 확인하고, 아니면 자동 추가
+					String filePath = selectedFile.getAbsolutePath();
+					if (!filePath.toLowerCase().endsWith(".qp")) {
+						filePath += ".qp";
+					}
+
+					// JTextField에 파일 경로 설정
+					qpTextField.setText(filePath);
+					qpfilePath = "";
+					qpfilePath = filePath;
+				} else {
+					
+				}
+            }
+        });
+		// inforBtn1 이벤트
+        inforBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //JOptionPane.showMessageDialog(frame, "정보 선택 버튼 클릭됨!");
+				// 새로운 JFrame 생성
+                JFrame useFrame = new JFrame("정보");
+                useFrame.setSize(500, 400);
+                useFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                useFrame.setLayout(new BorderLayout());
+
+                // TextArea와 스크롤바 추가
+                JTextArea useTextArea = new JTextArea();
+                useTextArea.setText("");
+				
+				useTextArea.append("qp파일변환기v0.0021\n");
+				useTextArea.append("만든이 : 컴퓨터판타지연구소\n");
+				useTextArea.append("지원 : 컴퓨터판타지연구소\n");
+				useTextArea.append("사용언어 : Java 8 SE\n");
+				useTextArea.append("v0.0021버전이 초기버전입니다.\n");
+				
+                useTextArea.setLineWrap(true); // 텍스트 줄 바꿈
+                useTextArea.setWrapStyleWord(true); // 단어 단위로 줄 바꿈
+                useTextArea.setEditable(false); // 텍스트 수정 불가
+				
+				// 폰트 변경
+				useTextArea.setFont(new Font("Serif", Font.PLAIN, 20)); // Serif 폰트, 크기 20
+                JScrollPane scrollPane = new JScrollPane(useTextArea);
+                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // 항상 스크롤바 보이기
+
+                // 확인 버튼 추가
+                JButton confirmButton = new JButton("확인");
+                confirmButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        useFrame.dispose(); // 창 닫기
+                    }
+                });
+
+                // 컴포넌트 배치
+                useFrame.add(scrollPane, BorderLayout.CENTER); // TextArea (스크롤 포함) 중앙
+                useFrame.add(confirmButton, BorderLayout.SOUTH); // 확인 버튼 아래
+
+                // 창 표시
+				useFrame.setLocation(400,300);
+                useFrame.setVisible(true);
+            }
+        });
+        // 변경하기 버튼 이벤트
+        changeBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //JOptionPane.showMessageDialog(frame, "파일을 변경합니다!");
+				// 확인 대화 상자 표시
+				int result = JOptionPane.showConfirmDialog(frame, "qp파일로 변경(생성)하겠습니까?", "확인", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+				// 확인 버튼을 눌렀을 경우 실행
+				if (result == JOptionPane.YES_OPTION) {
+					// 여기에 파일 변경(생성) 로직을 추가
+					//JOptionPane.showMessageDialog(frame, "파일이 성공적으로 변경(생성)되었습니다!");
+					try {
+						// 이미지 파일 경로 설정
+						File imageFile = new File(imagefilePath); // 이미지 파일의 경로
+            
+						// BufferedImage로 이미지 읽기
+						BufferedImage image = ImageIO.read(imageFile);
+
+						if (image != null) {
+							System.out.println("이미지가 성공적으로 로드되었습니다!");
+							// BufferedImage 정보를 출력 (너비와 높이)
+							System.out.println("이미지 크기: " + image.getWidth() + "x" + image.getHeight());
+							
+							// BMP 파일로 저장
+							String currentDir = System.getProperty("user.dir");
+							File outputBMPFile = new File(currentDir,"temp.bmp"); // 저장될 BMP 파일 경로
+							ImageIO.write(image, "bmp", outputBMPFile);
+							
+							//여기서부터 복사
+							StringBuilder writeTemp;
+							String tmp;
+							try{
+								int testRGB = 0;
+								int paste =0; //임시저장공간
+								int[] nd = new int[4];//nd는 not dead 아직 죽지 않았다.
+								char[] savetemp = new char[2];
+								//image = qpp.image;
+								writeTemp = new StringBuilder();
+								writeTemp.append((char)4425);//처음 파일인것을 인식
+								writeTemp.append((char)4989);//처음 파일인것을 인식
+								writeTemp.append((char)6989);//처음 파일인것을 인식
+								writeTemp.append((char)4548);//처음 파일인것을 인식
+								writeTemp.append((char)17);//시작지점1
+								writeTemp.append((char)0);//시작지점2(<<16)
+								writeTemp.append((char)image.getWidth());//가로크기
+								writeTemp.append((char)image.getHeight());//세로크기
+								writeTemp.append((char)0);//이미지좌표x
+								writeTemp.append((char)0);//이미지좌표y
+								writeTemp.append((char)0);//imfor1
+								writeTemp.append((char)0);//imfor2
+								writeTemp.append((char)0);//imfor3
+								writeTemp.append((char)0);//imfor4
+								writeTemp.append((char)0);//imfor5
+								writeTemp.append((char)0);//imfor6
+								writeTemp.append((char)0);//imfor7
+								for(int i =0; i<image.getHeight(); i++)
+								{
+									for(int j=0; j<image.getWidth(); j++)
+									{
+										testRGB = image.getRGB(j,i);
+										if(testRGB == -0x00000000) testRGB = 0xffffffff;
+										nd[0] = (int)((testRGB & 0xff000000));
+										nd[1] = (int)((testRGB & 0x00ff0000));
+										nd[2] = (int)((testRGB & 0x0000ff00));
+										nd[3] = (int)(testRGB & 0x000000ff);
+										savetemp[0] = (char)((nd[0]+nd[1])>>8);
+										savetemp[1] = (char)(nd[2]+nd[3]);
+										writeTemp.append((char)savetemp[0]);
+										writeTemp.append((char)savetemp[1]);
+									}
+								}
+								System.out.println(Integer.toHexString(image.getRGB(100,100)));
+								tmp = "";
+								tmp = writeTemp.toString();
+								
+								
+								File fw = new File(qpfilePath);
+								if(fw.exists()){
+									FileOutputStream fos = new FileOutputStream(fw);
+									fos.write(new byte[0]);
+									fos.close();
+								}
+			
+								RandomAccessFile raf = new RandomAccessFile(fw,"rw");
+								FileChannel channel = raf.getChannel();
+								MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_WRITE,0,tmp.getBytes("utf-8").length);
+								buffer.clear();
+								byte[] data = tmp.getBytes("UTF-8");
+								if(buffer.remaining()>=data.length){
+				
+									buffer.put(data);
+								}else
+								{
+									System.out.println("버퍼에 충분한 공간이 없습니다.");
+								}
+								channel.close();
+			
+								raf.close();
+		
+								System.out.println("RGB = " + Integer.toHexString(testRGB));
+								
+							}catch(IOException ioe)
+							{
+			
+							}
+							
+						} else {
+							System.out.println("이미지를 읽을 수 없습니다.");
+						}
+					} catch (IOException ex) {
+						ex.printStackTrace();
+						System.out.println("파일 로드 중 오류가 발생했습니다!");
+					}
+				} else {
+					// 취소를 눌렀을 경우
+					//JOptionPane.showMessageDialog(frame, "작업이 취소되었습니다.");
+				}
+            }
+        });
+
+        // 종료하기 버튼 이벤트
+        exitBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0); // 프로그램 종료
+            }
+        });
+
+        // JFrame을 보이게 설정
+		frame.setLocation(400,300);
+        frame.setVisible(true);
+	}
+}
