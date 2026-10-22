@@ -1,0 +1,252 @@
+Swing 말고도 꽤 많아.
+
+javax.swing — 우리가 아는 Swing 전체
+
+javax.swing.event — 이벤트 관련 클래스
+
+javax.swing.border — Border 관련 클래스
+
+javax.swing.table — JTable 관련
+
+javax.swing.tree — JTree 관련
+
+javax.swing.text — 텍스트 컴포넌트 관련
+
+javax.swing.plaf — Look & Feel 관련
+
+javax.swing.filechooser — 파일 선택기 관련
+
+javax.swing.colorchooser — 색상 선택기 관련
+
+이런 것들은 전부 Swing의 하위 패키지들이라서
+결국 Swing 생태계라고 보면 돼.
+
+javax 안에는 Swing 전체가 들어 있고,
+그 안에 수십 개의 GUI 컴포넌트들이 포함돼.
+
+즉,
+javax = Swing + Swing 하위 패키지들  
+이라고 보면 정확해.
+
+🖥️ javax.swing의 주요 컴포넌트들
+📌 입력 & 버튼류
+JButton — 기본 버튼
+
+JToggleButton — 토글 버튼
+
+JCheckBox — 체크박스
+
+JRadioButton — 라디오 버튼
+
+JComboBox — 콤보박스
+
+JTextField — 한 줄 텍스트 입력
+
+JTextArea — 여러 줄 텍스트 입력
+
+JFormattedTextField — 포맷된 입력 필드
+
+JPasswordField — 비밀번호 입력
+
+(출처: Java SE 문서에서 JComponent 하위 목록에 명시됨 )
+
+📌 파일·색상·대화상자
+JFileChooser — 파일 선택기
+
+JColorChooser — 색상 선택기
+
+JDialog — 대화상자
+
+JOptionPane — 메시지/확인창
+
+(JFileChooser와 JColorChooser는 javax.swing 하위 컴포넌트로 명시됨 )
+
+📌 텍스트 컴포넌트
+JEditorPane — HTML, RTF 등 편집
+
+JTextPane — 스타일 텍스트
+
+JLabel — 텍스트/이미지 표시
+
+📌 리스트·테이블·트리
+JList — 리스트
+
+JTable — 테이블
+
+JTree — 트리 구조
+
+(각각 javax.swing.table, javax.swing.tree 패키지에서 제공됨 )
+
+📌 컨테이너류
+JPanel — 기본 패널
+
+JScrollPane — 스크롤 영역
+
+JSplitPane — 화면 분할
+
+JTabbedPane — 탭 UI
+
+JLayeredPane — 레이어 기반 UI
+
+JDesktopPane — MDI(여러 내부 창)
+
+📌 프레임류
+JFrame — 기본 윈도우
+
+JWindow — 타이틀 없는 윈도우
+
+JInternalFrame — 내부 프레임(MDI)
+
+📌 메뉴 관련
+JMenuBar
+
+JMenu
+
+JMenuItem
+
+JCheckBoxMenuItem
+
+JRadioButtonMenuItem
+
+📌 기타 유틸 컴포넌트
+JProgressBar — 진행 표시
+
+JSlider — 슬라이더
+
+JSpinner — 스피너
+
+JToolBar — 툴바
+
+JSeparator — 구분선
+
+📦 javax 안에는 Swing 외에도 이런 패키지들이 있음
+javax.swing.event — 이벤트 처리
+
+javax.swing.table — JTable 관련
+
+javax.swing.tree — JTree 관련
+
+javax.swing.text — 텍스트 처리
+
+javax.swing.plaf — Look & Feel
+
+javax.accessibility — 접근성 API
+
+(문서에서 패키지 구조로 확인됨 )
+
+🎯 Swing 이벤트는 크게 4종류
+1) 입력 이벤트 (Input Events)
+→ 네가 말한 마우스, 키보드가 여기에 포함돼.
+
+MouseEvent
+
+MouseWheelEvent
+
+MouseMotionEvent
+
+KeyEvent
+
+이벤트 리스너:
+
+MouseListener
+
+MouseMotionListener
+
+MouseWheelListener
+
+KeyListener
+
+2) 컴포넌트 이벤트 (Component Events)
+→ Panel, Frame, Button 등 UI 컴포넌트의 상태 변화
+
+ComponentEvent
+
+ContainerEvent
+
+WindowEvent
+
+FocusEvent
+
+HierarchyEvent
+
+InputMethodEvent
+
+리스너:
+
+ComponentListener
+
+ContainerListener
+
+WindowListener
+
+FocusListener
+
+HierarchyListener
+
+3) 그래픽/렌더링 이벤트 (Painting Events)
+→ 네가 말한 “Panel 그래픽”이 바로 이쪽
+
+Swing에서는 그래픽 이벤트가 따로 존재하는 게 아니라
+paintComponent(Graphics g) 호출 자체가 이벤트처럼 동작해.
+
+즉:
+
+Panel이 다시 그려질 때
+
+크기 변경
+
+화면 갱신
+이런 상황에서 자동으로 paint 이벤트가 발생하는 구조야.
+
+4) 모델 이벤트 (Model Events)
+→ 리스트, 테이블, 트리 같은 데이터 모델 변화
+
+ListDataEvent
+
+TableModelEvent
+
+TreeModelEvent
+
+리스너:
+
+ListDataListener
+
+TableModelListener
+
+TreeModelListener
+
+⭐ 정리하면
+✔ 마우스 → MouseEvent
+✔ 키보드 → KeyEvent
+✔ Panel 그래픽 → paintComponent(Graphics) 호출
+✔ Panel 자체 변화 → ComponentEvent
+✔ Window 변화 → WindowEvent
+✔ Focus 변화 → FocusEvent
+✔ 데이터 변화 → ModelEvent
+Swing 이벤트는 이렇게 입력 / 컴포넌트 / 그래픽 / 모델로 나뉘어 있어.
+
+🔥 민우가 지금 만들고 있는 QPFileChooser에서
+어떤 이벤트를 다룰 가능성이 높냐면:
+
+✔ 마우스 이벤트
+파일 클릭, 더블클릭, 드래그 선택
+
+✔ 키보드 이벤트
+Enter로 선택, ESC로 취소
+
+✔ 컴포넌트 이벤트
+창 열릴 때, 닫힐 때, 크기 변경
+
+✔ 그래픽 이벤트
+파일 목록을 커스텀 렌더링할 때
+
+✔ 모델 이벤트
+파일 리스트가 갱신될 때
+
+QPFileChooser는 사실상 이벤트 덩어리야.
+그래서 이벤트 구조를 잘 잡아두면
+나중에 기능 확장할 때 엄청 편해진다.
+
+민우,
+너 지금 이벤트 구조를 직접 설계하려는 거야?
+아니면 QPFileChooser에서 어떤 이벤트를 먼저 구현할지 고민 중이야?
