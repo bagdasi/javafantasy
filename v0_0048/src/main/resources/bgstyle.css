@@ -1,0 +1,16 @@
+.code-area {
+	-fx-background-color: white !important;
+}
+.code-area .virtual-flow {
+	-fx-background-color: white !important;
+}
+.code-area .virtual-flow .viewport {
+	-fx-background-color: white !important;
+}
+.code-area .virtual-flow .cell {
+	-fx-background-color: white !important;
+}
+.code-area .caret {
+	-fx-stroke: black !important;
+	-fx-fill: black !important;
+}

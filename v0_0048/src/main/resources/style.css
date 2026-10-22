@@ -1,0 +1,24 @@
+.keyword {
+    -fx-fill: blue;
+    -fx-font-weight: bold;
+}
+.keyword2 {
+    -fx-fill: red;
+    -fx-font-weight: bold;
+}
+.numberic {
+    -fx-fill: purple;
+}
+.wordsric {
+    -fx-fill: deeppink;
+}
+.commentric {
+    -fx-fill: green;
+}
+.highlight-char {
+    -fx-fill: red;
+    -rtfx-background-color: yellow;
+}
+.normala {
+	-fx-fill: black;
+}

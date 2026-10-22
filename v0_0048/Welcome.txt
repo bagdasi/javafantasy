@@ -1,0 +1,57 @@
+ANT Java Editor
+
+이 에디터는 Java 개발을 위한 가볍고 직관적인 작업 환경을 제공합니다.
+필요한 파일을 불러오고, 코드를 편집하고, JAR을 생성하세요.
+
+당신의 프로젝트는 여기서 시작됩니다.
+ANT Java Editor
+
+Version 0.0047
+Author: 컴퓨터판타지연구소
+
+Features:
+• Java 코드 편집
+• JAR 패키징
+• Manifest 자동 생성
+• 파일/폴더 관리
+• 탭 기반 UI
+
+감사합니다.
+
+ANT Java Editor
+Welcome!
+
+Start coding. Build your JAR. Enjoy your workflow.
+
+ANT Java Editor
+
+어서오세요, 개발자님!
+여기는 Java 코드를 편집하고, JAR을 뚝딱 만들어내는 마법 공장입니다.
+
+버그는… 아마 없을 겁니다.
+(있으면… 음… 모른 척 해주세요.)
+
+즐겁게 사용하세요!
+
+ANT Java Editor
+
+오늘도 한 줄의 코드가 당신을 성장시킵니다.
+이 에디터는 Java 개발을 더 단순하고, 더 빠르게 만들기 위해 만들어졌습니다.
+
+코드를 열고, 수정하고, 저장하고, JAR을 만들고…
+당신의 개발 흐름을 끊지 않기 위해 존재합니다.
+
+Happy Coding.
+
+ANT Java Editor
+
+Welcome!
+
+이 에디터는 Java 개발을 보다 편리하게 만들기 위해 설계되었습니다.
+- 탭 기반 코드 편집
+- JAR 생성 및 Manifest 자동 구성
+- 파일 및 폴더 관리
+- 경로 및 인코딩 표시
+
+가볍고 빠른 Java 개발 환경을 경험해 보세요.
+
