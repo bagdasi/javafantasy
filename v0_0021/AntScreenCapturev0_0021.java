@@ -1,0 +1,411 @@
+package AntScreenCapturev0_0021;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseMotionAdapter;
+
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.IOException;
+import javax.swing.Timer;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import qpSystem.*;
+
+class AntScreenCapturev0_0021 extends JFrame 
+{
+	AntScreenCapturev0_0021 asa;
+	BufferedImage bufferedImage;
+	BufferedImage clipped;
+	JPanel imagePanel;
+	JLabel imageLabel,statuslabel;
+    JTextField widthField;
+    JTextField heightField;
+	private Rectangle selection;
+    private Point startPoint = new Point(0,0);
+	boolean clipsel = false;
+	int x,y,w,h;
+	qpFileCreate qpfc;
+	qpFileOpen qpfo;
+	public AntScreenCapturev0_0021() {
+        Init();
+        setTitle("앤트스크린캡쳐v0.0021");
+        setSize(1000, 700);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setVisible(true);
+    }
+
+	public void Init() {
+        setLayout(new BorderLayout());
+		JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // 왼쪽 이미지 패널 + 스크롤
+        imageLabel = new JLabel();
+        imageLabel.setHorizontalAlignment(JLabel.LEFT);
+        imagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT))
+		{
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				if (bufferedImage != null) {
+					g.drawImage(bufferedImage, 0, 0, null);
+				}
+				// 선택 사각형 그리기
+				if (selection != null) {
+					Graphics2D g2 = (Graphics2D) g;
+					g2.setColor(new Color(255, 0, 0, 128));
+					g2.setStroke(new BasicStroke(2));
+					g2.drawRect(x,y,w,h);
+					g2.dispose();
+				}
+
+
+
+			}
+
+
+		};
+		
+        //imagePanel.add(imageLabel);
+		//leftPanel.setPreferredSize(new Dimension(600,600));
+		//leftPanel.setSize(600,600);
+		leftPanel.setBackground(Color.GRAY);
+        JScrollPane scrollPane = new JScrollPane(leftPanel,
+            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+            JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		leftPanel.add(imagePanel);
+        add(scrollPane);
+		// 마우스 이벤트 처리
+       imagePanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent me) {
+                if(clipsel)
+				{
+					startPoint = me.getPoint();
+					selection = new Rectangle();
+					imagePanel.repaint(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+					imagePanel.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+				}
+            }
+
+            
+
+            @Override
+            public void mouseReleased(MouseEvent me) {
+				if(clipsel)
+				{
+					
+					// 원하는 위치에 clipped 저장 또는 표시
+					imagePanel.repaint(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+					imagePanel.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+					System.out.println(x + " " + y + " " + w + " " + h);
+				}
+            }
+        });
+		imagePanel.addMouseMotionListener(new MouseAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent mme) {
+				
+				int x = mme.getX();
+				int y = mme.getY();
+				String strformat = String.format("x : %s, y : %s ARGB : %s",x,y,Integer.toHexString(bufferedImage.getRGB(x,y)));
+				statuslabel.setText(strformat);
+				statuslabel.revalidate();
+				revalidate();
+					
+				
+				
+			}
+			@Override
+            public void mouseDragged(MouseEvent me) {
+				if(clipsel)
+				{
+					x = Math.min(startPoint.x, me.getX());
+					y = Math.min(startPoint.y, me.getY());
+					w = Math.abs(startPoint.x -me.getX());
+					h = Math.abs(startPoint.y - me.getY());
+					if((x+w)>bufferedImage.getWidth()) w = bufferedImage.getWidth()-x;
+					if((y+h)>bufferedImage.getHeight()) h = bufferedImage.getHeight()-y;
+					if(me.getX()<=0) x = 0;
+					if(me.getY()<=0) y = 0;
+					selection.setBounds(x, y, w, h);
+					imagePanel.repaint(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+					imagePanel.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+				}
+            }
+		});
+
+
+        
+		//imagePanel.addMouseListener(this);
+        //imagePanel.addMouseMotionListener(this);
+
+        // 오른쪽 컨트롤 패널
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+
+        // 버튼들
+        String[] buttonLabels = {
+            "스크린샷", "image저장", "image불러오기", "qp저장", "qp불러오기",
+            "선택", "잘라내기", "새붙이기", "새로고침", "종료하기"
+        };
+        for (String label : buttonLabels) {
+            JButton btn = new JButton(label);
+			btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            // 액션 리스너 추가
+            btn.addActionListener(e -> {
+                System.out.println(label + " 버튼 눌림");
+                // 여기에서 각 버튼에 맞는 동작을 추가하면 돼!
+				if (label.equals("스크린샷")) {
+					setVisible(false);
+                    try {
+						Thread.sleep(500);
+						Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+						bufferedImage = new Robot().createScreenCapture(screenRect);
+						/*Timer timer = new Timer(1000, new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								setVisible(true);
+							}
+						});
+						timer.start();*/
+
+						setVisible(true);
+						// 이미지 화면에 출력
+						//imageLabel.setIcon(new ImageIcon(bufferedImage));
+						System.out.println("스크린 캡처 완료!");
+						imagePanel.setPreferredSize(new Dimension(bufferedImage.getWidth(), bufferedImage.getHeight()));
+						imagePanel.setSize(bufferedImage.getWidth(), bufferedImage.getHeight());
+
+						imagePanel.repaint(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+						// 이미지 로드 또는 캡처 직후에 아래 코드 추가
+						imagePanel.revalidate();
+						// 이미지 로드 또는 캡처 직후에 아래 코드 추가
+
+
+
+
+						
+						imagePanel.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+
+					
+                }
+				if (label.equals("image저장")) {
+                    saveImageWithChooser(bufferedImage, this);
+
+                }
+				if (label.equals("image불러오기")) {
+                    loadImageWithChooser(this); // this는 JFrame 또는 부모 컴포넌트
+                }
+				if (label.equals("qp저장")) {
+					// ARGB 타입으로 변환
+					BufferedImage argbImage = new BufferedImage(bufferedImage.getWidth(),bufferedImage.getHeight(),BufferedImage.TYPE_INT_ARGB);
+					Graphics2D g2d = argbImage.createGraphics();
+					g2d.drawImage(bufferedImage, 0, 0, null);
+					g2d.dispose();
+
+
+
+                    qpfc = new qpFileCreate(argbImage,this);
+                }
+				if (label.equals("qp불러오기")) {
+                    qpfo = new qpFileOpen(this);
+					bufferedImage = qpfo.image;
+					imagePanel.setPreferredSize(new Dimension(bufferedImage.getWidth(), bufferedImage.getHeight()));
+					imagePanel.setSize(bufferedImage.getWidth(), bufferedImage.getHeight());
+
+					imagePanel.repaint(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+					imagePanel.revalidate();
+                }
+				if (label.equals("선택")) {
+                    clipsel = true;
+					System.out.println("test");
+                }
+				if (label.equals("잘라내기")) {
+                    if(selection!=null)
+					{
+						// 선택 완료 후 자르기 작업 가능
+						clipped = bufferedImage.getSubimage(
+						selection.x, selection.y, selection.width, selection.height);
+						selection = null;
+						imagePanel.repaint(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+						// 이미지 로드 또는 캡처 직후에 아래 코드 추가
+						imagePanel.revalidate();
+					}
+                }
+				if (label.equals("새붙이기")) {
+                    if(clipped!=null)
+					{
+						// 선택 완료 후 자르기 작업 가능
+						bufferedImage = clipped;
+						selection = null;
+						imagePanel.setPreferredSize(new Dimension(bufferedImage.getWidth(), bufferedImage.getHeight()));
+						imagePanel.setSize(bufferedImage.getWidth(), bufferedImage.getHeight());
+
+						imagePanel.repaint(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+						// 이미지 로드 또는 캡처 직후에 아래 코드 추가
+						imagePanel.revalidate();
+						
+					}
+                
+                }
+				if (label.equals("새로고침")) {
+                    int desiredWidth = Integer.parseInt(widthField.getText());
+					int desiredHeight = Integer.parseInt(heightField.getText());
+					imageLabel.setIcon(resizeIcon(bufferedImage, desiredWidth, desiredHeight));
+					imagePanel.setPreferredSize(new Dimension(bufferedImage.getWidth(), bufferedImage.getHeight()));
+					imagePanel.setSize(bufferedImage.getWidth(), bufferedImage.getHeight());
+
+					imagePanel.repaint(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+					imagePanel.revalidate();
+						// 이미지 로드 또는 캡처 직후에 아래 코드 추가
+					imagePanel.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+
+                }
+                if (label.equals("종료하기")) {
+                    System.exit(0);
+                }
+            });
+
+
+            rightPanel.add(btn);
+            rightPanel.add(Box.createVerticalStrut(5));
+        }
+
+        // 너비 입력 패널
+        JPanel widthPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel widthLabel = new JLabel("너비 : ");
+        widthField = new JTextField( 10);
+        widthPanel.add(widthLabel);
+        widthPanel.add(widthField);
+        rightPanel.add(widthPanel);
+
+        // 높이 입력 패널
+        JPanel heightPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel heightLabel = new JLabel("높이 : ");
+        heightField = new JTextField( 10);
+        heightPanel.add(heightLabel);
+        heightPanel.add(heightField);
+        rightPanel.add(heightPanel);
+
+        // 버전 및 제작자 정보
+        rightPanel.add(Box.createVerticalStrut(10));
+        JLabel versionLabel = new JLabel("버전 : v0.0021");
+        JLabel creatorLabel = new JLabel("만든이 : 컴퓨터판타지연구소");
+        rightPanel.add(versionLabel);
+        rightPanel.add(creatorLabel);
+
+        add(rightPanel, BorderLayout.EAST);
+		
+		JPanel statuspanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		statuslabel = new JLabel("x : 0 y : 0 ARGB : 0");
+		statuspanel.add(statuslabel);
+		
+		add(statuspanel,BorderLayout.SOUTH);
+		
+		setVisible(true);
+    }
+
+
+	public static void main(String[] args) 
+	{
+		
+		SwingUtilities.invokeLater(AntScreenCapturev0_0021::new);
+
+
+	}
+	
+	private ImageIcon resizeIcon(BufferedImage image, int newWidth, int newHeight) {
+		Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+		// Image → BufferedImage 변환
+		BufferedImage resizedBuffered = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = resizedBuffered.createGraphics();
+		g2d.drawImage(scaledImage, 0, 0, null);
+		g2d.dispose();
+
+		bufferedImage = resizedBuffered;
+
+
+		return new ImageIcon(scaledImage);
+	}
+	
+	private void saveImageWithChooser(BufferedImage image, Component parent) {
+		JFileChooser fileChooser = new JFileChooser();
+
+		// 현재 디렉토리 설정
+		fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+		fileChooser.setDialogTitle("이미지 저장");
+
+		// 파일 필터 추가 (지원 확장자 지정)
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG 이미지", "png"));
+		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPEG 이미지", "jpg", "jpeg"));
+		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("BMP 이미지", "bmp"));
+
+	    int userSelection = fileChooser.showSaveDialog(parent);
+
+		if (userSelection == JFileChooser.APPROVE_OPTION) {
+			File fileToSave = fileChooser.getSelectedFile();
+
+			// 선택된 필터를 기반으로 확장자 결정
+			String extension = "png"; // 기본값
+			String description = fileChooser.getFileFilter().getDescription();
+
+			if (description.contains("JPEG")) extension = "jpg";
+			else if (description.contains("BMP")) extension = "bmp";
+
+			// 확장자 자동 추가
+			if (!fileToSave.getName().toLowerCase().endsWith("." + extension)) {
+			    fileToSave = new File(fileToSave.getAbsolutePath() + "." + extension);
+			}
+
+			try {
+			    ImageIO.write(image, extension, fileToSave);
+			    JOptionPane.showMessageDialog(parent, "이미지 저장 완료: " + fileToSave.getName());
+			} catch (IOException ex) {
+			    ex.printStackTrace();
+			    JOptionPane.showMessageDialog(parent, "저장 중 오류 발생!", "오류", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+	private void loadImageWithChooser(Component parent) {
+		JFileChooser fileChooser = new JFileChooser();
+
+		// 현재 디렉토리 설정
+		fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+		fileChooser.setDialogTitle("이미지 불러오기");
+
+		// 이미지 파일 필터 추가
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("이미지 파일", "png", "jpg", "jpeg", "bmp"));
+
+		int result = fileChooser.showOpenDialog(parent);
+
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File selectedFile = fileChooser.getSelectedFile();
+
+			try {
+				// BufferedImage 로드
+				bufferedImage = ImageIO.read(selectedFile);
+
+				// 크기 설정 (스크롤바용)
+				imagePanel.setPreferredSize(new Dimension(bufferedImage.getWidth(), bufferedImage.getHeight()));
+				imagePanel.setSize(bufferedImage.getWidth(), bufferedImage.getHeight());
+
+				// 화면에 표시
+				imagePanel.repaint();
+				imagePanel.revalidate();
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(parent, "이미지 로드 실패!", "오류", JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
+			}
+		}
+	}
+}
