@@ -1,0 +1,278 @@
+require 'ffi'
+require 'win32ole'
+
+
+module Kernel32
+  extend FFI::Library
+  ffi_lib 'kernel32'
+  PROCESS_QUERY_INFORMATION = 0x0400
+  PROCESS_VM_READ = 0x0010
+  PROCESS_ALL_ACCESS = 0x1F0FFF
+
+  attach_function :IsWow64Process, [:pointer, :pointer], :bool
+  attach_function :OpenProcess, [:uint, :int, :uint], :pointer
+  attach_function :VirtualQueryEx, [:pointer, :ulong_long, :pointer, :size_t], :size_t
+  attach_function :WriteProcessMemory, [:pointer, :ulong_long, :pointer, :size_t, :pointer], :bool
+  attach_function :ReadProcessMemory, [:pointer, :ulong_long, :pointer, :size_t, :pointer], :bool
+end
+handle = nil
+selected = nil
+selected_pid = nil
+found_addresses = []	#검색된 주소를 저장
+# MEMORY_BASIC_INFORMATION 구조체 정의
+class MEMORY_BASIC_INFORMATION < FFI::Struct
+  layout :BaseAddress,      :ulong_long,
+         :AllocationBase,   :ulong_long,
+         :AllocationProtect,:uint,
+         :RegionSize,       :size_t,
+         :State,            :uint,
+         :Protect,          :uint,
+         :Type,             :uint
+end
+def list_processes
+  wmi = WIN32OLE.connect("winmgmts://")
+  processes = wmi.ExecQuery("SELECT Name, ProcessId FROM Win32_Process")
+
+  list = []
+  processes.each do |p|
+    list << { name: p.Name, pid: p.ProcessId }
+  end
+
+  list
+end
+
+def list_memory_regions(process_handle)
+  regions = []
+  addr = 0
+  mbi = MEMORY_BASIC_INFORMATION.new
+
+  while Kernel32.VirtualQueryEx(process_handle, addr, mbi, mbi.size) != 0
+    base = mbi[:BaseAddress]
+    size = mbi[:RegionSize]
+    state = mbi[:State]
+
+    # MEM_COMMIT 영역만 사용
+    if state == 0x1000
+      regions << { base: base, size: size }
+    end
+
+    addr = base + size
+  end
+
+  return regions
+end
+
+loop do
+
+	puts "앤트치트에디터입니다. 아래에서 선택하세요."
+	puts "1.프로세스 선택 2.선택한 프로세스 3.값 찾기 4.값 변경 5.정보 6.종료"
+	print "Enter:번호"
+	input = gets.chomp
+	case input
+		when "1"
+		puts "\n=== 실행 중인 프로세스 목록 ==="
+		
+		
+
+		# 출력 테스트
+		sorted = list_processes.sort_by { |p| p[:name].downcase }
+
+		sorted.each_with_index do |p, idx|
+
+			puts "#{idx + 1}. #{p[:name]} (PID: #{p[:pid]})"
+		end
+
+
+		print "\n선택할 번호 입력: "
+		sel = gets.chomp.to_i
+
+		if sel < 1 || sel > sorted.length
+			puts "잘못된 번호입니다."
+		else
+			selected = sorted[sel-1]
+			selected_pid = selected[:pid]
+			handle = Kernel32.OpenProcess(Kernel32::PROCESS_ALL_ACCESS, 0, selected_pid)
+			found_addresses = []
+			puts "\n선택된 프로세스:"
+			puts "이름: #{selected[:name]}"
+			puts "PID : #{selected[:pid]}"
+		end
+		# 여기서 이후 메모리 읽기, 핸들 열기 등 원하는 기능 추가 가능
+		
+
+		
+
+
+			
+
+		
+		when "2"
+		if(selected != nil)
+			
+			puts "\n선택된 프로세스:"
+			puts "이름: #{selected[:name]}"
+			puts "PID : #{selected[:pid]}"
+		else
+			puts "프로세스 정보가 없습니다."
+		end
+		
+		when "3"
+		if handle.nil?
+			puts "먼저 1번에서 프로세스를 선택하세요."
+			next
+		end
+
+		puts "값 찾기 모드 선택:"
+		puts "1. 10진수"
+		puts "2. 16진수"
+		print "선택: "
+		mode = gets.chomp
+
+		print "찾을 값 입력: "
+		raw_value = gets.chomp
+
+		# 입력값 변환
+		value =
+		case mode
+			when "1" then raw_value.to_i
+			when "2" then raw_value.to_i(16)
+			else
+			puts "잘못된 모드입니다."
+			next
+		end
+
+		puts "검색할 값: #{value} (#{value.to_s(16)}h)"
+
+		if found_addresses.empty?
+			puts "첫 검색입니다. 전체 메모리를 스캔합니다."
+
+
+			regions = list_memory_regions(handle)
+			regions.each do |region|
+				base = region[:base]
+				size = region[:size]
+
+				addr = base
+				end_addr = base + size
+
+
+				while addr < end_addr
+					buffer = FFI::MemoryPointer.new(:uint32)
+					bytes_read = FFI::MemoryPointer.new(:size_t)
+
+					ok = Kernel32.ReadProcessMemory(handle, addr, buffer, 4, bytes_read)
+
+					if ok
+						read_val = buffer.read_uint32
+						if read_val == value
+							found_addresses << addr
+							puts "발견! 주소: 0x#{addr.to_s(16).upcase}"
+						end
+					end
+
+					addr += 4
+				end
+			end
+		else
+			new_list = []
+
+			found_addresses.each do |addr|
+				buffer = FFI::MemoryPointer.new(:uint32)
+				bytes_read = FFI::MemoryPointer.new(:size_t)
+
+				ok = Kernel32.ReadProcessMemory(handle, addr, buffer, 4, bytes_read)
+
+				if ok
+					read_val = buffer.read_uint32
+					if read_val == value
+						new_list << addr
+						puts "유지됨: 0x#{addr.to_s(16).upcase}"
+					end
+				end
+			end
+
+			found_addresses = new_list
+
+		end
+
+		puts "검색 완료. 총 #{found_addresses.length}개 발견됨."
+
+		
+		
+		when "4"
+		puts "현재 값을 찾은 주소 목록"
+		if found_addresses.empty?
+			puts "아직 검색된 주소가 없습니다."
+		else
+				
+			found_addresses.each_with_index do |addr, idx|
+				puts "#{idx + 1}. 0x#{addr.to_s(16).upcase}"
+			end
+			puts "선택하세요. 엔터:번호"
+			sel = gets.chomp.to_i
+
+			if sel < 1 || sel > found_addresses.length
+				puts "잘못된 번호입니다."
+			else
+				sel_address = found_addresses[sel - 1]
+				puts "선택된 주소: 0x#{sel_address.to_s(16).upcase}"
+			end
+			puts "값 변경 모드 선택:"
+			puts "1. 10진수"
+			puts "2. 16진수"
+			print "선택: "
+			mode = gets.chomp
+			puts "변경값을 입력하세요. 엔터:변경값"
+			
+			new_value = gets.chomp
+
+			# 입력값 변환
+			value =
+			case mode
+				when "1" then new_value.to_i
+				when "2" then new_value.to_i(16)
+			else
+				puts "잘못된 모드입니다."
+				next
+			end
+
+			puts "변경한 값: #{value} (#{value.to_s(16)}h)"
+			# 4바이트 정수(int32) 기준
+			buffer = FFI::MemoryPointer.new(:uint32)
+			buffer.write_uint32(new_value)
+
+			bytes_written = FFI::MemoryPointer.new(:size_t)
+
+			ok = Kernel32.WriteProcessMemory(
+				handle,   # case 1에서 저장한 핸들
+				sel_address,      # 선택한 주소
+				buffer,           # 쓸 값
+				4,                # 4바이트
+				bytes_written
+			)
+
+			if ok
+				puts "값 변경 성공! #{new_value} → 0x#{sel_address.to_s(16).upcase}"
+			else
+				puts "값 변경 실패… 권한 문제 또는 잘못된 주소일 수 있음."
+			end
+
+			
+		end
+
+		when "5"
+		puts "앱 정보 : 앤트치트에디터v0.001"
+		puts "만든이 : 컴퓨터판타지연구소"
+		puts "이 앱은 아파치2.0라이센스를 따릅니다."
+		puts "http://javafantasy.kr <--이 사이트에서 다운로드 할 수 있습니다."
+		when "6"
+		puts "앤트치트에디터를 종료합니다."
+		exit
+		
+		else
+		puts "잘못된 입력입니다."
+		
+		
+			
+	end
+end

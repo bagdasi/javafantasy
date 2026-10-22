@@ -1,0 +1,2 @@
+처음에 AntCheatEditerv0_001.bat가 실행이 안되면 gem_install.bat를 실행해서 1,2,3번 모두 설치해주세요.. 
+gem_install.bat는 관리자권한으로 실행해주세요. 아니면 설치가 안됩니다.
