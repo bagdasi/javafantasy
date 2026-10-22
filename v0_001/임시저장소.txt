@@ -1,0 +1,33 @@
+JFrame newFrame = new JFrame("새 프레임");
+newFrame.setSize(300, 200);
+newFrame.setAlwaysOnTop(true); // 항상 위에 유지!
+newFrame.setVisible(true);
+
+
+newFrame.addWindowFocusListener(new WindowFocusListener() {
+    @Override
+    public void windowGainedFocus(WindowEvent e) {
+        newFrame.setAlwaysOnTop(true);
+    }
+
+    @Override
+    public void windowLostFocus(WindowEvent e) {
+        newFrame.setAlwaysOnTop(true);
+    }
+});
+z 90
+x 88
+1 49
+2 50
+3 51
+4 52
+5 53
+6 54
+7 55
+8 56
+9 57
+q 81
+w 87
+c 67
+v 86
+b 66
