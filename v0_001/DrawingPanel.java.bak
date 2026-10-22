@@ -1,0 +1,608 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.awt.geom.Path2D;
+import java.awt.geom.PathIterator;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
+class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener 
+{
+	QPPv0_001 qpp;
+	public BufferedImage image;
+	private Path2D currentPath;
+    private ArrayList<Path2D> paths;
+	public static int drawselect = 0; //0:Pen 1:select 2: rotate 3: cut 4: copy 5: paste 6: pre 7:next 8:fill 9:erase 10:string 11:
+	public int width,height;
+	public int mx,my;
+	private int prevx,prevy;
+	public int rgbget;
+	public static int replacementColor;
+	private Path2D selectPath;
+	private ArrayList<Path2D> selpaths;
+	private List<Integer> savergb;
+	private Stack<BufferedImage> undoStack = new Stack<>();
+    private Stack<BufferedImage> redoStack = new Stack<>();
+	private Stack<BufferedImage> selectundoStack = new Stack<>();
+	private Stack<BufferedImage> tempStack = new Stack<>();
+	public static boolean cutbool =false;
+	public static int penst=1,pensh=1;
+	private double startX,startY,endX,endY;
+	private boolean dragging;
+	
+	private Stack<BufferedImage> tempundoStack = new Stack<>();
+	public static int selrgb = 0xff000000;
+	/*public DrawingPanel(int x,int y)
+	{
+		this.setPreferredSize(new Dimension(x,y));
+		this.setBackground(Color.WHITE);
+		width = x;
+		height = y;
+		this.mouseInit();
+	}*/
+	public DrawingPanel()
+	{
+		Init();
+	}
+	public void Init()
+	{
+		qpp =  QPPv0_001.getInstance();
+		System.out.println("dpwidth : " + qpp.dpwidth + " dpheight : " + qpp.dpheight);
+		this.setPreferredSize(new Dimension(qpp.dpwidth, qpp.dpheight));
+		this.setBackground(Color.WHITE);
+		this.mouseInit();
+		replacementColor = Color.RED.getRGB(); // 예: 빨간색으로 채우기
+	}
+	public BufferedImage DPanel()
+	{
+		
+		image = new BufferedImage(qpp.dpwidth,qpp.dpheight,BufferedImage.TYPE_INT_ARGB);
+		Graphics g = image.getGraphics();
+		g.setColor(Color.WHITE);
+		g.fillRect(0,0,qpp.dpwidth, qpp.dpheight);
+		g.dispose();
+		this.repaint();
+		
+		return image;
+		
+		
+	}
+	public int getRGB(int x,int y)
+	{
+	
+		return image.getRGB(x,y);
+	}
+	public BufferedImage setImage(int x,int y,int replacementColor)
+	{
+		image.setRGB(x,y,replacementColor);
+	
+		return image;
+	}	
+	public void Draw()
+	{
+		Graphics2D g2d = image.createGraphics();
+		
+		if(drawselect == 0)
+		{
+			
+			if(currentPath != null)
+			{
+				if(pensh ==1)
+				{
+					g2d.setStroke(new BasicStroke(penst));
+					g2d.setColor(Color.BLACK);
+					g2d.draw(currentPath);
+				}else if (pensh == 2)
+				{
+					g2d.setStroke(new BasicStroke(penst));
+					g2d.setColor(Color.BLACK);
+					g2d.draw(currentPath);
+					if(startX != endX || startY != endY)
+					{
+						//tempUndo();
+						//g2d.drawLine((int)startX,(int)startY,(int)endX,(int)endY);
+					}
+				}else if (pensh == 3)
+				{
+					
+				}
+			}
+		}else if(drawselect == 1)
+		{
+			
+			if(selectPath != null)
+			{
+				g2d.setStroke(new BasicStroke(3));
+				g2d.setColor(Color.BLUE);
+				g2d.draw(selectPath);
+				
+			}
+			
+		}else if(drawselect ==2)
+		{
+			
+		}else if (drawselect == 3)
+		{
+			
+			
+			
+			if(cutbool)
+			{
+				
+				selectUndo();
+				savergb = saveShapeRGB(selpaths.get(selpaths.size()-1));
+				
+				cutbool = false;
+			}
+			g2d.setColor(Color.WHITE);
+				g2d.fill(selpaths.get(selpaths.size()-1));
+			this.repaint();
+			
+			
+			
+		}else if(drawselect==4)
+		{
+			savergb = saveShapeRGB(selpaths.get(selpaths.size()-1));
+			
+			selectUndo();
+			this.repaint();
+		}else if(drawselect==5)
+		{
+			
+		}else if(drawselect == 6)
+		{
+			undo();
+			drawselect = 0;
+		}else if(drawselect == 7)
+		{
+			redo();
+			drawselect = 0;
+		}
+		g2d.dispose();
+		this.repaint();
+		
+	}
+	public void mouseInit()
+	{
+		currentPath = null; // 경로를 null로 초기화
+        paths = new ArrayList<>();
+        selectPath = null;
+		selpaths = new ArrayList<>();
+		this.addMouseListener(this);
+        this.addMouseMotionListener(this);
+	}
+	 private void floodFill(BufferedImage image, int x, int y, int targetColor, int replacementColor) {
+        if (targetColor == replacementColor) return;
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        Queue<Point> queue = new LinkedList<>();
+        queue.add(new Point(x, y));
+
+        while (!queue.isEmpty()) {
+            Point p = queue.poll();
+            int currentX = p.x;
+            int currentY = p.y;
+
+            if (currentX < 0 || currentX >= width || currentY < 0 || currentY >= height) continue;
+            if (image.getRGB(currentX, currentY) != targetColor) continue;
+
+            image.setRGB(currentX, currentY, replacementColor);
+
+            queue.add(new Point(currentX + 1, currentY));
+            queue.add(new Point(currentX - 1, currentY));
+            queue.add(new Point(currentX, currentY + 1));
+            queue.add(new Point(currentX, currentY - 1));
+        }
+    }
+	    public List<Integer> saveShapeRGB(Path2D shape) {
+	     List<Integer> rgbList = new ArrayList<>();
+		    if (shape != null && image != null) {
+			    Rectangle bounds = shape.getBounds();
+				for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
+					for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
+						if (shape.contains(x, y)) {
+							int rgb = image.getRGB(x, y);
+							rgbList.add(rgb);
+		                }
+			        }
+				}
+	        }
+		    return rgbList;
+    }
+	public void restoreShapeRGB(Path2D shape, List<Integer> rgbList,int mx,int my) {
+    if (shape != null && image != null && rgbList != null) {
+        Rectangle bounds = shape.getBounds();
+        int index = 0;
+        /*for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
+            for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
+                if (shape.contains(x, y) && index < rgbList.size()) {
+                    image.setRGB(x, y, rgbList.get(index));
+                    index++;
+                }
+            }
+        }*/
+		for (int x = mx; x < mx + bounds.width; x++) {
+            for (int y = my; y < my + bounds.height; y++) {
+                if (shape.contains((x-mx)+bounds.x, (y-my)+bounds.y) && index < rgbList.size()) {
+                   
+					image.setRGB(x, y, rgbList.get(index));
+                    index++;
+                }
+            }
+        }
+        repaint();
+    }else
+	{
+		if(shape == null) System.out.println("shape가 null입니다.");
+		if(image == null) System.out.println("image가 null입니다.");
+		if(rgbList == null) System.out.println("rgbList가 null입니다.");
+	}
+}
+	private void drawPath()
+	{
+		Graphics2D g2d = image.createGraphics();
+		g2d.draw(currentPath);
+		g2d.dispose();
+	}
+	public void tempUndoState()
+	{
+		BufferedImage tempimage = new BufferedImage(image.getWidth(),image.getHeight(),image.getType());
+		Graphics g = tempimage.getGraphics();
+		g.drawImage(image,0,0,null);
+		g.dispose();
+		tempundoStack.push(tempimage);
+		tempStack.clear();
+	}
+	public void tempUndo()
+	{
+		if(!tempundoStack.isEmpty())
+		{
+			tempStack.push(image);
+			image = tempundoStack.peek();
+			//System.out.println("tempundostack을 state했습니다."+" isEmpty()? : " +tempundoStack.isEmpty());
+			repaint();
+		}
+	}
+	public void saveUndoState() {
+        BufferedImage copy = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+        Graphics g = copy.getGraphics();
+        g.drawImage(image, 0, 0, null);
+        g.dispose();
+        undoStack.push(copy);
+        redoStack.clear(); // 새로운 작업을 하면 redo 스택을 비웁니다.
+		//System.out.println("undostack을 state했습니다."+" isEmpty()? : " +undoStack.isEmpty());
+    }
+
+    public void undo() {
+        if (!undoStack.isEmpty()) {
+            redoStack.push(image);
+            image = undoStack.pop();
+			//System.out.println("undostack pop했습니다." + "redoStack.empty() : " + redoStack.isEmpty());
+            repaint();
+        }
+    }
+
+    public void redo() {
+        if (!redoStack.isEmpty()) {
+            undoStack.push(image);
+            image = redoStack.pop();
+			//System.out.println("redostack pop했습니다.");
+            repaint();
+        }
+    } 
+	public void selectUndoState()
+	{
+			BufferedImage selcopy = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+			Graphics g = selcopy.getGraphics();
+			g.drawImage(image, 0, 0, null);
+			g.dispose();
+			selectundoStack.push(selcopy);
+			tempStack.clear();
+			//System.out.println("selectundostack을 state했습니다."+" isEmpty()? : " +selectundoStack.isEmpty());
+	}
+	public void selectUndo()
+	{
+		if(!selectundoStack.isEmpty()) 
+		{
+			tempStack.push(image);
+			image = selectundoStack.pop();
+			repaint();
+			//System.out.println("selctUndo pop했습니다.");
+		}
+	}
+	@Override
+	protected void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		//그림그리기
+		this.Draw();
+		g.drawImage(image,0,0,null);
+		
+		
+	}
+	@Override
+    public void mousePressed(MouseEvent e) {
+        if (SwingUtilities.isLeftMouseButton(e)) {
+			switch(drawselect)
+			{
+				case 0:
+					
+					if (pensh == 1)
+					{
+						saveUndoState();
+						
+						currentPath = new Path2D.Double(); // 새로운 경로 생성
+						currentPath.reset();
+						currentPath.moveTo(e.getX(), e.getY());
+					}else if (pensh == 2)
+					{
+						//tempUndoState();
+						saveUndoState();
+						currentPath = new Path2D.Double();
+						currentPath.reset();
+						startX = e.getX();
+						startY = e.getY();
+					}
+					
+					
+					
+					break;
+				case 1:
+					selectUndoState();
+					selectPath = new Path2D.Double();
+					selectPath.moveTo(e.getX(), e.getY());
+					
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					
+					break;
+				case 4:
+						
+					break;
+				case 5:
+					
+					break;
+				case 6:
+					
+					break;
+				case 7:
+					
+					break;
+				case 8:
+					
+					break;
+				case 9:
+					
+					break;
+				case 10:
+					
+					break;
+				default:
+					break;
+					
+			}
+		}
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        
+		switch(drawselect)
+			{
+				case 0:
+					if(pensh == 1)
+					{
+						if (currentPath != null) {
+							currentPath.lineTo(e.getX(), e.getY());
+							this.Draw();
+						}
+					}else if (pensh == 2)
+					{
+						
+						//tempUndo();
+						endX = e.getX();
+						endY = e.getY();
+						
+						//selectUndo();
+						dragging = true;
+						
+					}
+						repaint();
+					
+					break;
+				case 1:
+					if (selectPath != null)
+					{
+						selectPath.lineTo(e.getX(),e.getY());
+						this.Draw();
+						repaint();
+					}
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					
+					break;
+				case 4:
+						
+					break;
+				case 5:
+					
+					break;
+				case 6:
+					
+					break;
+				case 7:
+					
+					break;
+				case 8:
+					
+					break;
+				case 9:
+					
+					break;
+				case 10:
+					
+					break;	
+				default:
+					break;
+					
+			}
+		
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+       if (SwingUtilities.isLeftMouseButton(e)) {
+            
+			switch(drawselect)
+			{
+				case 0:
+					if (pensh == 1)
+					{
+					
+						if(currentPath != null)
+						{
+							paths.add((Path2D) currentPath.clone());
+						  // 새로운 경로를 추가할 때는 채워지지 않도록 설정
+							currentPath = null; // 경로를 null로 재설정
+						}
+					}else if (pensh == 2)
+					{
+						//tempUndo();
+						endX = e.getX();
+						endY = e.getY();
+						currentPath.moveTo(startX,startY);
+						currentPath.lineTo(endX,endY);
+						//drawPath();
+						dragging = false;
+						
+					}
+						 repaint();
+						 
+						 System.out.println("test마우스떼기.");
+					
+					break;
+				case 1:
+					if(selectPath != null)
+					{	
+						selpaths.add((Path2D) selectPath.clone());
+						selectPath = null;
+						
+						repaint();
+						System.out.println("test마우스떼기.");
+					}
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					
+					break;
+				case 4:
+						
+					break;
+				case 5:
+					
+					break;
+				case 6:
+					
+					break;
+				case 7:
+					
+					break;
+				case 8:
+					
+					break;
+				case 9:
+					
+					break;
+				case 10:
+					
+					break;	
+				default:
+					break;
+					
+			}
+			
+        }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+		
+		if (SwingUtilities.isLeftMouseButton(e)) {
+			
+			switch(drawselect)
+			{
+				case 0:
+					
+					break;
+				case 1:
+					
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					this.repaint();
+					break;
+				case 4:
+						
+					break;
+				case 5:
+					
+						//System.out.println("restoreShapeRGB작동");
+						restoreShapeRGB(selpaths.get(selpaths.size()-1),savergb,e.getX(),e.getY());
+						saveUndoState();
+						this.repaint();
+					break;
+				case 6:
+					
+					break;
+				case 7:
+					
+					break;
+				case 8:
+					mx = e.getX(); my = e.getY();
+		
+					int targetColor = image.getRGB(mx, my);
+					
+
+					floodFill(image, mx, my, targetColor, replacementColor);
+					this.repaint();
+					break;
+				case 9:
+					
+					break;
+				case 10:
+					
+					break;	
+				default:
+					break;
+					
+			}
+			
+		}
+		
+        
+        
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {}
+
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+
+    @Override
+    public void mouseExited(MouseEvent e) {}
+}
