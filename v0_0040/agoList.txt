@@ -1,0 +1,8 @@
+D:\java\MyJava\AudioTest\AudioPlay.java
+D:\java\MyJava\BmpTest\BmpTest.java
+D:\java\MyJava\QualaPodoTest\consoleinput\consoleinput.java
+D:\java\MyJava\SimpleInputTest\SimpleInputTest.java
+D:\java\MyJava\AudioTest2\AudioTest2.java
+D:\java\MyJava\ArrayTest\ArrayTest.java
+D:\java\MyJava\SoloPingPong\SoloPingPong.java
+D:\java\MyJava\QualaPodo4\AntJavaEditerv0_0040\AntJavaEditer.java
