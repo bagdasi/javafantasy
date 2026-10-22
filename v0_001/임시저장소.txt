@@ -1,0 +1,31 @@
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+
+public class WordTrainerUI {
+    public static void main(String[] args) {
+        // 프레임 생성
+        JFrame frame = new JFrame("영어 단어 학습기");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+
+        // 테이블 데이터 설정
+        String[] columnNames = {"단어", "뜻"};
+        String[][] data = {
+                {"apple", "사과"},
+                {"banana", "바나나"},
+                {"cherry", "체리"}
+        };
+
+        // 테이블 생성
+        DefaultTableModel model = new DefaultTableModel(data, columnNames);
+        JTable table = new JTable(model);
+
+        // 스크롤 추가
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        // 프레임에 테이블 추가
+        frame.add(scrollPane, BorderLayout.CENTER);
+        frame.setVisible(true);
+    }
+}
