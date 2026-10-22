@@ -1,0 +1,556 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.awt.image.BufferedImage;
+import java.util.*;
+import java.util.List;
+import java.awt.geom.Path2D;
+import java.awt.geom.PathIterator;
+import java.nio.*;
+import java.nio.channels.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+class QPPv0_0022 
+{
+	public static QPPv0_0022 qpp;
+	JPanel menuPanel,rightPanel,workPanel;
+	JButton mFileButton,mEditButton,mDrawButton,mOptionButton,mViewButton,mHelpButton;
+	JButton newFileButton,qpFileOpenButton,qpFileSaveButton,exitButton;
+	JButton selectButton,cutButton,copyButton,pasteButton,preButton,nextButton;
+	JButton penButton,fillButton,eraseButton,stringButton,colorButton;
+	JButton settingButton,imageOptionButton;
+	JButton markButton,gridButton,stateButton;
+	JButton licenseButton,colorHelpButton,supportButton,inforButton;
+	JPanel drawPanel;
+	JFrame frame;
+	public static BufferedImage image;
+	
+	public static int dpwidth = 800, dpheight = 600;
+	public static int right_num = 0;
+	public static int drawSelect = 19;
+	public static boolean cutbool = false;
+	public static int penst = 1;
+	public void Init()
+	{
+		image = new BufferedImage(dpwidth,dpheight,BufferedImage.TYPE_INT_ARGB);
+		//여기서부터 프레임
+		frame = new JFrame("콰라포도 프로젝트v0.0021");
+		frame.setSize(800,600);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		
+		mFileButton = new JButton("파일");
+		mEditButton = new JButton("편집");
+		mDrawButton = new JButton("그리기");
+		mOptionButton = new JButton("옵션");
+		mViewButton = new JButton("보기");
+		mHelpButton = new JButton("도움말");
+		
+		menuPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		menuPanel.setBackground(Color.BLUE);
+		menuPanel.add(mFileButton);
+		menuPanel.add(mEditButton);
+		menuPanel.add(mDrawButton);
+		menuPanel.add(mOptionButton);
+		menuPanel.add(mViewButton);
+		menuPanel.add(mHelpButton);
+		frame.add(menuPanel,BorderLayout.NORTH);
+		
+		mFileButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				//System.out.println("파일버튼이 눌렀습니다.");
+				right_num = 0;
+				rightPanel.removeAll();
+				rightPanel.add(newFileButton);
+				rightPanel.add(qpFileOpenButton);
+				rightPanel.add(qpFileSaveButton);
+				rightPanel.add(exitButton);
+				frame.setVisible(true);
+				frame.repaint();
+			}
+		});
+		mEditButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				//System.out.println("편집버튼이 눌렀습니다.");
+				right_num = 1;
+				rightPanel.removeAll();
+				rightPanel.add(selectButton);
+				rightPanel.add(cutButton);
+				rightPanel.add(copyButton);
+				rightPanel.add(pasteButton);
+				rightPanel.add(preButton);
+				rightPanel.add(nextButton);
+				frame.setVisible(true);
+				frame.repaint();
+			}
+		});
+		mDrawButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				right_num = 2;
+				rightPanel.removeAll();
+				rightPanel.add(penButton);
+				rightPanel.add(fillButton);
+				rightPanel.add(eraseButton);
+				rightPanel.add(stringButton);
+				rightPanel.add(colorButton);
+				frame.setVisible(true);
+				frame.repaint();
+			}
+		});
+		mOptionButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				right_num = 3;
+				rightPanel.removeAll();
+				rightPanel.add(settingButton);
+				rightPanel.add(imageOptionButton);
+				frame.setVisible(true);
+				frame.repaint();
+			}
+		});
+		mViewButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				right_num = 4;
+				rightPanel.removeAll();
+				rightPanel.add(markButton);
+				rightPanel.add(gridButton);
+				rightPanel.add(stateButton);
+				frame.setVisible(true);
+				frame.repaint();
+			}
+		});
+		mHelpButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				right_num = 5;
+				rightPanel.removeAll();
+				rightPanel.add(licenseButton);
+				rightPanel.add(colorHelpButton);
+				rightPanel.add(supportButton);
+				rightPanel.add(inforButton);
+				frame.setVisible(true);
+				frame.repaint();
+			}
+		});
+		
+		//newFileButton,qpFileOpenButton,qpFileSaveButton,exitButton;
+		newFileButton = new JButton("새로 만들기");
+		qpFileOpenButton = new JButton("qp파일열기");
+		qpFileSaveButton = new JButton("qp파일저장");
+		exitButton = new JButton("끝내기");
+		
+		//selectButton,cutButton,copyButton,pasteButton,preButton,nextButton;
+		selectButton = new JButton("선택");
+		cutButton = new JButton("잘라내기");
+		copyButton = new JButton("복사하기");
+		pasteButton = new JButton("붙여놓기");
+		preButton = new JButton("이전");
+		nextButton = new JButton("다음");
+		
+		//penButton,fillButton,eraseButton,stringButton,colorButton;
+		penButton = new JButton("펜");
+		fillButton = new JButton("채우기");
+		eraseButton = new JButton("지우개");
+		stringButton = new JButton("문자");
+		colorButton = new JButton("색선택");
+		
+		//settingButton,imageOptionButton;
+		settingButton = new JButton("이미지설정");
+		imageOptionButton = new JButton("이미지속성");
+		
+		//markButton,gridButton,stateButton;
+		markButton = new JButton("눈금");
+		gridButton = new JButton("격자");
+		stateButton = new JButton("상태");
+		
+		//licenseButton,colorHelpButton,supportButton,inforButton;
+		licenseButton = new JButton("약관");
+		colorHelpButton = new JButton("색정보");
+		supportButton = new JButton("제품지원");
+		inforButton = new JButton("제품정보");
+		rightPanel = new JPanel();
+		rightPanel.setLayout(new BoxLayout(rightPanel,BoxLayout.Y_AXIS));
+		rightPanel.setPreferredSize(new Dimension(120,800));
+		rightPanel.setBackground(Color.GREEN);
+		switch(right_num)
+		{
+			case 0:
+				rightPanel.removeAll();
+				rightPanel.add(newFileButton);
+				rightPanel.add(qpFileOpenButton);
+				rightPanel.add(qpFileSaveButton);
+				rightPanel.add(exitButton);
+				break;
+			case 1:
+				rightPanel.removeAll();
+				rightPanel.add(selectButton);
+				rightPanel.add(cutButton);
+				rightPanel.add(copyButton);
+				rightPanel.add(pasteButton);
+				rightPanel.add(preButton);
+				rightPanel.add(nextButton);
+				
+				break;
+				
+			case 2:
+				rightPanel.removeAll();
+				rightPanel.add(penButton);
+				rightPanel.add(fillButton);
+				rightPanel.add(eraseButton);
+				rightPanel.add(stringButton);
+				rightPanel.add(colorButton);
+				break;
+				
+			case 3:
+				rightPanel.removeAll();
+				rightPanel.add(settingButton);
+				rightPanel.add(imageOptionButton);
+				break;
+				
+			case 4:
+				rightPanel.removeAll();
+				rightPanel.add(markButton);
+				rightPanel.add(gridButton);
+				rightPanel.add(stateButton);
+				break;
+				
+			case 5:
+				rightPanel.removeAll();
+				rightPanel.add(licenseButton);
+				rightPanel.add(colorHelpButton);
+				rightPanel.add(supportButton);
+				rightPanel.add(inforButton);
+				break;
+				
+			default:
+				
+				break;
+		}
+		frame.add(rightPanel,BorderLayout.EAST);
+		
+		workPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		workPanel.setPreferredSize(new Dimension(1280,1024));
+		workPanel.setBackground(Color.GRAY);
+		
+		drawPanel = new JPanel(){
+			@Override
+			protected void paintComponent(Graphics g)
+			{
+				super.paintComponent(g);
+				
+				qpp.drawPaint();
+				g.drawImage(image,0,0,null);
+				
+			}
+		};
+		drawPanel.setPreferredSize(new Dimension(dpwidth,dpheight));
+		drawPanel.setBackground(Color.WHITE);
+		
+		
+		workPanel.add(drawPanel,BorderLayout.WEST);
+		frame.add(workPanel,BorderLayout.WEST);
+		
+		frame.setVisible(true);
+		drawPanel.addMouseListener(new MouseListener(){
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (SwingUtilities.isLeftMouseButton(e)) {
+				switch(drawSelect)//0:pen 1:select 3:cut 4:copy 5:paste 6:pre 7:next 8:fill 9:erase 10:string
+				{
+					case 0:
+						
+					break;
+					case 1:
+						
+					break;
+					case 2:
+					
+					break;
+					case 3:
+					
+					break;
+					case 4:
+						
+					break;
+					case 5:
+					
+					break;
+					case 6:
+					
+					break;
+					case 7:
+					
+					break;
+					case 8:
+					
+					break;
+					case 9:
+						
+					break;
+					case 19:
+						
+					break;
+					default:
+					break;
+					
+				}
+			}
+		}
+
+    
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			if (SwingUtilities.isLeftMouseButton(e)) {
+            
+				switch(drawSelect)//0:pen 1:select 3:cut 4:copy 5:paste 6:pre 7:next 8:fill 9:erase 10:string
+				{
+					case 0:
+							
+					break;
+					case 1:
+						
+					break;
+					case 2:
+					
+					break;
+					case 3:
+					
+					break;
+					case 4:
+						
+					break;
+					case 5:
+					
+					break;
+					case 6:
+					
+					break;
+					case 7:
+					
+					break;
+					case 8:
+					
+					break;
+					case 9:
+						
+					break;
+					case 19:
+						
+					break;	
+					default:
+					break;
+					
+				}
+			
+			}
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+		
+			if (SwingUtilities.isLeftMouseButton(e)) {
+			
+				switch(drawSelect)//0:pen 1:select 3:cut 4:copy 5:paste 6:pre 7:next 8:fill 9:erase 10:string
+				{
+					case 0:
+					
+					break;
+					case 1:
+					
+					break;
+					case 2:
+					
+					break;
+					case 3:
+					
+					case 4:
+						
+					break;
+					case 5:
+						
+					break;
+					case 6:
+					
+					break;
+					case 7:
+					
+					break;
+					case 8:
+						
+					break;
+					case 9:
+					
+					break;
+					case 19:
+						
+						
+					break;	
+					default:
+					break;
+					
+				}
+			
+			}
+		
+        
+        
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {}
+		
+			
+			
+		});
+		drawPanel.addMouseMotionListener(new MouseMotionListener(){
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+        
+				switch(drawSelect)//0:pen 1:select 3:cut 4:copy 5:paste 6:pre 7:next 8:fill 9:erase 10:string
+				{
+					case 0:
+						
+					
+					break;
+					case 1:
+						
+					break;
+					case 2:
+					
+					break;
+					case 3:
+					
+					break;
+					case 4:
+						
+					break;
+					case 5:
+					
+					break;
+					case 6:
+					
+					break;
+					case 7:
+					
+					break;
+					case 8:
+					
+					break;
+					case 9:
+						
+					break;
+					case 19:
+						
+					break;	
+					default:
+					break;
+					
+				}
+		
+		}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {}		
+			
+		});
+		
+	}
+	
+	public void drawPaint()
+	{
+		//BufferedImage copy = new BufferedImage(image.getWidth(),image.getHeight(),image.getType());
+		Graphics2D g2d = image.createGraphics();
+		//g2d.drawImage(image,0,0,null);
+		switch(drawSelect)//0:pen 1:select 3:cut 4:copy 5:paste 6:pre 7:next 8:fill 9:erase 10:string
+		{
+			case 0:
+				
+			break;
+			
+			case 1:
+				
+			break;
+			
+			case 2:
+				
+				
+			break;
+			
+			case 3:
+				
+			break;
+			
+			case 4:
+				
+			break;
+				
+			case 5:
+				
+			break;
+			
+			case 6:
+				
+			break;
+			
+			case 7:
+				
+			break;
+			
+			case 8:
+				
+			break;
+			
+			case 9:
+				
+			break;
+			
+			case 19:
+				//여기까지 실행되는건 맞음...그런데 draw가 여기서 안됨 무슨 이유때문이지?
+				//System.out.println("drawselect : " + drawSelect);
+				Font font = new Font("Serif",Font.BOLD,22);
+				g2d.setFont(font);
+				g2d.drawString("fdksajfdsajlkflkf",200,200);
+				g2d.drawRect(50,50,100,100);
+				//drawPanel.repaint();
+					
+					
+					
+					
+				
+			break;
+			default:
+				
+			break;
+		}
+		g2d.dispose();
+		//image = copy;
+		drawPanel.repaint();
+	}
+	public static void main(String[] args) 
+	{
+		SwingUtilities.invokeLater(new Runnable(){
+			@Override
+			public void run()
+			{
+				qpp = new QPPv0_0022();
+				qpp.Init();
+				
+			}
+		});
+	}
+}
