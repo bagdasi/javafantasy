@@ -1,0 +1,1422 @@
+package AntJavaExcutev0_0021;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException; // 예외 처리할 때 필요
+import java.util.List;
+import java.util.ArrayList;
+import java.io.BufferedWriter;
+import java.io.BufferedReader;
+import java.io.FileWriter;
+import java.io.FileReader;
+import java.io.OutputStreamWriter;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.DocumentEvent;
+import java.util.Vector;
+
+
+public class AntJavaExcutev0_0021 {
+	public static BufferedReader reader;
+	public static Process process;
+	private static JTextField arg1Field, arg2Field, arg1Field2, arg2Field2, mainClassField, mainClassField2, pathField;
+	private static JTextArea outputArea;
+	public static String[] autodir;
+	public static String dir;
+	static int autonum,autolen;
+	static boolean lastbool = false;
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("앤트자바 실행기 v0.0021");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(700, 600);
+
+            // 전체 패널과 레이아웃
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // 세로 정렬
+
+            // 위치 선택 행
+            JPanel pathPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            JLabel pathLabel = new JLabel("위치 : ");
+            pathField = new JTextField(30);
+			pathField.addActionListener(e -> {
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			});
+			pathField.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					int keyCode = e.getKeyCode();
+					int modifiers = e.getModifiersEx();
+
+					if ((modifiers & KeyEvent.CTRL_DOWN_MASK) != 0) {
+						switch (keyCode) {
+							case KeyEvent.VK_1:
+								javacRunExcute();
+								break;
+							case KeyEvent.VK_2:
+								javaRunExcute();
+								break;
+							case KeyEvent.VK_A:
+								if(autolen!=0)
+								{	
+									lastbool = true;
+									int lastIndex = pathField.getText().lastIndexOf('\\');
+									String input="",directory="";
+									if(lastIndex!=-1)
+									{
+										input = pathField.getText().substring(lastIndex+1);
+										directory = pathField.getText().substring(0,lastIndex+1);
+									}
+									input = autodir[autonum];
+									autonum++;
+									if(autonum>=autolen) 
+									{	
+										autonum = 0;
+									}
+									//System.out.println(autodir.length);
+									pathField.setText(directory+input);
+									pathField.setCaretPosition(pathField.getText().length());
+								}
+								break;
+							default :
+								
+								break;
+						}
+					}
+				}
+				@Override
+				public void keyReleased(KeyEvent e) {
+					if(lastbool)
+					{
+						lastbool = false;
+					}else
+					{
+						int lastIndex = pathField.getText().lastIndexOf('\\');
+						String input="",directory="";
+						if(lastIndex!=-1)
+						{
+							input = pathField.getText().substring(lastIndex+1);
+							directory = pathField.getText().substring(0,lastIndex+1);
+						}
+						Vector<String> suggestions = new Vector<>();
+						if (!input.isEmpty()) {
+							File rootf = new File(directory); 
+							File[] files = null;
+							if (rootf.exists() && rootf.isDirectory()) {
+								files = rootf.listFiles();
+
+							}
+
+						
+						
+							if (files != null) {
+								autolen = files.length;
+								autonum = 0;
+								String[] temp = new String[autolen];
+								autolen = 0;
+								for (File f : files) {
+									String name = f.getName();
+									if (name.toLowerCase().startsWith(input.toLowerCase())) {
+										suggestions.add(name);
+										//System.out.println(name);
+										temp[autonum] = name;
+										autonum++;
+										autolen++;
+									}
+								}
+								autonum = 0;
+								autodir = new String[autolen];
+								for(int i=0;i<autolen;i++)
+								{
+									autodir[i] = temp[i];
+								}
+							}
+						
+
+						}
+					}
+
+				}//keyReleased
+
+
+			});
+
+
+
+            JButton browseButton = new JButton("...");
+			browseButton.addActionListener(e -> {
+				File currentDir = new File(System.getProperty("user.dir"));
+				JFileChooser chooser = new JFileChooser();
+				chooser.setCurrentDirectory(currentDir);
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); // 디렉토리만 선택
+
+				int result = chooser.showOpenDialog(null);
+				if (result == JFileChooser.APPROVE_OPTION) {
+					String selectedPath = chooser.getSelectedFile().getAbsolutePath();
+					pathField.setText(selectedPath); // 선택된 경로를 텍스트 필드에 넣음
+				}
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			});
+            pathPanel.add(pathLabel);
+            pathPanel.add(pathField);
+            pathPanel.add(browseButton);
+            panel.add(pathPanel);
+
+            // javac 실행 행
+            JPanel javacPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            JLabel javacLabel = new JLabel("javac 실행");
+            javacLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+            JButton javacRunButton = new JButton("실행");
+
+
+
+            javacPanel.add(javacLabel);
+            javacPanel.add(javacRunButton);
+            panel.add(javacPanel);
+
+            // 명령인수1
+            JPanel arg1Panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            arg1Panel.add(new JLabel("명령인수1 : "));
+            arg1Field = new JTextField(30);
+			arg1Field.addActionListener(e -> {
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			});
+			arg1Field.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					int keyCode = e.getKeyCode();
+					int modifiers = e.getModifiersEx();
+
+					if ((modifiers & KeyEvent.CTRL_DOWN_MASK) != 0) {
+						switch (keyCode) {
+							case KeyEvent.VK_1:
+								javacRunExcute();
+								break;
+							case KeyEvent.VK_2:
+								javaRunExcute();
+								break;
+							case KeyEvent.VK_A:
+								if(autolen!=0)
+								{	
+									lastbool = true;
+									int lastIndex = arg1Field.getText().lastIndexOf('\\');
+									int startIndex = arg1Field.getText().lastIndexOf(' ');
+									if(arg1Field.getText().length()>=startIndex+2 && arg1Field.getText().substring(startIndex+1,startIndex+2).equals("\"") )
+									{
+										startIndex++;
+							
+							
+									}
+									if(lastIndex==-1)
+									{
+										lastIndex = startIndex;	
+									}
+									String input="",directory="",tmp="";
+									if(lastIndex!=-1 && startIndex != -1)
+									{
+										tmp = arg1Field.getText().substring(0,lastIndex+1);
+										input = arg1Field.getText().substring(lastIndex+1);
+										directory = pathField.getText()+"\\"+arg1Field.getText().substring(startIndex+1,lastIndex+1);
+									}
+									input = autodir[autonum];
+									autonum++;
+									if(autonum>=autolen) 
+									{	
+										autonum = 0;
+									}
+									//System.out.println(autodir.length);
+									arg1Field.setText(tmp+input);
+									arg1Field.setCaretPosition(arg1Field.getText().length());
+								}
+								break;
+							default :
+								
+								break;
+						}
+					}
+				}
+				@Override
+				public void keyReleased(KeyEvent e) {
+					if(lastbool)
+					{
+						lastbool = false;
+					}else
+					{
+						int lastIndex = arg1Field.getText().lastIndexOf('\\');
+						int startIndex = arg1Field.getText().lastIndexOf(' ');
+						//System.out.println(arg1Field.getText().substring(startIndex,startIndex+1));
+						if(arg1Field.getText().length()>=startIndex+2 && arg1Field.getText().substring(startIndex+1,startIndex+2).equals("\"") )
+						{
+							startIndex++;
+							System.out.println("들어왔습니다.");
+							
+						}
+						if(lastIndex==-1)
+						{
+							lastIndex = startIndex;	
+						}
+						String input="",directory="";
+						if(lastIndex!=-1)
+						{
+							input = arg1Field.getText().substring(lastIndex+1);
+							directory = pathField.getText()+"\\"+arg1Field.getText().substring(startIndex+1,lastIndex+1);
+							System.out.println(directory);
+							System.out.println(input);
+						}
+						Vector<String> suggestions = new Vector<>();
+						if (!input.isEmpty()) {
+							File rootf = new File(directory); 
+							File[] files = null;
+							if (rootf.exists() && rootf.isDirectory()) {
+								files = rootf.listFiles();
+
+							}
+
+						
+						
+							if (files != null) {
+								autolen = files.length;
+								autonum = 0;
+								String[] temp = new String[autolen];
+								autolen = 0;
+								for (File f : files) {
+									String name = f.getName();
+									//System.out.println(f.getPath());
+									if (name.toLowerCase().startsWith(input.toLowerCase())) {
+										suggestions.add(name);
+										System.out.println(name);
+										temp[autonum] = name;
+										autonum++;
+										autolen++;
+									}
+								}
+								autonum = 0;
+								autodir = new String[autolen];
+								for(int i=0;i<autolen;i++)
+								{
+									autodir[i] = temp[i];
+								}
+							}
+						
+
+						}
+					}
+
+				}//keyReleased
+			});
+            arg1Panel.add(arg1Field);
+            panel.add(arg1Panel);
+
+            // 명령인수2
+            JPanel arg2Panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            arg2Panel.add(new JLabel("명령인수2 : "));
+            arg2Field = new JTextField(30);
+			arg2Field.addActionListener(e -> {
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			});
+			arg2Field.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					int keyCode = e.getKeyCode();
+					int modifiers = e.getModifiersEx();
+
+					if ((modifiers & KeyEvent.CTRL_DOWN_MASK) != 0) {
+						switch (keyCode) {
+							case KeyEvent.VK_1:
+								javacRunExcute();
+								break;
+							case KeyEvent.VK_2:
+								javaRunExcute();
+								break;
+							case KeyEvent.VK_A:
+								System.out.println("Ctrl + A 입력됨");
+								break;
+						}
+					}
+				}
+			});
+            arg2Panel.add(arg2Field);
+            panel.add(arg2Panel);
+
+            // 메인 클래스
+            JPanel mainClassPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            mainClassPanel.add(new JLabel("메인클래스 : "));
+            mainClassField = new JTextField(30);
+			mainClassField.addActionListener(e -> {
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			});
+			mainClassField.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					int keyCode = e.getKeyCode();
+					int modifiers = e.getModifiersEx();
+
+					if ((modifiers & KeyEvent.CTRL_DOWN_MASK) != 0) {
+						switch (keyCode) {
+							case KeyEvent.VK_1:
+								javacRunExcute();
+								break;
+							case KeyEvent.VK_2:
+								javaRunExcute();
+								break;
+							case KeyEvent.VK_A:
+								if(autolen!=0&&lastbool)
+								{	
+									
+									
+									String input;
+									
+									input = autodir[autonum];
+									autonum++;
+									if(autonum>=autolen) 
+									{	
+										autonum = 0;
+									}
+									//System.out.println(autodir.length);
+									mainClassField.setText(dir+input);
+									mainClassField.setCaretPosition(mainClassField.getText().length());
+									
+								}
+								break;
+							case KeyEvent.VK_PERIOD:
+								
+								break;
+							default :
+								break;
+						}
+					}
+				}
+				@Override
+				public void keyTyped(KeyEvent e) {
+					if (e.getKeyChar() == '.') {
+						
+						lastbool = false;
+					}
+				}
+				@Override
+				public void keyReleased(KeyEvent e) {
+					if(lastbool)
+					{
+						
+					}else
+					{
+						int lastIndex = mainClassField.getText().lastIndexOf('.');
+						
+						
+						String input="",directory="",tmp="";
+						
+						if(lastIndex==-1) {input = mainClassField.getText();
+						dir = "";
+							directory = pathField.getText();
+						}
+						else {input = mainClassField.getText().substring(lastIndex+1);
+						dir = mainClassField.getText().substring(0,lastIndex+1);
+						tmp = pathField.getText()+"\\"+mainClassField.getText().substring(0,lastIndex+1);
+						directory = tmp.replaceAll("\\.","\\\\");
+						}
+						System.out.println(directory);
+						System.out.println(input);
+						
+						Vector<String> suggestions = new Vector<>();
+						if (!input.isEmpty()||input.equals("")) {
+							File rootf = new File(directory); 
+							File[] files = null;
+							if (rootf.exists() && rootf.isDirectory()) {
+								files = rootf.listFiles();
+
+							}
+
+						
+						
+							if (files != null) {
+								autolen = files.length;
+								autonum = 0;
+								String[] temp = new String[autolen];
+								autolen = 0;
+								for (File f : files) {
+									String name = f.getName();
+									
+									if (name.toLowerCase().startsWith(input.toLowerCase())) {
+										suggestions.add(name);
+										
+
+										
+										temp[autonum] = name;
+										
+										autonum++;
+										autolen++;
+									}
+								}
+								autonum = 0;
+								autodir = new String[autolen];
+								for(int i=0;i<autolen;i++)
+								{
+									autodir[i] = temp[i];
+									System.out.println(autodir[i]);
+								}
+								lastbool = true;
+							}
+						
+
+						}
+					}
+
+				}//keyReleased
+			});
+            mainClassPanel.add(mainClassField);
+            panel.add(mainClassPanel);
+
+            // java 실행 행
+            JPanel javaPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            JLabel javaLabel = new JLabel("java 실행");
+            javaLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+            JButton javaRunButton = new JButton("실행");
+            javaPanel.add(javaLabel);
+            javaPanel.add(javaRunButton);
+            panel.add(javaPanel);
+
+            // 다시 명령인수/메인클래스 구성
+            JPanel arg1Panel2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            arg1Panel2.add(new JLabel("명령인수1 : "));
+            arg1Field2 = new JTextField(30);
+			arg1Field2.addActionListener(e -> {
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			});
+			arg1Field2.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					int keyCode = e.getKeyCode();
+					int modifiers = e.getModifiersEx();
+
+					if ((modifiers & KeyEvent.CTRL_DOWN_MASK) != 0) {
+						switch (keyCode) {
+							case KeyEvent.VK_1:
+								javacRunExcute();
+								break;
+							case KeyEvent.VK_2:
+								javaRunExcute();
+								break;
+							case KeyEvent.VK_A:
+								if(autolen!=0)
+								{	
+									lastbool = true;
+									int lastIndex = arg1Field2.getText().lastIndexOf('\\');
+									int startIndex = arg1Field2.getText().lastIndexOf(' ');
+									if(arg1Field2.getText().length()>=startIndex+2 && arg1Field2.getText().substring(startIndex+1,startIndex+2).equals("\"") )
+									{
+										startIndex++;
+							
+							
+									}
+									if(lastIndex==-1)
+									{
+										lastIndex = startIndex;	
+									}
+									String input="",directory="",tmp="";
+									if(lastIndex!=-1 && startIndex != -1)
+									{
+										tmp = arg1Field.getText().substring(0,lastIndex+1);
+										input = arg1Field.getText().substring(lastIndex+1);
+										directory = pathField.getText()+"\\"+arg1Field.getText().substring(startIndex+1,lastIndex+1);
+									}
+									input = autodir[autonum];
+									autonum++;
+									if(autonum>=autolen) 
+									{	
+										autonum = 0;
+									}
+									//System.out.println(autodir.length);
+									arg1Field2.setText(tmp+input);
+									arg1Field2.setCaretPosition(arg1Field.getText().length());
+								}
+								break;
+							default :
+								
+								break;
+								
+						}
+					}
+				}
+				@Override
+				public void keyReleased(KeyEvent e) {
+					if(lastbool)
+					{
+						lastbool = false;
+					}else
+					{
+						int lastIndex = arg1Field2.getText().lastIndexOf('\\');
+						int startIndex = arg1Field2.getText().lastIndexOf(' ');
+						//System.out.println(arg1Field.getText().substring(startIndex,startIndex+1));
+						if(arg1Field2.getText().length()>=startIndex+2 && arg1Field2.getText().substring(startIndex+1,startIndex+2).equals("\"") )
+						{
+							startIndex++;
+							System.out.println("들어왔습니다.");
+							
+						}
+						if(lastIndex==-1)
+						{
+							lastIndex = startIndex;	
+						}
+						String input="",directory="";
+						if(lastIndex!=-1)
+						{
+							input = arg1Field2.getText().substring(lastIndex+1);
+							directory = pathField.getText()+"\\"+arg1Field2.getText().substring(startIndex+1,lastIndex+1);
+							System.out.println(directory);
+							System.out.println(input);
+						}
+						Vector<String> suggestions = new Vector<>();
+						if (!input.isEmpty()) {
+							File rootf = new File(directory); 
+							File[] files = null;
+							if (rootf.exists() && rootf.isDirectory()) {
+								files = rootf.listFiles();
+
+							}
+
+						
+						
+							if (files != null) {
+								autolen = files.length;
+								autonum = 0;
+								String[] temp = new String[autolen];
+								autolen = 0;
+								for (File f : files) {
+									String name = f.getName();
+									//System.out.println(f.getPath());
+									if (name.toLowerCase().startsWith(input.toLowerCase())) {
+										suggestions.add(name);
+										System.out.println(name);
+										temp[autonum] = name;
+										autonum++;
+										autolen++;
+									}
+								}
+								autonum = 0;
+								autodir = new String[autolen];
+								for(int i=0;i<autolen;i++)
+								{
+									autodir[i] = temp[i];
+								}
+							}
+						
+
+						}
+					}
+
+				}//keyReleased
+			});
+            arg1Panel2.add(arg1Field2);
+            panel.add(arg1Panel2);
+
+            JPanel arg2Panel2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            arg2Panel2.add(new JLabel("명령인수2 : "));
+            arg2Field2 = new JTextField(30);
+			arg2Field2.addActionListener(e -> {
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			});
+			arg2Field2.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					int keyCode = e.getKeyCode();
+					int modifiers = e.getModifiersEx();
+
+					if ((modifiers & KeyEvent.CTRL_DOWN_MASK) != 0) {
+						switch (keyCode) {
+							case KeyEvent.VK_1:
+								javacRunExcute();
+								break;
+							case KeyEvent.VK_2:
+								javaRunExcute();
+								break;
+							case KeyEvent.VK_A:
+								System.out.println("Ctrl + A 입력됨");
+								break;
+						}
+					}
+				}
+			});
+            arg2Panel2.add(arg2Field2);
+            panel.add(arg2Panel2);
+
+            JPanel mainClassPanel2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            mainClassPanel2.add(new JLabel("메인클래스 : "));
+            mainClassField2 = new JTextField(30);
+			mainClassField2.addActionListener(e -> {
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			});
+			mainClassField2.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					int keyCode = e.getKeyCode();
+					int modifiers = e.getModifiersEx();
+
+					if ((modifiers & KeyEvent.CTRL_DOWN_MASK) != 0) {
+						switch (keyCode) {
+							case KeyEvent.VK_1:
+								javacRunExcute();
+								break;
+							case KeyEvent.VK_2:
+								javaRunExcute();
+								break;
+							case KeyEvent.VK_A:
+								if(autolen!=0&&lastbool)
+								{	
+									
+									
+									String input;
+									
+									input = autodir[autonum];
+									autonum++;
+									if(autonum>=autolen) 
+									{	
+										autonum = 0;
+									}
+									//System.out.println(autodir.length);
+									mainClassField2.setText(dir+input);
+									mainClassField2.setCaretPosition(mainClassField2.getText().length());
+									
+								}
+								break;
+							case KeyEvent.VK_PERIOD:
+								
+								break;
+							default :
+								break;
+						}
+					}
+				}
+				@Override
+				public void keyTyped(KeyEvent e) {
+					if (e.getKeyChar() == '.') {
+						
+						lastbool = false;
+					}
+				}
+
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+					if(lastbool)
+					{
+						
+					}else
+					{
+						
+						int lastIndex = mainClassField2.getText().lastIndexOf('.');
+						
+						
+						String input="",directory="",tmp="";
+						
+						if(lastIndex==-1) {input = mainClassField2.getText();
+							directory = pathField.getText();
+							dir="";
+						}
+						else {input = mainClassField2.getText().substring(lastIndex+1);
+						dir = mainClassField2.getText().substring(0,lastIndex+1);
+						tmp = pathField.getText()+"\\"+mainClassField2.getText().substring(0,lastIndex+1);
+						directory = tmp.replaceAll("\\.","\\\\");
+						}
+						System.out.println(directory);
+						System.out.println(input);
+						
+						Vector<String> suggestions = new Vector<>();
+						if (!input.isEmpty()||input.equals("")) {
+							File rootf = new File(directory); 
+							File[] files = null;
+							if (rootf.exists() && rootf.isDirectory()) {
+								files = rootf.listFiles();
+
+							}
+
+						
+						
+							if (files != null) {
+								autolen = files.length;
+								autonum = 0;
+								String[] temp = new String[autolen];
+								autolen = 0;
+								for (File f : files) {
+									String name = f.getName();
+									
+									if (name.toLowerCase().startsWith(input.toLowerCase())) {
+										suggestions.add(name);
+										
+/*
+										// 마지막 점 위치 찾기
+										int dotIndex = name.lastIndexOf('.');
+
+										String baseName = (dotIndex != -1) ? name.substring(0, dotIndex) : name;
+*/
+										
+										temp[autonum] = name;
+										autonum++;
+										autolen++;
+									}
+								}
+								autonum = 0;
+								autodir = new String[autolen];
+								for(int i=0;i<autolen;i++)
+								{
+									autodir[i] = temp[i];
+									System.out.println(autodir[i]);
+								}
+								lastbool=true;
+							}
+						
+
+						}
+					}
+
+				}//keyReleased
+			});
+            mainClassPanel2.add(mainClassField2);
+            panel.add(mainClassPanel2);
+
+            // 출력 영역
+            panel.add(new JLabel("출력 : "));
+            outputArea = new JTextArea(10, 60);
+            outputArea.setLineWrap(true);
+            outputArea.setWrapStyleWord(true);
+			outputArea.getDocument().addDocumentListener(new DocumentListener() {
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					frame.setFocusable(true); // 포커스 설정 중요!
+					frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+				}
+
+				@Override
+				public void removeUpdate(DocumentEvent e) {
+					frame.setFocusable(true); // 포커스 설정 중요!
+					frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+				}
+
+				@Override
+				public void changedUpdate(DocumentEvent e) {
+					frame.setFocusable(true); // 포커스 설정 중요!
+					frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+				}
+			});
+
+
+            JScrollPane scrollPane = new JScrollPane(outputArea);
+            panel.add(scrollPane);
+
+            // 저장 및 종료 버튼 행
+            JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+			JPanel infopanel = new JPanel();
+			infopanel.setLayout(new BoxLayout(infopanel,BoxLayout.Y_AXIS));
+			JLabel verlabel = new JLabel("버전 : v0.0021");
+			JLabel makerlabel = new JLabel("만든이 : 컴퓨터판타지연구소");
+			infopanel.add(verlabel);
+			infopanel.add(makerlabel);
+            JButton saveButton = new JButton("저장");
+			JButton loadButton = new JButton("불러오기");
+            JButton exitButton = new JButton("종료");
+			controlPanel.add(infopanel);
+            controlPanel.add(saveButton);
+			controlPanel.add(loadButton);
+            controlPanel.add(exitButton);
+            panel.add(controlPanel);
+
+            frame.add(panel);
+            
+			javacRunButton.addActionListener(e -> {
+				// 입력값들 가져오기
+				String arg1 = arg1Field.getText().trim();
+				String arg2 = arg2Field.getText().trim();
+				String mainClass = mainClassField.getText().trim();
+				String path = pathField.getText().trim();
+				String javacpath = findJavacFromSystemPath("javac.exe");
+
+				// javac.exe 경로 추적
+				File javacFile = new File(javacpath);
+				if (!javacFile.exists()) {
+					JOptionPane.showMessageDialog(null, "해당 위치에 javac.exe가 없습니다.");
+					return;
+				}
+				File directory = new File(path);
+
+				if (!directory.exists() || !directory.isDirectory()) {
+					outputArea.append("❌ 실행 디렉토리가 올바르지 않거나 존재하지 않습니다.\n");
+					return;
+				}
+
+
+				
+
+				// 명령어 조립
+				List<String> command = new ArrayList<>();
+				command.add(javacpath);
+				int count = 0;
+				for(char c : arg1.toCharArray())
+				{
+					
+					if(c == ' ') count++;
+				}
+				String[] parts = arg1.split("\\s+");
+
+				for(int i=0;i<count+1;i++)
+				{
+					if(parts[i].equals("")) break;
+					command.add(parts[i]);
+				}
+				command.add(mainClass); // 쉼표 ❌ 확장자 정확히!
+				count = 0;
+				for(char c : arg2.toCharArray())
+				{
+					if(c == ' ') count++;
+				}
+				parts = arg2.split(" ");
+				for(int i=0;i<count+1;i++)
+				{
+					if(parts[i].equals("")) break;
+					command.add(parts[i]);
+				}
+
+				outputArea.append("실행 명령어: " + command + "\n");
+
+				try {
+					// ProcessBuilder로 실행
+					ProcessBuilder pb = new ProcessBuilder(command);
+					pb.directory(directory); // 실행 디렉터리 설정
+					pb.redirectErrorStream(true); // 오류도 표준 출력으로 통합
+					
+					process = pb.start();
+					
+					
+					new Thread(()->{
+						try{
+					// 결과 읽어오기
+					process = pb.start();
+					reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
+						
+						
+						
+					
+					String line;
+					outputArea.setText("");
+					while ((line = reader.readLine()) != null) {
+						final String outputLine = line;
+						SwingUtilities.invokeLater(() -> {
+							
+							outputArea.append(outputLine + "\n"); // UI에 한 줄씩 실시간 출력!
+						});
+
+
+						
+						
+					}
+					process.waitFor(); // 실행 완료까지 대기
+					outputArea.append("📦 컴파일이 완료되었습니다.\n");
+						}catch(Exception ess)
+						{
+							
+						}
+					}).start();
+
+				} catch (Exception ex) {
+					outputArea.append("❗ 오류 발생: " + ex.getMessage() + "\n");
+					ex.printStackTrace();
+				}
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			});
+			javaRunButton.addActionListener(e -> {
+				
+				// 입력값들 가져오기
+				String arg1 = arg1Field2.getText().trim();
+				String arg2 = arg2Field2.getText().trim();
+				String mainClass = mainClassField2.getText().trim();
+				String path = pathField.getText().trim();
+				String javapath = findJavacFromSystemPath("java.exe");
+
+				// javac.exe 경로 추적
+				File javaFile = new File(javapath);
+				if (!javaFile.exists()) {
+					JOptionPane.showMessageDialog(null, "해당 위치에 javac.exe가 없습니다.");
+					return;
+				}
+				File directory = new File(path);
+
+				if (!directory.exists() || !directory.isDirectory()) {
+					outputArea.append("❌ 실행 디렉토리가 올바르지 않거나 존재하지 않습니다.\n");
+					return;
+				}
+
+
+				
+
+				// 명령어 조립
+				List<String> command = new ArrayList<>();
+				command.add(javapath);
+				int count = 0;
+				for(char c : arg1.toCharArray())
+				{
+					if(c == ' ') count++;
+				}
+				String[] parts = arg1.split("\\s+");
+
+				for(int i=0;i<count+1;i++)
+				{
+					if(parts[i].equals("")) break;
+					command.add(parts[i]);
+				}
+				command.add(mainClass); // 쉼표 ❌ 확장자 정확히!
+				count = 0;
+				for(char c : arg2.toCharArray())
+				{
+					if(c == ' ') count++;
+				}
+				parts = arg2.split(" ");
+				for(int i=0;i<count+1;i++)
+				{
+					if(parts[i].equals("")) break;
+					command.add(parts[i]);
+				}
+
+				outputArea.append("실행 명령어: " + command + "\n");
+
+				try {
+					// ProcessBuilder로 실행
+					ProcessBuilder pb = new ProcessBuilder(command);
+					pb.directory(directory); // 실행 디렉터리 설정
+					pb.redirectErrorStream(true); // 오류도 표준 출력으로 통합
+
+					
+					
+					
+					new Thread(()->{
+						try{
+					// 결과 읽어오기
+					process = pb.start();
+					reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
+						
+						
+						
+					
+					String line;
+					outputArea.setText("");
+					while ((line = reader.readLine()) != null) {
+						final String outputLine = line;
+						SwingUtilities.invokeLater(() -> {
+							
+							outputArea.append(outputLine + "\n"); // UI에 한 줄씩 실시간 출력!
+						});
+
+
+						
+						
+					}
+					process.waitFor(); // 실행 완료까지 대기
+					outputArea.append("📦 컴파일이 완료되었습니다.\n");
+						}catch(Exception ess)
+						{
+							
+						}
+					}).start();
+					
+					
+
+				} catch (Exception ex) {
+					outputArea.append("❗ 오류 발생: " + ex.getMessage() + "\n");
+					ex.printStackTrace();
+				}
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			});//javarunbutton
+			saveButton.addActionListener(e -> {
+				StringBuilder sb = new StringBuilder();
+
+				// 고정 문자 추가 (char 형 숫자 4글자)
+				sb.append((char)4444);
+				sb.append((char)4254);
+				sb.append((char)3454);
+				sb.append((char)1111);
+				sb.append(";;");
+				// 텍스트 필드 내용 가져오기 + 구분자 ";"로 추가
+				sb.append(pathField.getText().trim()).append(";;");
+				sb.append(arg1Field.getText().trim()).append(";;");
+				sb.append(arg2Field.getText().trim()).append(";;");
+				sb.append(mainClassField.getText().trim()).append(";;");
+				
+
+				sb.append(arg1Field2.getText().trim()).append(";;");
+				sb.append(arg2Field2.getText().trim()).append(";;");
+				sb.append(mainClassField2.getText().trim()).append(";;");
+   
+
+				// 파일 저장 다이얼로그 열기
+				JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.dir")));
+				chooser.setDialogTitle("저장할 .jeop 파일 선택");
+				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+				// 파일 필터 설정 (선택사항)
+				chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JEOP 파일", "jeop"));
+
+				int result = chooser.showSaveDialog(null);
+				if (result == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = chooser.getSelectedFile();
+
+					// 확장자 자동 추가
+					if (!selectedFile.getName().endsWith(".jeop")) {
+						selectedFile = new File(selectedFile.getAbsolutePath() + ".jeop");
+					}
+					outputArea.setText("");
+					try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(selectedFile), "UTF-8"))) {
+						writer.write(sb.toString());
+					}
+
+					catch (Exception ex) {
+						outputArea.append("❗ 저장 중 오류 발생: " + ex.getMessage() + "\n");
+					}
+				}
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			});//savebutton
+			loadButton.addActionListener(e -> {
+				JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.dir")));
+				chooser.setDialogTitle("불러올 .jeop 파일 선택");
+				chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JEOP 파일", "jeop"));
+
+				int result = chooser.showOpenDialog(null);
+				if (result == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = chooser.getSelectedFile();
+
+					try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(selectedFile), "UTF-8"))) {
+						String line = reader.readLine();
+						if (line != null) {
+							String[] tokens = line.split(";;");
+							String sb = tokens[0];
+							
+							outputArea.setText("");
+							if ( sb.charAt(0) == (char)4444&&sb.charAt(1) == (char)4254&&sb.charAt(2) == (char)3454&&sb.charAt(3) == (char)1111) {
+								pathField.setText("");
+								arg1Field.setText("");
+								arg2Field.setText("");
+								mainClassField.setText("");
+								
+
+								
+								arg1Field2.setText("");
+								arg2Field2.setText("");
+								mainClassField2.setText("");
+								// 앞 4개는 고정값이라서 건너뛴 후 순서대로 채움
+								pathField.setText(tokens[1]);
+								arg1Field.setText(tokens[2]);
+								arg2Field.setText(tokens[3]);
+								mainClassField.setText(tokens[4]);
+								
+
+								
+								arg1Field2.setText(tokens[5]);
+								arg2Field2.setText(tokens[6]);
+								mainClassField2.setText(tokens[7]);
+									
+								
+
+								outputArea.append("📥 설정 불러오기 완료: " + selectedFile.getName() + "\n");
+							} else {
+								outputArea.append("⚠️ 불러온 파일의 형식이 올바르지 않습니다.\n");
+							}
+							
+						}
+					} catch (Exception ex) {
+						outputArea.append("❗ 불러오기 중 오류 발생: " + ex.getMessage() + "\n");
+						
+					}
+				}
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			});//loadbutton
+			exitButton.addActionListener(e -> {
+				int result = JOptionPane.showConfirmDialog(null,"정말 종료하시겠습니까?","종료 확인",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+				
+				if (result == JOptionPane.YES_OPTION) {
+					System.exit(0); // 프로그램 종료
+				}
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+				// NO일 경우 아무 것도 하지 않음 → 그대로 유지
+			});//exitbutton
+			frame.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                int keyCode = e.getKeyCode();
+                int modifiers = e.getModifiersEx();
+
+                if ((modifiers & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                    switch (keyCode) {
+                        case KeyEvent.VK_1:
+                            javacRunExcute();
+                            break;
+                        case KeyEvent.VK_2:
+                            javaRunExcute();
+                            break;
+                        case KeyEvent.VK_A:
+                            System.out.println("Ctrl + A 이벤트 발생!");
+                            break;
+                    }
+                }
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+            }
+        });
+		frame.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			}
+		});
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				frame.setFocusable(true); // 포커스 설정 중요!
+				frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+			}
+		});
+        frame.setFocusable(true); // 포커스 설정 중요!
+		frame.requestFocusInWindow(); // 🔥 창이 열릴 때 바로 포커스 받도록 설정
+		frame.setVisible(true);
+			
+			
+		});//swingutility
+		
+    }
+	public static String findJavacFromSystemPath(String exename) {
+        String systemPath = System.getenv("PATH"); // 환경변수 PATH 가져오기
+
+        if (systemPath == null || systemPath.isEmpty()) {
+            return null;
+        }
+
+        String[] paths = systemPath.split(File.pathSeparator); // 경로 분할 (; 또는 :)
+
+        for (String dir : paths) {
+            File javaexe = new File(dir, exename); // 각 경로에 javac.exe 존재하는지 확인
+            if (javaexe.exists() && javaexe.isFile()) {
+                return javaexe.getAbsolutePath(); // 찾으면 해당 경로 반환
+            }
+        }
+
+        return null; // 못 찾은 경우
+    }
+	public static void javaRunExcute()
+	{
+		// 입력값들 가져오기
+		String arg1 = arg1Field2.getText().trim();
+		String arg2 = arg2Field2.getText().trim();
+		String mainClass = mainClassField2.getText().trim();
+		String path = pathField.getText().trim();
+		String javapath = findJavacFromSystemPath("java.exe");
+
+		// javac.exe 경로 추적
+		File javaFile = new File(javapath);
+		if (!javaFile.exists()) {
+			JOptionPane.showMessageDialog(null, "해당 위치에 java.exe가 없습니다.");
+			return;
+		}
+		File directory = new File(path);
+
+		if (!directory.exists() || !directory.isDirectory()) {
+			outputArea.append("❌ 실행 디렉토리가 올바르지 않거나 존재하지 않습니다.\n");
+			return;
+		}
+
+
+				
+
+		// 명령어 조립
+		List<String> command = new ArrayList<>();
+		command.add(javapath);
+		int count = 0;
+		for(char c : arg1.toCharArray())
+		{
+			if(c == ' ') count++;
+		}
+		String[] parts = arg1.split("\\s+");
+
+		for(int i=0;i<count+1;i++)
+		{
+			if(parts[i].equals("")) break;
+			command.add(parts[i]);
+		}
+		command.add(mainClass); // 쉼표 ❌ 확장자 정확히!
+		count = 0;
+		for(char c : arg2.toCharArray())
+		{
+			if(c == ' ') count++;
+		}
+		parts = arg2.split(" ");
+		for(int i=0;i<count+1;i++)
+		{
+			if(parts[i].equals("")) break;
+			command.add(parts[i]);
+		}
+
+		outputArea.append("실행 명령어: " + command + "\n");
+
+		try {
+			// ProcessBuilder로 실행
+			ProcessBuilder pb = new ProcessBuilder(command);
+			pb.directory(directory); // 실행 디렉터리 설정
+			pb.redirectErrorStream(true); // 오류도 표준 출력으로 통합
+
+					
+					
+					
+			new Thread(()->{
+				try{
+					// 결과 읽어오기
+					process = pb.start();
+					reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
+						
+						
+						
+					
+					String line;
+					outputArea.setText("");
+					while ((line = reader.readLine()) != null) {
+						final String outputLine = line;
+						SwingUtilities.invokeLater(() -> {
+							
+							outputArea.append(outputLine + "\n"); // UI에 한 줄씩 실시간 출력!
+						});
+
+
+						
+						
+					}
+					process.waitFor(); // 실행 완료까지 대기
+					outputArea.append("📦 컴파일이 완료되었습니다.\n");
+				}catch(Exception ess)
+				{
+							
+				}
+			}).start();
+					
+					
+
+		} catch (Exception ex) {
+			outputArea.append("❗ 오류 발생: " + ex.getMessage() + "\n");
+			ex.printStackTrace();
+		}
+	}//javaRunExcute()
+	public static void javacRunExcute()
+	{
+		// 입력값들 가져오기
+		String arg1 = arg1Field.getText().trim();
+		String arg2 = arg2Field.getText().trim();
+		String mainClass = mainClassField.getText().trim();
+		String path = pathField.getText().trim();
+		String javapath = findJavacFromSystemPath("javac.exe");
+
+		// javac.exe 경로 추적
+		File javaFile = new File(javapath);
+		if (!javaFile.exists()) {
+			JOptionPane.showMessageDialog(null, "해당 위치에 javac.exe가 없습니다.");
+			return;
+		}
+		File directory = new File(path);
+
+		if (!directory.exists() || !directory.isDirectory()) {
+			outputArea.append("❌ 실행 디렉토리가 올바르지 않거나 존재하지 않습니다.\n");
+			return;
+		}
+
+
+				
+
+		// 명령어 조립
+		List<String> command = new ArrayList<>();
+		command.add(javapath);
+		int count = 0;
+		for(char c : arg1.toCharArray())
+		{
+			if(c == ' ') count++;
+		}
+		String[] parts = arg1.split("\\s+");
+
+		for(int i=0;i<count+1;i++)
+		{
+			if(parts[i].equals("")) break;
+			command.add(parts[i]);
+		}
+		command.add(mainClass); // 쉼표 ❌ 확장자 정확히!
+		count = 0;
+		for(char c : arg2.toCharArray())
+		{
+			if(c == ' ') count++;
+		}
+		parts = arg2.split(" ");
+		for(int i=0;i<count+1;i++)
+		{
+			if(parts[i].equals("")) break;
+			command.add(parts[i]);
+		}
+
+		outputArea.append("실행 명령어: " + command + "\n");
+
+		try {
+			// ProcessBuilder로 실행
+			ProcessBuilder pb = new ProcessBuilder(command);
+			pb.directory(directory); // 실행 디렉터리 설정
+			pb.redirectErrorStream(true); // 오류도 표준 출력으로 통합
+
+					
+					
+					
+			new Thread(()->{
+				try{
+					// 결과 읽어오기
+					process = pb.start();
+					reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
+						
+						
+						
+					
+					String line;
+					outputArea.setText("");
+					while ((line = reader.readLine()) != null) {
+						final String outputLine = line;
+						SwingUtilities.invokeLater(() -> {
+							
+							outputArea.append(outputLine + "\n"); // UI에 한 줄씩 실시간 출력!
+						});
+
+
+						
+						
+					}
+					process.waitFor(); // 실행 완료까지 대기
+					outputArea.append("📦 컴파일이 완료되었습니다.\n");
+				}catch(Exception ess)
+				{
+							
+				}
+			}).start();
+					
+					
+
+		} catch (Exception ex) {
+			outputArea.append("❗ 오류 발생: " + ex.getMessage() + "\n");
+			ex.printStackTrace();
+		}
+	}//javaRunExcute()
+
+}
