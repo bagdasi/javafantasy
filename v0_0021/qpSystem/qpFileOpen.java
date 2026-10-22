@@ -1,0 +1,225 @@
+package qpSystem;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.awt.image.BufferedImage;
+import java.util.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+public class qpFileOpen 
+{
+	public BufferedImage image;
+	public qpFileOpen(Component parent)
+	{
+		qpLoadFile(parent);
+	}
+	public qpFileOpen(File ofile,Component parent)
+	{
+		qpLoadFast(ofile,parent);
+	}
+	public BufferedImage qpLoadFile(Component parent)
+	{
+		char[] tc;
+		int[] color;
+				
+		try
+		{
+			StringBuilder readTemp;
+			BufferedReader br = null;
+			int readC = 0;
+			long qpfs = 0;
+			String fchoose;
+			int returnvalue;
+			File selectedFile= null;
+			JFileChooser filechooser = new JFileChooser();
+			// 파일 필터 추가 (.qp 파일만 보이게 하기)
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("QP 파일", "qp");
+			filechooser.setFileFilter(filter);
+			// 초기 디렉토리 설정 (현재 디렉토리)
+			filechooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+			returnvalue = filechooser.showOpenDialog(parent);
+			if(returnvalue == JFileChooser.APPROVE_OPTION)
+			{
+				selectedFile = filechooser.getSelectedFile();
+				System.out.println("선택한 파일 : " + selectedFile.getPath());
+			}else
+			{
+				System.out.println("선택파일 취소됨");
+			}
+			if(selectedFile != null)
+			{
+				String filePath = selectedFile.getPath();
+						
+				if(!filePath.endsWith(".qp"))
+				{
+					filePath += ".qp";	
+				}
+				br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),"utf-8"));
+				File file = new File(filePath);
+				if(file.exists() && file.isFile())
+				{
+					qpfs = file.length();	
+							
+							
+				}
+				readTemp = new StringBuilder();
+				while((readC = br.read())!=-1)
+				{
+					readTemp.append((char)readC);
+					
+				}
+				br.close();
+						
+				tc = new char[readTemp.length()];
+				tc = readTemp.toString().toCharArray();
+			
+				if(tc[0]==(char)4425 && tc[1] == (char)4989 && tc[2] == (char)6989 && tc[3] == (char)4548)
+				{
+							
+							
+					int start = (tc[5]<<8)+tc[4];
+					color = new int[(tc.length-start)/2];
+					int colorarray=0;
+					String hexString;
+					for(int i=0;i< tc.length-start;i+=2)
+					{
+								
+								
+						color[colorarray] = (int)((-0x00000000)^((tc[start+i]<<8)+tc[start+i+1]));
+						//color[colorarray] = (int)((tc[start+i]<<8)+tc[start+i+1]);
+						colorarray++;
+					}
+						
+					int dpwidth = tc[6];
+					int dpheight = tc[7];
+					
+					image = new BufferedImage(dpwidth, dpheight, BufferedImage.TYPE_INT_ARGB);
+					Graphics2D g2d = image.createGraphics();
+					g2d.setColor(Color.WHITE);
+					g2d.fillRect(0,0,dpwidth, dpheight);
+							
+							
+						
+					colorarray=0;
+					for(int i=0;i<tc[7];i++)
+					{
+						for (int j=0;j<tc[6] ;j++ )
+						{
+									
+									
+									
+							g2d.setColor(new Color(color[colorarray]));
+							g2d.drawLine(j,i,j,i);
+							colorarray++;
+						}	
+					}
+					g2d.dispose();
+							
+							
+				}
+				return image;
+			}
+					
+		}
+		catch (IOException ioe)
+		{
+		}
+		return null;
+	}
+	public BufferedImage qpLoadFast(File ofile,Component parent)
+	{
+		char[] tc;
+		int[] color;
+				
+		try
+		{
+			StringBuilder readTemp;
+			BufferedReader br = null;
+			int readC = 0;
+			long qpfs = 0;
+			String fchoose;
+			int returnvalue;
+			File selectedFile= ofile;
+			
+			if(selectedFile != null)
+			{
+				String filePath = selectedFile.getPath();
+						
+				if(!filePath.endsWith(".qp"))
+				{
+					filePath += ".qp";	
+				}
+				br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),"utf-8"));
+				File file = new File(filePath);
+				if(file.exists() && file.isFile())
+				{
+					qpfs = file.length();	
+							
+							
+				}
+				readTemp = new StringBuilder();
+				while((readC = br.read())!=-1)
+				{
+					readTemp.append((char)readC);
+					
+				}
+				br.close();
+						
+				tc = new char[readTemp.length()];
+				tc = readTemp.toString().toCharArray();
+			
+				if(tc[0]==(char)4425 && tc[1] == (char)4989 && tc[2] == (char)6989 && tc[3] == (char)4548)
+				{
+							
+							
+					int start = (tc[5]<<8)+tc[4];
+					color = new int[(tc.length-start)/2];
+					int colorarray=0;
+					String hexString;
+					for(int i=0;i< tc.length-start;i+=2)
+					{
+								
+								
+						color[colorarray] = (int)((-0x00000000)^((tc[start+i]<<8)+tc[start+i+1]));
+						colorarray++;
+					}
+						
+					int dpwidth = tc[6];
+					int dpheight = tc[7];
+					
+					image = new BufferedImage(dpwidth, dpheight, BufferedImage.TYPE_INT_ARGB);
+					Graphics g = image.getGraphics();
+					g.setColor(Color.WHITE);
+					g.fillRect(0,0,dpwidth, dpheight);
+							
+							
+						
+					colorarray=0;
+					for(int i=0;i<tc[7];i++)
+					{
+						for (int j=0;j<tc[6] ;j++ )
+						{
+									
+									
+									
+							g.setColor(new Color(color[colorarray]));
+							g.drawLine(j,i,j,i);
+							colorarray++;
+						}	
+					}
+					g.dispose();
+							
+							
+				}
+				return image;
+			}
+					
+		}
+		catch (IOException ioe)
+		{
+		}
+		return null;
+	}
+}
