@@ -1,0 +1,880 @@
+package FuseDB;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import javax.swing.JOptionPane;
+
+
+public class FuseDBsql 
+{
+	public static String tableName;
+    
+	public String logreturn;
+    
+	
+	public static TableData create(String command)
+	{
+		List<Column> columns = new ArrayList<>();
+		if (command.startsWith("create table")) {
+            String[] parts = command.split("\\{");
+            tableName = parts[0].replace("create table", "").trim();
+			
+            String[] columnDefs = parts[1].replace("}", "").split(",");
+            for (String col : columnDefs) {
+                Column column = parseColumn(col.trim());
+                columns.add(column);
+            }
+			FuseDBFile fusedbfile = new FuseDBFile();
+			fusedbfile.FuseDBSaveDataTable(tableName, columns);
+			TableData table = new TableData();
+			table.name = tableName;
+			table.columns = columns;
+			return table;
+        }
+		return null;
+	}
+	
+	public static void alter(String command,List<TableData> tablelist)
+	{
+		int num = 0;
+		command = command.trim();
+        if (!command.startsWith("alter table")) {
+			
+		} else {
+			String[] parts = command.split("\\{");
+			tableName = parts[0].replace("alter table", "").trim();
+			
+			for(TableData table : tablelist)
+			{
+				if(table.name.equals(tableName))
+				{
+					break;	
+				}
+				num++;
+			}
+			// 명령어 부분만 따로 추출
+			if (parts.length > 1) {
+				command = parts[1].replace("}", "").trim(); // 명령어만 남김
+			} else {
+				
+			}
+		}
+		System.out.println(command);
+        String[] tokens = command.split(" ");
+        String action = tokens[0].toLowerCase();
+		// 정확하게 action 결정
+		if (tokens.length > 2 && tokens[0].equalsIgnoreCase("add")&& tokens[1].equalsIgnoreCase("constraint")) {
+			action = "add_constraint";
+		} else if (tokens.length > 1 && tokens[0].equalsIgnoreCase("add")) {
+			action = "add_column";
+		}
+
+		
+        switch (action) {
+            
+			case "add_column":
+				System.out.println("add_column 동작은 함");
+				Column newCol = parseColumn(command.substring(command.indexOf("add") + 4).trim());
+				if (num < tablelist.size()) {
+					tablelist.get(num).columns.add(newCol);
+				} else {
+					System.out.println("table name is fail or isn't");
+				}
+			break;
+
+			case "add_constraint":
+				String constraint = tokens[2];
+                applyConstraint(constraint,tablelist.get(num).columns);
+                   
+				
+			break;
+				
+			
+            case "drop":
+                if (tokens[1].equalsIgnoreCase("column")) {
+                    String colName = tokens[2];
+                    tablelist.get(num).columns.removeIf(c -> c.name.equals(colName));
+                } else if (tokens[1].equalsIgnoreCase("constraint")) {
+                    String constraintdrop = tokens[2];
+                    dropConstraint(constraintdrop,tablelist.get(num).columns);
+                }
+                break;
+
+            case "rename":
+                if (tokens[1].equalsIgnoreCase("column") && tokens[3].equalsIgnoreCase("column")) {
+                    String oldName = tokens[2];
+                    String newName = tokens[4];
+                    for (Column c : tablelist.get(num).columns) {
+                        if (c.name.equals(oldName)) {
+                            c.name = newName;
+                            break;
+                        }
+                    }
+                }
+                break;
+
+            case "modify":
+                String colName = tokens[1];
+                String newType = tokens[2];
+                for (Column c : tablelist.get(num).columns) {
+                    if (c.name.equals(colName)) {
+                        c.type = newType;
+                        c.notNull = command.contains("not null");
+                        c.primaryKey = command.contains("primary key");
+                        c.unique = command.contains("unique");
+                        break;
+                    }
+                }
+                break;
+
+            
+        }
+		
+		
+	}
+	
+	public void drop(String command,List<TableData> tablelist)
+	{
+		if (command.startsWith("drop table")) {
+			String tableName = command.split(" ")[2]; // "test" 추출
+
+			
+
+			// 2. JSON 파일 삭제 (테이블 이름 기반)
+			File dbFile = new File(tableName + ".fdbf");
+			if (dbFile.exists()) {
+				dbFile.delete(); // 파일 삭제
+			}
+			int num = 0;
+			for(TableData table : tablelist)
+			{
+				if(table.name.equals(tableName))
+				{
+					tablelist.remove(num);	
+					break;
+				}
+				num++;
+			}
+			// 3. 로그 또는 알림
+			logreturn = "테이블 : " + tableName + "이 삭제완료되었습니다.";
+		}
+
+	}
+	
+	public List<Object> insert(String command,String table, List<TableData> tablelist) throws IOException {
+		
+		List<Object> insertdata = new ArrayList<>();
+		if (command.startsWith("insert into")) {
+			// 파싱
+			String[] parts = command.toLowerCase().split("values", 2);
+			//String columnPart = parts[0].substring(command.indexOf("("), command.indexOf(")") + 1);
+			
+			String valuePart = parts[1].trim();
+			int colStart = parts[0].indexOf("(");
+			int colEnd = parts[0].indexOf(")");
+			String columnPart = parts[0].substring(colStart + 1, colEnd);
+			String[] columns = columnPart.replace("(", "").replace(")", "").split(",");
+			String[] values = valuePart.replace("(", "").replace(")", "").split(",");
+			
+			// 1. 테이블 찾기
+			TableData targetTable = null;
+			for (TableData t : tablelist) {
+				if (t.name.equals(table)) {
+					targetTable = t;
+					break;
+				}
+			}
+
+			if (targetTable == null) {
+				throw new IOException("테이블을 찾을 수 없습니다: " + tableName);
+			}
+
+
+			// 새 행 추가
+			
+			for (int i = 0; i < columns.length; i++) {
+				String col = columns[i].trim();
+				
+				String val = values[i].trim().replace("\"", "").replace("'", "");
+				String coltype = null;
+				boolean prikey=false,notnull=false,unique=false;
+				for (Column c : targetTable.columns) {
+					if (c.name.equals(col)) {
+						coltype = c.type; // Column 클래스에 type 필드가 있다고 가정
+						prikey = c.primaryKey;
+						notnull = c.notNull;
+						unique = c.unique;
+						break;
+					}
+				}
+
+				if (coltype == null) {
+					throw new IOException("컬럼을 찾을 수 없습니다: " + col);
+				}
+
+
+				switch(coltype)
+				{
+					case "String":
+						String strVal = val;
+						if(prikey)
+						{
+							for(TableData table2 : tablelist)
+							{	
+								if(table2.name.equals(table))
+								{
+									
+									
+									for(List<Object> data : table2.datas)
+									{
+										
+										
+										int num = 0;
+										for(Object dataobj : data)
+										{
+											if(table2.columns.get(num).name.equals(col))
+											{
+												Object obj = dataobj;
+												if(obj instanceof String && ((String)obj).equals(strVal))
+												{
+													List<Object> listobj = null;
+													// 중복일 때 메시지 띄우기
+													JOptionPane.showMessageDialog(null, "Primary key가 중복됩니다.", "경고", JOptionPane.WARNING_MESSAGE);
+
+													return listobj;
+												}
+											}
+											num++;
+										}
+									}
+								}
+							}
+						}
+						if(notnull || prikey)
+						{
+							if(strVal == null )
+							{
+								List<Object> listobj = null;
+								// 중복일 때 메시지 띄우기
+								JOptionPane.showMessageDialog(null, "Null값은 안됩니다.", "경고", JOptionPane.WARNING_MESSAGE);
+
+								return listobj;
+							}
+						}
+						insertdata.add(strVal);
+						
+					break;
+					case "int":
+						int intVal = Integer.parseInt(val);
+						if(prikey)
+						{
+							for(TableData table2 : tablelist)
+							{	
+								if(table2.name.equals(table))
+								{
+									
+									
+									for(List<Object> data : table2.datas)
+									{
+										
+										
+										int num = 0;
+										for(Object dataobj : data)
+										{
+											if(table2.columns.get(num).name.equals(col))
+											{
+												Object obj = dataobj;
+												if((int)obj == intVal)
+												{
+													List<Object> listobj = null;
+													// 중복일 때 메시지 띄우기
+													JOptionPane.showMessageDialog(null, "Primary key가 중복됩니다.", "경고", JOptionPane.WARNING_MESSAGE);
+
+													return listobj;
+												}
+											}
+											num++;
+										}
+									}
+								}
+							}
+						}
+						if(notnull || prikey)
+						{
+							Integer intValObj = Integer.valueOf(intVal);
+							if (intValObj == null) // 가능
+
+							{
+								List<Object> listobj = null;
+								// 중복일 때 메시지 띄우기
+								JOptionPane.showMessageDialog(null, "Null값은 안됩니다.", "경고", JOptionPane.WARNING_MESSAGE);
+
+								return listobj;
+							}
+						}
+						insertdata.add(intVal);
+						
+
+					break;
+					
+					case "char":
+						char charVal = val.charAt(0); // 첫 글자만 사용
+						if(prikey)
+						{
+							for(TableData table2 : tablelist)
+							{	
+								if(table2.name.equals(table))
+								{
+									
+									
+									for(List<Object> data : table2.datas)
+									{
+										
+										
+										int num = 0;
+										for(Object dataobj : data)
+										{
+											if(table2.columns.get(num).name.equals(col))
+											{
+												Object obj = dataobj;
+												if((char)obj == charVal)
+												{
+													List<Object> listobj = null;
+													// 중복일 때 메시지 띄우기
+													JOptionPane.showMessageDialog(null, "Primary key가 중복됩니다.", "경고", JOptionPane.WARNING_MESSAGE);
+
+													return listobj;
+												}
+											}
+											num++;
+										}
+									}
+								}
+							}
+						}
+						if(notnull || prikey)
+						{
+							Character charValObj = Character.valueOf(charVal);
+							if (charValObj == null) // 가능
+
+							{
+								List<Object> listobj = null;
+								// 중복일 때 메시지 띄우기
+								JOptionPane.showMessageDialog(null, "Null값은 안됩니다.", "경고", JOptionPane.WARNING_MESSAGE);
+
+								return listobj;
+							}
+						}
+						insertdata.add(charVal);
+					break;
+					
+					case "float":
+						float floatVal = Float.parseFloat(val);
+						if(prikey)
+						{
+							for(TableData table2 : tablelist)
+							{	
+								if(table2.name.equals(table))
+								{
+									
+									
+									for(List<Object> data : table2.datas)
+									{
+										
+										
+										int num = 0;
+										for(Object dataobj : data)
+										{
+											if(table2.columns.get(num).name.equals(col))
+											{
+												Object obj = dataobj;
+												if((float)obj == floatVal)
+												{
+													List<Object> listobj = null;
+													// 중복일 때 메시지 띄우기
+													JOptionPane.showMessageDialog(null, "Primary key가 중복됩니다.", "경고", JOptionPane.WARNING_MESSAGE);
+
+													return listobj;
+												}
+											}
+											num++;
+										}
+									}
+								}
+							}
+						}
+						if(notnull || prikey)
+						{
+							Float floatValObj = Float.valueOf(floatVal);
+							if (floatValObj == null) // 가능
+							{
+								List<Object> listobj = null;
+								// 중복일 때 메시지 띄우기
+								JOptionPane.showMessageDialog(null, "Null값은 안됩니다.", "경고", JOptionPane.WARNING_MESSAGE);
+
+								return listobj;
+							}
+						}
+						insertdata.add(floatVal);
+					break;
+					
+					case "double":
+						double doubleVal = Double.parseDouble(val);
+						if(prikey)
+						{
+							for(TableData table2 : tablelist)
+							{	
+								if(table2.name.equals(table))
+								{
+									
+									
+									for(List<Object> data : table2.datas)
+									{
+										
+										
+										int num = 0;
+										for(Object dataobj : data)
+										{
+											if(table2.columns.get(num).name.equals(col))
+											{
+												Object obj = dataobj;
+												if((double)obj == doubleVal)
+												{
+													List<Object> listobj = null;
+													// 중복일 때 메시지 띄우기
+													JOptionPane.showMessageDialog(null, "Primary key가 중복됩니다.", "경고", JOptionPane.WARNING_MESSAGE);
+
+													return listobj;
+												}
+											}
+											num++;
+										}
+									}
+								}
+							}
+						}
+						if(notnull || prikey)
+						{
+							Double doubleValObj = Double.valueOf(doubleVal);
+							if (doubleValObj == null) // 가능
+							{
+								List<Object> listobj = null;
+								// 중복일 때 메시지 띄우기
+								JOptionPane.showMessageDialog(null, "Null값은 안됩니다.", "경고", JOptionPane.WARNING_MESSAGE);
+
+								return listobj;
+							}
+						}
+						insertdata.add(doubleVal);
+					break;
+						
+					case "boolean":
+						boolean boolVal = Boolean.parseBoolean(val);
+						if(prikey)
+						{
+							for(TableData table2 : tablelist)
+							{	
+								if(table2.name.equals(table))
+								{
+									
+									
+									for(List<Object> data : table2.datas)
+									{
+										
+										
+										int num = 0;
+										for(Object dataobj : data)
+										{
+											if(table2.columns.get(num).name.equals(col))
+											{
+												Object obj = dataobj;
+												if((boolean)obj == boolVal)
+												{
+													List<Object> listobj = null;
+													// 중복일 때 메시지 띄우기
+													JOptionPane.showMessageDialog(null, "Primary key가 중복됩니다.", "경고", JOptionPane.WARNING_MESSAGE);
+
+													return listobj;
+												}
+											}
+											num++;
+										}
+									}
+								}
+							}
+						}
+						if(notnull || prikey)
+						{
+							
+
+							Boolean boolValObj = Boolean.valueOf(boolVal);
+							if (boolValObj == null) // 가능
+
+							{
+								List<Object> listobj = null;
+								// 중복일 때 메시지 띄우기
+								JOptionPane.showMessageDialog(null, "Null값은 안됩니다.", "경고", JOptionPane.WARNING_MESSAGE);
+
+								return listobj;
+							}
+						}
+						insertdata.add(boolVal);
+					break;
+				}
+				
+
+			}
+			
+			return insertdata;
+			
+		}
+		return insertdata;
+		
+	}
+	public void update(String command, String table, List<TableData> tablelist) {
+		if (!command.toLowerCase().startsWith("update")) return;
+
+		// 테이블 찾기
+		TableData targetTable = null;
+		for (TableData t : tablelist) {
+			if (t.name.equals(table)) {
+				targetTable = t;
+				break;
+			}
+		}
+		if (targetTable == null) {
+			String message = "테이블을 찾을 수 없습니다: " + table;
+			showMessage(message);
+			return;
+		}
+
+		// 파싱
+		String[] parts = command.toLowerCase().split("set");
+		String[] setAndWhere = parts[1].split("where");
+
+		String setPart = setAndWhere[0].trim();
+		String wherePart = setAndWhere.length > 1 ? setAndWhere[1].trim() : null;
+
+		// SET 파싱
+		String[] assignments = setPart.split(",");
+		List<String> setColumns = new ArrayList<>();
+		List<String> setValues = new ArrayList<>();
+		for (String assign : assignments) {
+			String[] kv = assign.split("=");
+			setColumns.add(kv[0].trim());
+			setValues.add(kv[1].trim().replace("\"", "").replace("'", ""));
+		}
+
+		// WHERE 파싱
+		String whereColumn = null;
+		String whereValue = null;
+		if (wherePart != null && wherePart.contains("=")) {
+			String[] whereParts = wherePart.split("=");
+			whereColumn = whereParts[0].trim();
+			whereValue = whereParts[1].trim().replace("\"", "").replace("'", "");
+		}
+
+		// 업데이트 수행
+		for (List<Object> row : targetTable.datas) {
+			boolean match = true;
+
+			if (whereColumn != null) {
+				for (int i = 0; i < targetTable.columns.size(); i++) {
+					Column col = targetTable.columns.get(i);
+					if (col.name.equals(whereColumn)) {
+						Object val = row.get(i);
+						if (!val.toString().equals(whereValue)) {
+							match = false;
+						}
+						break;
+					}
+				}
+			}
+
+			if (match) {
+				for (int i = 0; i < setColumns.size(); i++) {
+					String colName = setColumns.get(i);
+					String newVal = setValues.get(i);
+
+					for (int j = 0; j < targetTable.columns.size(); j++) {
+						Column col = targetTable.columns.get(j);
+						if (col.name.equals(colName)) {
+							Object parsedVal = parseValue(col.type, newVal);
+							row.set(j, parsedVal);
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+	public void delete(String command, String table, List<TableData> tablelist) {
+		if (!command.toLowerCase().startsWith("delete from")) return;
+
+		// 테이블 찾기
+		TableData targetTable = null;
+		for (TableData t : tablelist) {
+			if (t.name.equals(table)) {
+				targetTable = t;
+				break;
+			}
+		}
+		if (targetTable == null) {
+			String message = "테이블을 찾을 수 없습니다: " + table;
+			showMessage(message);
+			return;
+		}
+
+		// WHERE 조건 파싱
+		String[] parts = command.toLowerCase().split("where");
+		if (parts.length < 2) {
+			String message = "WHERE 조건이 필요합니다.";
+			showMessage(message);
+			return;
+		}
+
+		String condition = parts[1].trim();
+		String[] conditionParts = condition.split("=");
+		if (conditionParts.length < 2) {
+			String message = "조건 형식이 잘못되었습니다.";
+			showMessage(message);
+			return;
+		}
+
+		String whereColumn = conditionParts[0].trim();
+		String whereValue = conditionParts[1].trim().replace("\"", "").replace("'", "");
+
+		// 삭제 대상 찾기
+		List<List<Object>> toRemove = new ArrayList<>();
+		for (List<Object> row : targetTable.datas) {
+			for (int i = 0; i < targetTable.columns.size(); i++) {
+				Column col = targetTable.columns.get(i);
+				if (col.name.equals(whereColumn)) {
+					Object val = row.get(i);
+					if (val.toString().equals(whereValue)) {
+						toRemove.add(row);
+					}
+					break;
+				}
+			}
+		}
+
+		// 삭제 수행
+		targetTable.datas.removeAll(toRemove);
+	}
+	
+	public TableData select(String command, String table, List<TableData> tablelist) {
+		command = command.trim().toLowerCase();
+		TableData resultTable = new TableData();
+
+		// 테이블 찾기
+		TableData targetTable = null;
+		for (TableData t : tablelist) {
+			if (t.name.equals(table)) {
+				targetTable = t;
+				break;
+			}
+		}
+		if (targetTable == null) {
+			System.out.println("테이블을 찾을 수 없습니다: " + table);
+			return null;
+		}
+
+		resultTable.name = table;
+
+		// SELECT 컬럼 파싱
+		String[] parts = command.split("from");
+		String selectPart = parts[0].replace("select", "").trim();
+		String[] selectColumns = selectPart.equals("*") ? 
+			targetTable.columns.stream().map(c -> c.name).toArray(String[]::new) : 
+			selectPart.split(",");
+
+		// WHERE 조건 파싱
+		String whereColumn = null;
+		String whereValue = null;
+		if (command.contains("where")) {
+			String[] whereParts = command.split("where");
+			String condition = whereParts[1].trim();
+			String[] condParts = condition.split("=");
+			whereColumn = condParts[0].trim();
+			whereValue = condParts[1].trim().replace("\"", "").replace("'", "");
+		}
+
+		// 결과 컬럼 설정
+		for (String colName : selectColumns) {
+			colName = colName.trim();
+			for (Column col : targetTable.columns) {
+				if (col.name.equals(colName)) {
+					resultTable.columns.add(col.copy());
+					break;
+				}
+			}
+		}
+
+		// 결과 데이터 추출
+		for (List<Object> row : targetTable.datas) {
+			boolean match = true;
+
+			if (whereColumn != null) {
+				for (int i = 0; i < targetTable.columns.size(); i++) {
+					Column col = targetTable.columns.get(i);
+					if (col.name.equals(whereColumn)) {
+						Object val = row.get(i);
+						if (!val.toString().equals(whereValue)) {
+							match = false;
+						}
+						break;
+					}
+				}
+			}
+
+			if (match) {
+				List<Object> selectedRow = new ArrayList<>();
+				for (String colName : selectColumns) {
+					colName = colName.trim();
+					for (int i = 0; i < targetTable.columns.size(); i++) {
+						if (targetTable.columns.get(i).name.equals(colName)) {
+							selectedRow.add(row.get(i));
+							break;
+						}
+					}
+				}
+				resultTable.datas.add(selectedRow);
+			}
+		}
+
+		return resultTable;
+	}
+	public TableData view(String command, List<TableData> tablelist) {
+		command = command.trim().toLowerCase();
+		if (!command.equals("view table")) return null;
+
+		TableData result = new TableData();
+		result.name = "table_list";
+
+		// 컬럼 정의
+		Column col1 = new Column();
+		col1.name = "number";
+		col1.type = "int";
+		col1.primaryKey = false;
+		col1.notNull = true;
+		col1.unique = false;
+
+		Column col2 = new Column();
+		col2.name = "tableName";
+		col2.type = "String";
+		col2.primaryKey = false;
+		col2.notNull = true;
+		col2.unique = false;
+
+		result.columns.add(col1);
+		result.columns.add(col2);
+
+		// 데이터 채우기
+		int count = 1;
+		for (TableData t : tablelist) {
+			List<Object> row = new ArrayList<>();
+			row.add(count);
+			row.add(t.name);
+			result.datas.add(row);
+			count++;
+		}
+
+		return result;
+	}
+	private static Column parseColumn(String colDef) {
+        String[] tokens = colDef.split(" ");
+		if (tokens.length < 0) {
+			throw new IllegalArgumentException("Column definition must include name and type.");
+			}
+        Column column = new Column();
+
+        column.name = tokens[0];
+        if(tokens.length>1){column.type = tokens[1];}
+        column.primaryKey = colDef.contains("primary key");
+        column.notNull = colDef.contains("not null");
+        column.unique = colDef.contains("unique");
+        return column;
+    }
+	
+	private static void applyConstraint(String constraint, List<Column> columns) {
+        // 예: pk_id → id 컬럼에 primary key 설정
+        if (constraint.startsWith("pk_")) {
+            String colName = constraint.substring(3);
+            for (Column c : columns) {
+                if (c.name.equals(colName)) {
+                    c.primaryKey = true;
+                    break;
+                }
+            }
+        } else if (constraint.startsWith("nn_")) {
+            String colName = constraint.substring(3);
+            for (Column c : columns) {
+                if (c.name.equals(colName)) {
+                    c.notNull = true;
+                    break;
+                }
+            }
+        } else if (constraint.startsWith("uq_")) {
+            String colName = constraint.substring(3);
+            for (Column c : columns) {
+                if (c.name.equals(colName)) {
+                    c.unique = true;
+                    break;
+                }
+            }
+        }
+    }
+	
+	private static void dropConstraint(String constraint, List<Column> columns) {
+        if (constraint.startsWith("pk_")) {
+            String colName = constraint.substring(3);
+            for (Column c : columns) {
+                if (c.name.equals(colName)) {
+                    c.primaryKey = false;
+                    break;
+                }
+            }
+        } else if (constraint.startsWith("nn_")) {
+            String colName = constraint.substring(3);
+            for (Column c : columns) {
+                if (c.name.equals(colName)) {
+                    c.notNull = false;
+                    break;
+                }
+            }
+        } else if (constraint.startsWith("uq_")) {
+            String colName = constraint.substring(3);
+            for (Column c : columns) {
+                if (c.name.equals(colName)) {
+                    c.unique = false;
+                    break;
+                }
+            }
+        }
+    }
+	
+	private Object parseValue(String type, String val) {
+		switch (type) {
+			case "String": return val;
+			case "int": return Integer.parseInt(val);
+			case "char": return val.charAt(0);
+			case "float": return Float.parseFloat(val);
+			case "double": return Double.parseDouble(val);
+			case "boolean": return Boolean.parseBoolean(val);
+			default: return null;
+		}
+	}
+	
+	private void showMessage(String message)
+	{
+		JOptionPane.showMessageDialog(null, message, "경고", JOptionPane.WARNING_MESSAGE);
+	}
+	
+}

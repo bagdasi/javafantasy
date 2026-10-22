@@ -1,0 +1,22 @@
+package FuseDB;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+
+public class TableData 
+{
+	public List<Column> columns = new ArrayList<>();
+	public List<List<Object>> datas = new ArrayList<>();
+	
+	
+	public void tableReset()
+	{
+		columns = new ArrayList<>();
+		datas = new ArrayList<>();
+	}
+	public void tableset(List<Object> data)
+	{
+		datas.add(data);
+	}
+}

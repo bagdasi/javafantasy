@@ -1,0 +1,49 @@
+FuseDB는 간단한 프로젝트와 게임 개발을 위해 만들어진 경량 데이터베이스 엔진입니다.
+설치 과정 없이 바로 사용할 수 있으며, 테이블과 뷰를 생성하고 조회하는 기본적인 SQL 기능을 제공합니다.
+가벼운 구조와 직관적인 명령어를 통해 누구나 쉽게 데이터 관리를 할 수 있도록 설계되었습니다.
+FuseDB는 Java 기반으로 제작된 경량 SQL 데이터베이스 엔진입니다.
+테이블 생성, 뷰 생성, 데이터 조회 등 핵심 기능을 간단한 명령어로 수행할 수 있으며,
+작은 규모의 게임, 툴, 개인 프로젝트에서 빠르고 가볍게 사용할 수 있도록 최적화되어 있습니다.
+데이터는 FuseDB 전용 파일 포맷(.fdbf, .fvf)으로 저장되며, 별도의 설치나 서버 환경 없이 단독 실행이 가능합니다.
+FuseDB는 간단한 게임 개발을 위해 설계된 초경량 데이터베이스입니다.
+캐릭터 정보, 아이템 데이터, 스테이지 설정 등 다양한 게임 데이터를
+직관적인 SQL 명령어로 관리할 수 있으며, 파일 기반으로 저장되어 배포가 쉽습니다.
+작고 빠르고 가벼운 DB가 필요할 때 FuseDB는 최고의 선택이 될 것입니다.
+FuseDB는 복잡한 설치나 설정 없이 바로 사용할 수 있는 가벼운 데이터베이스 엔진입니다.
+작은 게임이나 개인 프로젝트에서 빠르게 데이터를 저장하고 조회할 수 있도록 만들어졌습니다.
+필요한 기능만 간단하게 담아, 누구나 쉽게 다룰 수 있는 것을 목표로 합니다.
+버전 : 0.0022A
+예제...
+
+create table test { name String , age int , num int primary key }
+unique,not null,primary key 3개가 있습니다.
+unique : 중복방지
+not null : null값 방지
+primary key : 중복, null값 둘다 방지
+type은 String,int,float,double,boolean,char 자바 기본값은 모두 들어있다고 봐도 됩니다.
+alter table test { add number int}
+alter table test { add constraint number primary key }
+add_constraint
+add
+drop constraint
+drop column
+rename column
+modify not null
+modify unique
+modify primary key
+drop table test : test테이블 삭제
+drop view test :테스트 뷰 삭제
+insert into test ( name , age, num ) values ( "ddd" , 33, 1 )
+update test set name = "aba" , age = 35 where num = 3
+select * from test
+view table
+view column test
+show view testview
+create view testview { select * from test}
+뭐 대충 명령어는 이정도고
+select name, age from test where num = 1 이정도는 된걸로 기억납니다. > < sum,이런것들은 전혀 안되고 검색도 김% 이런거 전혀 기능이 없습니다.
+테스트한다고 진땀 뺐네요... String은 vaule할 때 "를 붙여야 합니다. 안붙이면 안되네요...
+AI가 만든거라 저는 어떻게 동작하는지도 모르겠네요....됬다가 안됬다가 내 컴퓨터도 말썽이네요....
+쉽게 만든다고 했지만 정말 다루기 어렵습니다. 라이트하게 심플한 게임만들 때 사용할 DB입니다.
+안되면 껐다가 켰다가 하면 될 때도 있습니다.
+크기를 조금 크게했습니다.. 원형모델로 게임을 만들면서 계속 업데이트 해나가겠습니다. 

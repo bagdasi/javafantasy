@@ -1,0 +1,8 @@
+create table test { num int primary key, 테스트이름 String, 테스트점수 int }
+insert into test ( num, 테스트이름, 테스트점수 ) values ( 0, "테스트1", 33 )
+insert into test ( num, 테스트이름, 테스트점수 ) values ( 1, "테스트2", 33 )
+insert into test ( num, 테스트이름, 테스트점수 ) values ( 2, "테스트3", 55 )
+insert into test ( num, 테스트이름, 테스트점수 ) values ( 3, "테스트4", 23 )
+insert into test ( num, 테스트이름, 테스트점수 ) values ( 4, "테스트5", 99 )
+
+select * from test

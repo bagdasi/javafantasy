@@ -1,0 +1,11 @@
+table test [ 
+{ columnName = num , columnType = int , primarykey = yes , notnull = no , unique = no } 
+{ columnName = 테스트이름 , columnType = String , primarykey = no , notnull = no , unique = no } 
+{ columnName = 테스트점수 , columnType = int , primarykey = no , notnull = no , unique = no } 
+] 
+data:
+{ num : 0 , 테스트이름 : 테스트1 , 테스트점수 : 33 } 
+{ num : 1 , 테스트이름 : 테스트2 , 테스트점수 : 33 } 
+{ num : 2 , 테스트이름 : 테스트3 , 테스트점수 : 55 } 
+{ num : 3 , 테스트이름 : 테스트4 , 테스트점수 : 23 } 
+{ num : 4 , 테스트이름 : 테스트5 , 테스트점수 : 99 } 
