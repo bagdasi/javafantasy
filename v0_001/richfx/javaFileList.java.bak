@@ -1,0 +1,37 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.File;
+
+
+public class javaFileList
+{
+	public static void main(String[] args)
+	{
+		String excute = "--module-path \"javafx-sdk-17.0.16\\lib\" --add-modules javafx.controls,javafx.fxml -cp \"";
+		File currentDir = new File("."); // 현재 디렉토리
+        File[] files = currentDir.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if(file.getName().endsWith(".jar"))
+				{
+					//excute+="richfx\\";
+					excute+=file.getName().toString();
+					excute+=";";
+				}
+            }
+			excute+=".\"";
+        } else {
+            System.out.println("디렉토리를 읽을 수 없습니다.");
+        }
+		String filename = "output.txt";
+
+        try (FileWriter writer = new FileWriter(filename)) {
+            writer.write(excute);
+            System.out.println("파일 저장 완료: " + filename);
+        } catch (IOException e) {
+            System.out.println("파일 저장 중 오류 발생: " + e.getMessage());
+        }
+
+	}
+}

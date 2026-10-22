@@ -1,0 +1,8 @@
+.keyword {
+    -fx-fill: blue;
+    -fx-font-weight: bold;
+}
+.keyword2{
+	-fx-fill: red;
+	-fx-font-weight: bold;
+}
