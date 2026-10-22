@@ -1,0 +1,44 @@
+public class 
+{
+	public static void main(String[] args) {
+		System.out.println("Hello World!");
+	}
+	aa()
+	{
+		ace();
+		ace3();
+		ace();
+		{
+			dsafdsa
+			fdsafads
+			fdsfda
+		}
+		ace();
+		ace();
+		ace();
+	}
+	aa2()
+	{
+		fasdf
+		fdafdsa
+		fsdafsa
+		fdsaf
+		dsaf
+	}
+	aa3()
+	{
+		dsafdsa
+		fdsafdsa
+		fdsafdsa
+		ffdsafsa
+	}
+	aa4()
+	{
+		dfdsa
+		dsafdsaf
+		dsafdsa
+		dsafsad
+		fdsafdsa
+		fdsfdsa
+	}
+}
