@@ -1,0 +1,21 @@
+import java.io.*;
+
+public class MultiFormatHexViewer {
+    public static void main(String[] args) {
+        String filePath = "example.jpg"; // 원하는 파일 경로로 변경하세요
+
+        try (FileInputStream fis = new FileInputStream(filePath)) {
+            System.out.println("파일을 분석 중: " + filePath);
+            int byteValue;
+            int count = 0;
+
+            while ((byteValue = fis.read()) != -1) {
+                System.out.printf("%02X ", byteValue);
+                count++;
+                if (count % 16 == 0) System.out.println();
+            }
+        } catch (IOException e) {
+            System.err.println("파일을 읽는 중 오류 발생: " + e.getMessage());
+        }
+    }
+}
