@@ -1,0 +1,3169 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.*;
+import java.util.ArrayList;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Arrays;
+import java.awt.event.*;
+import javax.swing.filechooser.FileFilter;
+import java.io.File;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+
+
+class QPDv0_001 
+{
+	public static QPDv0_001 qpd;
+	public static JFrame frame;
+	public static JPanel toppanel,midpanel,midsubpanel1,midsubpanel2,rightpanel,downpanel;
+	public static JPanel qpgpanel,qppanel;
+	public static JButton Filebtn,Editbtn,Mapbtn,Optionbtn,Viewbtn,Helpbtn;
+	public static JButton newfilebtn,qpfileopenbtn,qpfiledelbtn,qpgfileopenbtn,qpgfilesavebtn,exitbtn;
+	public static JButton rotatebtn,inforsetbtn,qpinfobtn;
+	public static JButton mapsetbtn,inputbtn,outputbtn;
+	public static JButton optionsetbtn,fileinfobtn;
+	public static JButton statebarbtn;
+	public static JButton licensebtn,qpginfobtn,useinfobtn,appinfobtn;
+	public static int right_num = 0;
+	//여기서부터 Init
+	public static final String qpfoldername = "setting";
+    public static final String qpfilesettingpath = "setting\\qplistsetting.qps";
+	public static String tmpstr;
+	public static int qplist_num = 0;
+	public static int qpglist_num = 0;
+	//여기서부터 qppanel
+	public static ArrayList<String> qplist = new ArrayList<>();
+	public static ArrayList<String> qpglist = new ArrayList<>();
+	public static int qplength_num,qpx_num=3,qpy_num=1,qpgwidth_num=100,qpgheight_num=100,qpgx_num=10,qpgy_num=10;
+	public static int qpgselx_num = 0,qpgsely_num=0;
+	//public static ArrayList<Integer> filelist = new ArrayList<>();
+	public static ArrayList<BufferedImage> qpimagelist = new ArrayList<>();
+	public static ArrayList<JLabel> qplabels = new ArrayList<>();
+	public static ArrayList<BufferedImage> qpgimagelist = new ArrayList<>();
+	public static ArrayList<JLabel> qpglabels = new ArrayList<>();
+	public static int tmpi = -1;
+	public static int oldIndex = -1,oldIndexg = -1;
+	public static int qpselIndex = -1,qpgselIndex = -1;
+	public static int tmpx=0,tmpy=0;
+	public static int[] tmpinfo_num = new int[7];
+	
+	//public static int qpindex = -1;
+	public static ArrayList<String> settingqpfilelist = new ArrayList<>();
+	
+	public static JLabel statusLabel;
+	public static JPanel statusbarPanel;
+	public static boolean statusbar = true;
+	public static String getfilepath = "";
+	//여기서부터 qpg파낼
+	public static void Init()
+	{
+		frame = new JFrame("콰로포도디자인v0.001");
+		frame.setSize(800,600);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		Filebtn = new JButton("파일");
+		Editbtn = new JButton("편집");
+		Mapbtn = new JButton("맵");
+		Optionbtn = new JButton("옵션");
+		Viewbtn = new JButton("보기");
+		Helpbtn = new JButton("도움말");
+		toppanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		toppanel.setBackground(Color.BLUE);
+		toppanel.add(Filebtn);
+		toppanel.add(Editbtn);
+		toppanel.add(Mapbtn);
+		toppanel.add(Optionbtn);
+		toppanel.add(Viewbtn);
+		toppanel.add(Helpbtn);
+		frame.add(toppanel,BorderLayout.NORTH);
+		
+		Filebtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				right_num=0;
+				rightpanel.removeAll();
+				rightpanel.add(newfilebtn);
+				rightpanel.add(qpfileopenbtn);
+				rightpanel.add(qpfiledelbtn);
+				rightpanel.add(qpgfileopenbtn);
+				rightpanel.add(qpgfilesavebtn);
+				rightpanel.add(exitbtn);
+				frame.setVisible(true);
+				frame.repaint();
+			}
+		});
+		Editbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				right_num=1;
+				rightpanel.removeAll();
+				rightpanel.add(rotatebtn);
+				rightpanel.add(inforsetbtn);
+				rightpanel.add(qpinfobtn);
+				frame.setVisible(true);
+				frame.repaint();
+			}
+		});
+		Mapbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				right_num=2;
+				rightpanel.removeAll();
+				rightpanel.add(mapsetbtn);
+				rightpanel.add(inputbtn);
+				rightpanel.add(outputbtn);
+				frame.setVisible(true);
+				frame.repaint();
+			}
+		});
+		Optionbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				right_num=3;
+				rightpanel.removeAll();
+				rightpanel.add(optionsetbtn);
+				rightpanel.add(fileinfobtn);
+				frame.setVisible(true);
+				frame.repaint();
+				
+			}
+		});
+		Viewbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				right_num=4;
+				rightpanel.removeAll();
+				rightpanel.add(statebarbtn);
+				frame.setVisible(true);
+				frame.repaint();
+			}
+		});
+		Helpbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				right_num=5;
+				rightpanel.removeAll();
+				rightpanel.add(licensebtn);
+				rightpanel.add(qpginfobtn);
+				rightpanel.add(useinfobtn);
+				rightpanel.add(appinfobtn);
+				frame.setVisible(true);
+				frame.repaint();
+			}
+		});
+		//파일버튼
+		newfilebtn = new JButton("새로만들기");
+		qpfileopenbtn = new JButton("qp파일불러오기");
+		qpfiledelbtn = new JButton("qp파일지우기");
+		qpgfileopenbtn = new JButton("qpd파일불러오기");
+		qpgfilesavebtn = new JButton("qpd파일저장");
+		exitbtn = new JButton("종료");
+		newfilebtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				JFrame nframe = new JFrame("새로만들기");
+				nframe.setSize(500,400);
+				nframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				nframe.setLocation(300,300);
+				nframe.getContentPane().setLayout(new BoxLayout(nframe.getContentPane(),BoxLayout.Y_AXIS));
+				JLabel nmapxlabel = new JLabel("mapX크기 : ");
+				nmapxlabel.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField nmapxtxt = new JTextField(6);
+				nmapxtxt.setFont(new Font("Serif",Font.PLAIN,14));
+				nmapxtxt.setText(Integer.toString(qpgx_num));
+				JLabel nmapylabel = new JLabel("mapY크기 : ");
+				nmapylabel.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField nmapytxt = new JTextField(6);
+				nmapytxt.setFont(new Font("Serif",Font.PLAIN,14));
+				nmapytxt.setText(Integer.toString(qpgy_num));
+				JPanel nmappanel = new JPanel();
+				nmappanel.setLayout(new FlowLayout());
+				nmappanel.add(nmapxlabel);
+				nmappanel.add(nmapxtxt);
+				nmappanel.add(nmapylabel);
+				nmappanel.add(nmapytxt);
+				nframe.add(nmappanel);
+				JLabel nmapwidthlabel = new JLabel("map너비view : ");
+				nmapwidthlabel.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField nmapwidthtxt = new JTextField(6);
+				nmapwidthtxt.setText(Integer.toString(qpgwidth_num));
+				nmapwidthtxt.setFont(new Font("Serif",Font.PLAIN,14));
+				JLabel nmapheightlabel = new JLabel("map높이view : ");
+				nmapheightlabel.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField nmapheighttxt = new JTextField(6);
+				nmapheighttxt.setFont(new Font("Serif",Font.PLAIN,14));
+				nmapheighttxt.setText(Integer.toString(qpgheight_num));
+				
+				JPanel nmappanel2 = new JPanel();
+				nmappanel2.setLayout(new FlowLayout());
+				nmappanel2.add(nmapwidthlabel);
+				nmappanel2.add(nmapwidthtxt);
+				nmappanel2.add(nmapheightlabel);
+				nmappanel2.add(nmapheighttxt);
+				nframe.add(nmappanel2);
+				
+				JButton confirmbtn = new JButton("확인");
+				confirmbtn.setFont(new Font("Serif",Font.PLAIN,14));
+				confirmbtn.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent cone)
+					{
+						qpgx_num = Integer.parseInt(nmapxtxt.getText());
+						qpgy_num = Integer.parseInt(nmapytxt.getText());
+						qpgwidth_num = Integer.parseInt(nmapwidthtxt.getText());
+						qpgheight_num = Integer.parseInt(nmapheighttxt.getText());
+						qpglist.clear();
+						qpglabels.clear();
+						qpgimagelist.clear();
+						System.out.println(qpgx_num + " " + qpgy_num + " " + qpgwidth_num + " " +qpgheight_num);
+						qpgpanel.removeAll();
+						qpgpanel.setLayout(new GridLayout(qpgy_num,qpgx_num));
+						for(int i=0; i<qpgy_num*qpgx_num;i++)
+						{
+							int imageIndex = i;
+							BufferedImage tmpimage = new BufferedImage(3,3,BufferedImage.TYPE_INT_ARGB);
+							Graphics2D g2d = tmpimage.createGraphics();
+							g2d.setColor(Color.BLACK);
+							g2d.fillRect(0,0,3,3);
+							g2d.dispose();
+							qpgimagelist.add(tmpimage);
+			
+							qpglist.add(qpd.qpSaveMethod(tmpimage));
+							Image resizeimage = qpgimagelist.get(i).getScaledInstance((int)qpgwidth_num, (int)qpgheight_num, Image.SCALE_SMOOTH);
+							JLabel label = new JLabel(new ImageIcon(resizeimage));
+							//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+							qpglabels.add(label);
+							qpglabels.get(i).setPreferredSize(new Dimension(qpgwidth_num+5, qpgheight_num+5)); // 너비 200, 높이 100
+							qpglabels.get(i).setSize(qpgwidth_num+5, qpgheight_num+5); // 너비 200, 높이 100
+							qpglabels.get(i).setSize(qpgwidth_num+5, qpgheight_num+5); // 너비 200, 높이 100
+							qpglabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+							qpglabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+							qpglabels.get(i).setOpaque(true);
+							qpglabels.get(i).setBackground(Color.WHITE);
+							qpglabels.get(i).addMouseListener(new MouseAdapter() {
+								@Override
+								public void mouseClicked(MouseEvent e) {
+									//JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+									// 선택 상태 토글
+						
+						
+									if(oldIndex != -1)
+									{
+										qpglabels.get(oldIndex).setBackground(Color.WHITE);
+									}
+									oldIndex = imageIndex;
+									
+									qpglabels.get(imageIndex).setBackground(Color.GRAY);
+									qpgpanel.repaint();
+									qpgselx_num = (oldIndexg%qpgx_num)+1;
+									qpgsely_num = (oldIndexg/qpgx_num)+1;
+									String statusText = String.format("상태표시줄입니다. mapwidth : %d mapheight : %d mapX : %d mapY : %d",qpgx_num,qpgy_num,qpgselx_num,qpgsely_num);
+									statusLabel.setText(statusText);
+									frame.revalidate();
+									frame.repaint();
+								}
+
+								@Override
+								public void mouseEntered(MouseEvent e) {
+						
+									//label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+								}
+
+								@Override
+								public void mouseExited(MouseEvent e) {
+						
+									//label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+								}
+							});
+							
+							qpgpanel.add(label);
+							qpgpanel.repaint();
+							frame.revalidate();
+							frame.repaint();
+							
+							nframe.dispose();
+						}
+					}
+				});
+				JButton cancelbtn = new JButton("취소");
+				cancelbtn.setFont(new Font("Serif",Font.PLAIN,14));
+				cancelbtn.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent cane)
+					{
+						nframe.dispose();
+					}
+				});
+				
+				JPanel nbtnpanel = new JPanel();
+				nbtnpanel.setLayout(new FlowLayout());
+				nbtnpanel.add(confirmbtn);
+				nbtnpanel.add(cancelbtn);
+				nframe.add(nbtnpanel);
+				
+				nframe.setVisible(true);
+			}
+		});
+		qpfileopenbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				/*
+				JFrame oframe = new JFrame("qp파일열기");
+				oframe.setSize(500,400);
+				oframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				oframe.getContentPane().setLayout(new BoxLayout(oframe.getContentPane(),BoxLayout.Y_AXIS));
+				
+				oframe.setVisible(true);
+				*/
+				
+				char[] tc;
+				int[] color;
+				int dpwidth =0, dpheight = 0;
+				
+				try
+				{
+					StringBuilder readTemp;
+					BufferedReader br = null;
+					int readC = 0;
+					long qpfs = 0;
+					String fchoose;
+					int returnvalue;
+					File selectedFile= null;
+					JFileChooser filechooser = new JFileChooser();
+					// 파일 필터 추가 (.qp 파일만 보이게 하기)
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("QP 파일", "qp");
+					filechooser.setFileFilter(filter);
+					// 초기 디렉토리 설정 (현재 디렉토리)
+					filechooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+					returnvalue = filechooser.showOpenDialog(frame);
+					if(returnvalue == JFileChooser.APPROVE_OPTION)
+					{
+						selectedFile = filechooser.getSelectedFile();
+						//System.out.println("선택한 파일 : " + selectedFile.getPath());
+					}else
+					{
+						System.out.println("선택파일 취소됨");
+					}
+					if(selectedFile != null)
+					{
+						String filePath = selectedFile.getPath();
+						settingqpfilelist.add(qplist_num, filePath);
+						if(!filePath.endsWith(".qp"))
+						{
+							filePath += ".qp";	
+						}
+						br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),"utf-8"));
+						File file = new File(filePath);
+						if(file.exists() && file.isFile())
+						{
+							qpfs = file.length();	
+							
+							//System.out.println("size : " + qpfs);
+						}
+						readTemp = new StringBuilder();
+						while((readC = br.read())!=-1)
+						{
+							readTemp.append((char)readC);
+					
+						}
+						br.close();
+						qplist.add(qplist_num,readTemp.toString());
+						
+						tc = new char[readTemp.length()];
+						tc = readTemp.toString().toCharArray();
+			
+						if(tc[0]==(char)4425 && tc[1] == (char)4989 && tc[2] == (char)6989 && tc[3] == (char)4548)
+						{
+							
+							
+							int start = (tc[5]<<8)+tc[4];
+							color = new int[(tc.length-start)/2];
+							int colorarray=0;
+							String hexString;
+							for(int i=0;i< tc.length-start;i+=2)
+							{
+								//hexString = Integer.toUnsignedString((int)((tc[start+i]<<8)+tc[start+i+1]), 16);
+								//color[colorarray] = Integer.parseInt(hexString,16);
+								
+								color[colorarray] = (int)((-0x00000000)^((tc[start+i]<<8)+tc[start+i+1]));
+								colorarray++;
+							}
+							//System.out.println("color:"+color[110]);
+							dpwidth = tc[6];
+							dpheight = tc[7];
+							
+							//drawPanel.setOpaque(true); // 불투명 설정
+							frame.revalidate();
+							frame.repaint();
+							//drawPanel.setBackground(Color.WHITE);
+							BufferedImage image = new BufferedImage(dpwidth, dpheight, BufferedImage.TYPE_INT_ARGB);
+							Graphics g = image.getGraphics();
+							g.setColor(Color.WHITE);
+							g.fillRect(0,0,dpwidth, dpheight);
+							
+							
+							/*try{
+								Thread.sleep(100);
+							}catch(InterruptedException ie)
+							{
+								
+							}*/
+							colorarray=0;
+							for(int i=0;i<tc[7];i++)
+							{
+								for (int j=0;j<tc[6] ;j++ )
+								{
+									
+									//image.setRGB(j,i,color[colorarray]);
+									
+									g.setColor(new Color(color[colorarray]));
+									g.drawLine(j,i,j,i);
+									colorarray++;
+								}	
+							}
+							g.dispose();
+							qplabels.clear();
+							qpimagelist.add(qplist_num,image);
+							Image qplabelimage = qpgimagelist.get(qplist_num).getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+							JLabel label = new JLabel(new ImageIcon(qplabelimage));
+			
+							//qplabels.add(qplist_num,label);
+							qplist_num++;
+						}
+						qppanel.removeAll();
+						qpy_num = (qpimagelist.size()/qpx_num)+1;
+						
+		qppanel.setLayout(new GridLayout(qpy_num,qpx_num));
+		for(int i =0; i< qpimagelist.size();i++)
+		{
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpimagelist.get(i).getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qplabels.add(i,label);
+			qplabels.get(i).setPreferredSize(new Dimension(158, 158)); // 너비 200, 높이 100
+			qplabels.get(i).setSize(158,158); // 너비 200, 높이 100
+			qplabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setOpaque(true);
+			qplabels.get(i).setBackground(Color.WHITE);
+			
+			qplabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndex != -1)
+						{
+							qplabels.get(oldIndex).setBackground(Color.WHITE);
+						}
+						oldIndex = imageIndex;
+						qpselIndex = imageIndex;
+						qplabels.get(imageIndex).setBackground(Color.GRAY);
+						qppanel.repaint();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				//labels.add(label);
+				
+				qppanel.add(label);
+		}
+		qppanel.repaint();
+		frame.revalidate();
+		frame.repaint();
+		String tmpstr = "";
+					int tmp;
+					tmp = 4268;//초기번호
+					tmpstr+= String.valueOf((char)tmp);	
+					tmp = qplist_num;//qplist수
+					tmpstr+= String.valueOf((char)tmp);	
+					tmp = qpx_num;//qpx수
+					tmpstr+= String.valueOf((char)tmp);		
+					tmp = qpgwidth_num;//너비
+					tmpstr+= String.valueOf((char)tmp);		
+					tmp = qpgheight_num;//높이
+					tmpstr+= String.valueOf((char)tmp);	
+					tmp = qpgx_num;//qpgx
+					tmpstr+= String.valueOf((char)tmp);	
+					tmp = qpgy_num;//qpgy
+					tmpstr+= String.valueOf((char)tmp);	
+					for(String str2 : settingqpfilelist)
+						{
+							tmpstr+="\n"+String.valueOf((char)33232)+str2;
+						}
+		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(qpfilesettingpath), "UTF-8"))) {
+						
+						
+						writer.write(tmpstr); // 숫자를 문자열로 저장
+						System.out.println("파일에 문자열이 성공적으로 기록되었습니다: " + qpfilesettingpath);
+					} catch (IOException e2) {
+						e2.printStackTrace(); // 예외 처리
+					}
+
+                
+            
+					}
+				}
+				catch (IOException ioe)
+				{
+				}
+			}
+		});
+		qpfiledelbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if(oldIndex != -1)
+				{
+					qpimagelist.remove(oldIndex);
+					qplabels.remove(oldIndex);
+					qplist.remove(oldIndex);
+					settingqpfilelist.remove(oldIndex);
+					
+					qplist_num = settingqpfilelist.size();
+					qppanel.removeAll();
+						qpy_num = (qpimagelist.size()/qpx_num)+1;
+						
+		qppanel.setLayout(new GridLayout(qpy_num,qpx_num));
+		for(int i =0; i< qpimagelist.size();i++)
+		{
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpimagelist.get(i).getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qplabels.add(i,label);
+			qplabels.get(i).setPreferredSize(new Dimension(158, 158)); // 너비 200, 높이 100
+			qplabels.get(i).setSize(158,158); // 너비 200, 높이 100
+			qplabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setOpaque(true);
+			qplabels.get(i).setBackground(Color.WHITE);
+			qplabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndex != -1)
+						{
+							qplabels.get(oldIndex).setBackground(Color.WHITE);
+						}
+						oldIndex = imageIndex;
+						qpselIndex = imageIndex;
+						qplabels.get(imageIndex).setBackground(Color.GRAY);
+						qppanel.repaint();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				//labels.add(label);
+				
+				qppanel.add(label);
+		}
+					qppanel.repaint();
+					frame.revalidate();
+					frame.repaint();
+					String tmpstr = "";
+					int tmp;
+					tmp = 4268;//초기번호
+					tmpstr+= String.valueOf((char)tmp);	
+					tmp = qplist_num;//qplist수
+					tmpstr+= String.valueOf((char)tmp);	
+					tmp = qpx_num;//qpx수
+					tmpstr+= String.valueOf((char)tmp);		
+					tmp = qpgwidth_num;//너비
+					tmpstr+= String.valueOf((char)tmp);		
+					tmp = qpgheight_num;//높이
+					tmpstr+= String.valueOf((char)tmp);	
+					tmp = qpgx_num;//qpgx
+					tmpstr+= String.valueOf((char)tmp);	
+					tmp = qpgy_num;//qpgy
+					tmpstr+= String.valueOf((char)tmp);	
+					for(String str2 : settingqpfilelist)
+						{
+							tmpstr+="\n"+String.valueOf((char)33232)+str2;
+						}
+		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(qpfilesettingpath), "UTF-8"))) {
+						
+						
+						writer.write(tmpstr); // 숫자를 문자열로 저장
+						System.out.println("파일에 문자열이 성공적으로 기록되었습니다: " + qpfilesettingpath);
+					} catch (IOException e2) {
+						e2.printStackTrace(); // 예외 처리
+					}
+					
+				}
+			}
+		});
+		qpgfileopenbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				try{
+					File selectedFile= null;
+					JFileChooser filechooser = new JFileChooser();
+					
+					// 파일 필터 추가 (.qp 파일만 보이게 하기)
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("QPD 파일", "qpd");
+					filechooser.setFileFilter(filter);
+					// 초기 디렉토리 설정 (현재 디렉토리)
+					filechooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+					int returnvalue = filechooser.showOpenDialog(frame);
+					if(returnvalue == JFileChooser.APPROVE_OPTION)
+					{
+						selectedFile = filechooser.getSelectedFile();
+						System.out.println("선택한 파일 : " + selectedFile.getPath());
+					}else
+					{
+						System.out.println("선택파일 취소됨");
+					}
+					if(selectedFile != null)
+					{
+						String[] tmps = qpgFileOpen(selectedFile);
+						getfilepath = selectedFile.getAbsolutePath();
+						
+						BufferedImage tmpimage;
+						//int[] color = new int[(int)tmps[i].charAt(6)*(int)tmps[i].charAt(7)];
+						int color = 0;
+						qpgimagelist.clear();
+						qpglist.clear();
+						for(int i=0;i<tmps.length;i++)
+						{
+							
+							qpglist.add(tmps[i]);
+							int inc =0;
+							tmpimage = new BufferedImage((int)tmps[i].charAt(6),(int)tmps[i].charAt(7),BufferedImage.TYPE_INT_ARGB);
+							Graphics2D tmpg = tmpimage.createGraphics();
+							//System.out.println(tmps[i].length() + "<-tmp["+i+"].length");
+							for(int k = 0 ; k<tmps[i].charAt(7);k++)
+							{
+								for (int j = 0;j<tmps[i].charAt(6) ;j++ )
+								{
+									color = (int)(tmps[i].charAt(17+inc)<<8)+tmps[i].charAt(18+inc);
+									
+									tmpg.setColor(new Color(color));
+									tmpg.drawLine(j,k,j,k);
+										
+									inc+=2;
+								}	
+								//System.out.println("inc : " + inc);
+							}
+							tmpg.dispose();
+							
+							
+							
+							qpgimagelist.add(tmpimage);
+							//System.out.println("-----------------------" + i);
+							
+						}
+						
+						labelViewSet();
+						
+					}
+					
+				}catch(NullPointerException ne)
+				{
+					System.out.println("파일오픈에서 눌이 발생했습니다.");	
+				}
+			}
+		});
+		qpgfilesavebtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				try{
+					//String fchoose;
+					int returnvalue;
+					File selectedFile= null;
+					JFileChooser filechooser = new JFileChooser();
+					// 파일 필터 추가 (.qp 파일만 보이게 하기)
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("QPD 파일", "qpd");
+					filechooser.setFileFilter(filter);
+					// 초기 디렉토리 설정 (현재 디렉토리)
+					filechooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+					returnvalue = filechooser.showSaveDialog(frame);
+					if(returnvalue == JFileChooser.APPROVE_OPTION)
+					{
+						selectedFile = filechooser.getSelectedFile();
+						System.out.println("선택한 파일 : " + selectedFile.getPath());
+					}else
+					{
+						System.out.println("선택파일 취소됨");
+					}
+					if(selectedFile != null)
+					{
+						getfilepath = selectedFile.getAbsolutePath();
+						System.out.println("selectedfile != null");
+						String[] qpgstr = new String[qpglist.size()];
+						System.out.println("qpglist.size() : " + qpglist.size());
+						for(int i=0;i<qpglist.size();i++)
+						{
+							qpgstr[i] = qpglist.get(i);
+						}
+						qpgFileSave(selectedFile,qpgstr);
+					}
+				}catch(NullPointerException ioe2)
+				{
+					System.out.println("NummPoint예외처리상황이 발생했습니다.");
+				}
+				
+			}
+		});
+		exitbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				int response = JOptionPane.showConfirmDialog(null, "종료하겠습니까?", "종료 확인", JOptionPane.YES_NO_OPTION);
+
+				if (response == JOptionPane.YES_OPTION) {
+					System.out.println("프로그램을 종료합니다.");
+					System.exit(0); // 프로그램 종료
+				} else {
+					System.out.println("종료를 취소했습니다.");
+				}
+
+			}
+		});
+		//편집버튼
+		rotatebtn = new JButton("회전");
+		inforsetbtn = new JButton("qp정보세팅");
+		qpinfobtn = new JButton("qp파일정보");
+		rotatebtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				int tmpwidth = 0,tmpheight =0;
+				char[] tc;
+				if(oldIndex != -1)
+				{
+					tc = qplist.get(oldIndex).toCharArray();
+			
+						if(tc[0]==(char)4425 && tc[1] == (char)4989 && tc[2] == (char)6989 && tc[3] == (char)4548)
+						{
+							
+							
+							int start = (tc[5]<<8)+tc[4];
+							int[] color = new int[(tc.length-start)/2];
+							int colorarray=0;
+							String hexString;
+							for(int i=0;i< tc.length-start;i+=2)
+							{
+								//hexString = Integer.toUnsignedString((int)((tc[start+i]<<8)+tc[start+i+1]), 16);
+								//color[colorarray] = Integer.parseInt(hexString,16);
+								
+								color[colorarray] = (int)((-0x00000000)^((tc[start+i]<<8)+tc[start+i+1]));
+								colorarray++;
+							}
+							//System.out.println("color:"+color[110]);
+							tmpwidth = tc[6];
+							tmpheight = tc[7];
+							for (int i =0 ;i<7 ; i++)
+							{
+								tmpinfo_num[i] = tc[10+i];
+								
+							}
+							colorarray=0;
+							int[][] saveColor = new int[tmpheight][tmpwidth];
+							for(int i=0;i<tmpheight;i++)
+							{
+								for (int j=0;j<tmpwidth ;j++ )
+								{
+									
+									//image.setRGB(j,i,color[colorarray]);
+									saveColor[i][j] = color[colorarray];
+									//g.setColor(new Color(color[colorarray]));
+									
+									colorarray++;
+								}	
+							}
+							int tmpw=0,tmph=0;
+							tmpw = tmpwidth;
+							tmph = tmpheight;
+							tmpheight = tmpw;
+							tmpwidth = tmph;
+							BufferedImage tmpimage = new BufferedImage(tmpwidth,tmpheight,BufferedImage.TYPE_INT_ARGB);
+				Graphics g = tmpimage.getGraphics();
+				g.setColor(Color.GREEN);
+				g.fillRect(0,0,tmpwidth, tmpheight);
+				int[][] loctemp = new int[tmpheight][tmpwidth];
+				int incw = 0,inch=0;
+				for(int i=0;i<tmpheight;i++)
+				{
+					
+					for(int j=0;j<tmpwidth;j++)
+					{
+						loctemp[i][tmpwidth-(j+1)] = saveColor[inch][incw];
+						//saveColor[incw][inch] = 1;
+						inch++;
+						if(inch==tmpwidth) inch = 0;
+					}
+					incw++;
+					//if(incw==dpheight) incw = 0;
+				}
+				saveColor = new int[tmpheight][tmpwidth];
+				//saveColor = loctemp;
+				System.out.println("너비 : " + tmpwidth + " 높이 : " + tmpheight);
+				for(int i=0;i<tmpheight;i++)
+				{
+					for (int j=0;j<tmpwidth ;j++ )
+					{
+									
+						saveColor[i][j] = loctemp[i][j];	
+						g.setColor(new Color(saveColor[i][j]));
+						//g.setColor(new Color(loctemp[i][j]));
+						g.drawLine(j,i,j,i);
+							
+					}	
+				}
+				g.dispose();
+					qpimagelist.set(oldIndex,tmpimage);	
+					StringBuilder tmpb = new StringBuilder(qpSaveMethod(tmpimage));
+					String tmps = qplist.get(oldIndex);
+					tmpb.setCharAt(10,tmps.charAt(10));
+					tmpb.setCharAt(11,tmps.charAt(11));
+					tmpb.setCharAt(12,tmps.charAt(12));
+					tmpb.setCharAt(13,tmps.charAt(13));
+					tmpb.setCharAt(14,tmps.charAt(14));
+					tmpb.setCharAt(15,tmps.charAt(15));
+					tmpb.setCharAt(16,tmps.charAt(16));
+					qplist.set(oldIndex,tmpb.toString());
+					}
+				//g.setColor(Color.GRAY);
+				//g.fillRect(10,650,60,60);
+					qpgpanel.removeAll();
+					qpglabels.clear();
+					qpgpanel.setLayout(new GridLayout(qpgy_num,qpgx_num));
+					for(int i =0; i< qpglist.size();i++)
+		{
+			
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpgimagelist.get(i).getScaledInstance((int)qpgwidth_num, (int)qpgheight_num, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//JLabel label = qpglabels.get(i);
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qpglabels.add(label);
+			qpglabels.get(i).setPreferredSize(new Dimension(qpgwidth_num+5, qpgheight_num+5)); // 너비 200, 높이 100
+			qpglabels.get(i).setSize(qpgwidth_num+5, qpgheight_num+5); // 너비 200, 높이 100
+			qpglabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qpglabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qpglabels.get(i).setOpaque(true);
+			qpglabels.get(i).setBackground(Color.WHITE);
+			qpglabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndexg != -1 && qpgx_num*qpgy_num > oldIndex)
+						{
+							qpglabels.get(oldIndexg).setBackground(Color.WHITE);
+						}
+						
+						oldIndexg = imageIndex;
+						qpgselIndex = imageIndex;
+						qpglabels.get(imageIndex).setBackground(Color.GRAY);
+						
+						qpgpanel.repaint();
+						
+						qpgselx_num = (oldIndexg%qpgx_num)+1;
+						qpgsely_num = (oldIndexg/qpgx_num)+1;
+						String statusText = String.format("상태표시줄입니다. mapwidth : %d mapheight : %d mapX : %d mapY : %d",qpgx_num,qpgy_num,qpgselx_num,qpgsely_num);
+						statusLabel.setText(statusText);
+						frame.revalidate();
+						frame.repaint();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				
+				//labels.add(label);
+				qpgpanel.add(label);
+		}
+				qppanel.removeAll();
+				qplabels.clear();
+						qpy_num = (qpimagelist.size()/qpx_num)+1;
+						
+		qppanel.setLayout(new GridLayout(qpy_num,qpx_num));
+		for(int i =0; i< qpimagelist.size();i++)
+		{
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpimagelist.get(i).getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qplabels.add(i,label);
+			qplabels.get(i).setPreferredSize(new Dimension(158, 158)); // 너비 200, 높이 100
+			qplabels.get(i).setSize(158,158); // 너비 200, 높이 100
+			qplabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setOpaque(true);
+			qplabels.get(i).setBackground(Color.WHITE);
+			qplabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndex != -1)
+						{
+							qplabels.get(oldIndex).setBackground(Color.WHITE);
+						}
+						if(oldIndex == imageIndex)
+						{
+							qplabels.get(imageIndex).setBackground(Color.GRAY);
+						}
+						oldIndex = imageIndex;
+						qpselIndex = imageIndex;
+						qplabels.get(imageIndex).setBackground(Color.GRAY);
+						qppanel.repaint();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				//labels.add(label);
+				
+						
+				qppanel.add(label);
+		}
+					if(qpselIndex == oldIndex && qpselIndex != -1)
+						{
+							qplabels.get(oldIndex).setBackground(Color.GRAY);
+		
+						}
+					qppanel.repaint();
+					qpgpanel.repaint();
+					frame.revalidate();
+					frame.repaint();
+				
+				}
+			}
+		});
+		inforsetbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				for(int i=0;i<7;i++)
+				{
+					tmpinfo_num[i]=0;	
+				}
+				if(oldIndex != -1)
+				{
+					String qptmpstr = qplist.get(oldIndex);
+					for(int i=0;i<7;i++)
+					{
+						tmpinfo_num[i] = (char)qptmpstr.charAt(10+i);	
+					}
+					tmpstr = "";
+					tmpstr = qptmpstr;
+				}
+				System.out.println(qplist.size() + " " + oldIndex);
+				tmpi = oldIndex;
+				JFrame iframe = new JFrame("정보세팅");
+				iframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				iframe.getContentPane().setLayout(new BoxLayout(iframe.getContentPane(),BoxLayout.Y_AXIS));
+				iframe.setSize(400,600);
+				iframe.setLocation(200,300);
+				JPanel infopanel1 = new JPanel();
+				infopanel1.setLayout(new FlowLayout());
+				JLabel infolabel1 = new JLabel("정보1");
+				infolabel1.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField infotxt1 = new JTextField(10);
+				infotxt1.setFont(new Font("Serif",Font.PLAIN,14));
+				infotxt1.setText(String.valueOf(tmpinfo_num[0]));
+				infopanel1.add(infolabel1);
+				infopanel1.add(infotxt1);
+				iframe.add(infopanel1);
+				
+				JPanel infopanel2 = new JPanel();
+				infopanel2.setLayout(new FlowLayout());
+				JLabel infolabel2 = new JLabel("정보2");
+				infolabel2.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField infotxt2 = new JTextField(10);
+				infotxt2.setFont(new Font("Serif",Font.PLAIN,14));
+				infotxt2.setText(String.valueOf(tmpinfo_num[1]));
+				infopanel2.add(infolabel2);
+				infopanel2.add(infotxt2);
+				iframe.add(infopanel2);
+				
+				JPanel infopanel3 = new JPanel();
+				infopanel3.setLayout(new FlowLayout());
+				JLabel infolabel3 = new JLabel("정보3");
+				infolabel3.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField infotxt3 = new JTextField(10);
+				infotxt3.setFont(new Font("Serif",Font.PLAIN,14));
+				infotxt3.setText(String.valueOf(tmpinfo_num[2]));
+				infopanel3.add(infolabel3);
+				infopanel3.add(infotxt3);
+				iframe.add(infopanel3);
+				
+				JPanel infopanel4 = new JPanel();
+				infopanel4.setLayout(new FlowLayout());
+				JLabel infolabel4 = new JLabel("정보4");
+				infolabel4.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField infotxt4 = new JTextField(10);
+				infotxt4.setFont(new Font("Serif",Font.PLAIN,14));
+				infotxt4.setText(String.valueOf(tmpinfo_num[3]));
+				infopanel4.add(infolabel4);
+				infopanel4.add(infotxt4);
+				iframe.add(infopanel4);
+				
+				JPanel infopanel5 = new JPanel();
+				infopanel5.setLayout(new FlowLayout());
+				JLabel infolabel5 = new JLabel("정보5");
+				infolabel5.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField infotxt5 = new JTextField(10);
+				infotxt5.setFont(new Font("Serif",Font.PLAIN,14));
+				infotxt5.setText(String.valueOf(tmpinfo_num[4]));
+				infopanel5.add(infolabel5);
+				infopanel5.add(infotxt5);
+				iframe.add(infopanel5);
+				
+				JPanel infopanel6 = new JPanel();
+				infopanel6.setLayout(new FlowLayout());
+				JLabel infolabel6 = new JLabel("정보6");
+				infolabel6.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField infotxt6 = new JTextField(10);
+				infotxt6.setFont(new Font("Serif",Font.PLAIN,14));
+				infotxt6.setText(String.valueOf(tmpinfo_num[5]));
+				infopanel6.add(infolabel6);
+				infopanel6.add(infotxt6);
+				iframe.add(infopanel6);
+				
+				JPanel infopanel7 = new JPanel();
+				infopanel7.setLayout(new FlowLayout());
+				JLabel infolabel7 = new JLabel("정보6");
+				infolabel7.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField infotxt7 = new JTextField(10);
+				infotxt7.setFont(new Font("Serif",Font.PLAIN,14));
+				infotxt7.setText(String.valueOf(tmpinfo_num[6]));
+				infopanel7.add(infolabel7);
+				infopanel7.add(infotxt7);
+				iframe.add(infopanel7);
+				
+				JPanel btnpanel = new JPanel();
+				btnpanel.setLayout(new FlowLayout());
+				JButton confirmbtn = new JButton("확인");
+				confirmbtn.setFont(new Font("Serif",Font.PLAIN,14));
+				confirmbtn.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent ae)
+					{
+						if(tmpi != -1)
+						{
+							tmpinfo_num[0] = Integer.parseInt(infotxt1.getText());
+							tmpinfo_num[1] = Integer.parseInt(infotxt2.getText());
+							tmpinfo_num[2] = Integer.parseInt(infotxt3.getText());
+							tmpinfo_num[3] = Integer.parseInt(infotxt4.getText());
+							tmpinfo_num[4] = Integer.parseInt(infotxt5.getText());
+							tmpinfo_num[5] = Integer.parseInt(infotxt6.getText());
+							tmpinfo_num[6] = Integer.parseInt(infotxt7.getText());
+							StringBuilder tmpstrb = new StringBuilder(tmpstr);
+							for(int i=0;i<7;i++)
+							{
+								
+								tmpstrb.setCharAt(10+i,(char)tmpinfo_num[i]);
+								//System.out.print((int)tmpstrb.toString().charAt(10+i) + ",");
+							}
+							System.out.println((int)tmpstrb.toString().charAt(11));
+							qplist.set(tmpi , tmpstrb.toString());
+						try{
+							System.out.println(settingqpfilelist.get(tmpi));
+							File fw = new File(settingqpfilelist.get(tmpi));
+						if(fw.exists()){
+							FileOutputStream fos = new FileOutputStream(fw);
+							fos.write(new byte[0]);
+							fos.close();
+							//System.out.println("파일이 열렸습니까? 예 ");
+						}
+			
+						RandomAccessFile raf = new RandomAccessFile(fw,"rw");
+						raf.setLength(0);
+						FileChannel channel = raf.getChannel();
+						byte[] data = tmpstrb.toString().getBytes("UTF-8");
+						raf.setLength(data.length);
+						MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_WRITE,0,data.length);
+						buffer.clear();
+						
+						if(buffer.remaining()>=data.length){
+							
+							buffer.put(data);
+						}else
+						{
+							System.out.println("버퍼에 충분한 공간이 없습니다.");
+						}
+						buffer.force();
+						channel.close();
+			
+						raf.close();
+						}catch(IOException ioe)
+							{
+							}
+							
+						}
+						iframe.dispose();
+					}
+				});
+				JButton cancelbtn = new JButton("취소");
+				cancelbtn.setFont(new Font("Serif",Font.PLAIN,14));
+				cancelbtn.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent ae)
+					{
+						iframe.dispose();
+					}
+				});
+				btnpanel.add(confirmbtn);
+				btnpanel.add(cancelbtn);
+				iframe.add(btnpanel);
+				
+				iframe.setVisible(true);
+			}
+		});
+		qpinfobtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				JFrame iframe = new JFrame("정보세팅");
+				iframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				iframe.getContentPane().setLayout(new BoxLayout(iframe.getContentPane(),BoxLayout.Y_AXIS));
+				
+				iframe.setSize(400,600);
+				iframe.setLocation(200,300);
+				if(oldIndex != -1)
+				{
+					String tmp = "파일경로 : " + settingqpfilelist.get(oldIndex);
+					JLabel filepathlabel = new JLabel(tmp);
+					filepathlabel.setHorizontalAlignment(SwingConstants.CENTER);
+					//filepathlabel.setVerticalAlignment(SwingConstants.CENTER);
+					filepathlabel.setFont(new Font("Serif",Font.PLAIN,15));
+					tmp = "파일너비 : " + String.valueOf((int)qplist.get(oldIndex).charAt(6));
+					JLabel filewidthlabel = new JLabel(tmp);
+					filewidthlabel.setHorizontalAlignment(SwingConstants.CENTER);
+					//filewidthlabel.setVerticalAlignment(SwingConstants.CENTER);
+					filewidthlabel.setFont(new Font("Serif",Font.PLAIN,15));
+					tmp = "파일높이 : " + String.valueOf((int)qplist.get(oldIndex).charAt(7));
+					JLabel fileheightlabel = new JLabel(tmp);
+					fileheightlabel.setHorizontalAlignment(SwingConstants.CENTER);
+					//fileheightlabel.setVerticalAlignment(SwingConstants.CENTER);
+					fileheightlabel.setFont(new Font("Serif",Font.PLAIN,15));
+					tmp = "정보1 : " + String.valueOf((int)qplist.get(oldIndex).charAt(10));
+					JLabel info1label = new JLabel(tmp);
+					info1label.setHorizontalAlignment(SwingConstants.CENTER);
+					//info1label.setVerticalAlignment(SwingConstants.CENTER);
+					info1label.setFont(new Font("Serif",Font.PLAIN,15));
+					tmp = "정보2 : " + String.valueOf((int)qplist.get(oldIndex).charAt(11));
+					JLabel info2label = new JLabel(tmp);
+					info2label.setHorizontalAlignment(SwingConstants.CENTER);
+					info2label.setVerticalAlignment(SwingConstants.CENTER);
+					info2label.setFont(new Font("Serif",Font.PLAIN,15));
+					tmp = "정보3 : " + String.valueOf((int)qplist.get(oldIndex).charAt(12));
+					JLabel info3label = new JLabel(tmp);
+					info3label.setHorizontalAlignment(SwingConstants.CENTER);
+					//info3label.setVerticalAlignment(SwingConstants.CENTER);
+					info3label.setFont(new Font("Serif",Font.PLAIN,15));
+					tmp = "정보4 : " + String.valueOf((int)qplist.get(oldIndex).charAt(13));
+					JLabel info4label = new JLabel(tmp);
+					info4label.setHorizontalAlignment(SwingConstants.CENTER);
+					//info4label.setVerticalAlignment(SwingConstants.CENTER);
+					info4label.setFont(new Font("Serif",Font.PLAIN,15));
+					tmp = "정보5 : " + String.valueOf((int)qplist.get(oldIndex).charAt(14));
+					JLabel info5label = new JLabel(tmp);
+					info5label.setHorizontalAlignment(SwingConstants.CENTER);
+					//info5label.setVerticalAlignment(SwingConstants.CENTER);
+					info5label.setFont(new Font("Serif",Font.PLAIN,15));
+					tmp = "정보6 : " + String.valueOf((int)qplist.get(oldIndex).charAt(15));
+					JLabel info6label = new JLabel(tmp);
+					info6label.setHorizontalAlignment(SwingConstants.CENTER);
+					//info6label.setVerticalAlignment(SwingConstants.CENTER);
+					info6label.setFont(new Font("Serif",Font.PLAIN,15));
+					tmp = "정보7 : " + String.valueOf((int)qplist.get(oldIndex).charAt(16));
+					JLabel info7label = new JLabel(tmp);
+					info7label.setHorizontalAlignment(SwingConstants.CENTER);
+					//info7label.setVerticalAlignment(SwingConstants.CENTER);
+					info7label.setFont(new Font("Serif",Font.PLAIN,15));
+					
+					
+					iframe.add(filepathlabel);
+					iframe.add(filewidthlabel);
+					iframe.add(fileheightlabel);
+					iframe.add(info1label);
+					iframe.add(info2label);
+					iframe.add(info3label);
+					iframe.add(info4label);
+					iframe.add(info5label);
+					iframe.add(info6label);
+					iframe.add(info7label);
+					JButton okbtn = new JButton("확인");
+					okbtn.setHorizontalAlignment(SwingConstants.CENTER);
+					//okbtn.setVerticalAlignment(SwingConstants.CENTER);
+					okbtn.setFont(new Font("Serif",Font.PLAIN,15));
+					okbtn.addActionListener(new ActionListener(){
+						@Override
+						public void actionPerformed(ActionEvent ae)
+						{
+							iframe.dispose();
+						}
+					});
+					iframe.add(okbtn);
+				}else
+				{
+					JLabel info8label = new JLabel("파일이 선택되지 않았습니다.");
+					info8label.setFont(new Font("Serif",Font.PLAIN,15));
+					JButton okbtn = new JButton("확인");
+					okbtn.setHorizontalAlignment(SwingConstants.CENTER);
+					//okbtn.setVerticalAlignment(SwingConstants.CENTER);
+					okbtn.setFont(new Font("Serif",Font.PLAIN,15));
+					okbtn.addActionListener(new ActionListener(){
+						@Override
+						public void actionPerformed(ActionEvent ae)
+						{
+							iframe.dispose();
+						}
+					});
+					iframe.add(info8label);
+					iframe.add(okbtn);
+				}
+				iframe.setVisible(true);
+			}
+		});
+		//맵버튼
+		mapsetbtn = new JButton("맵세팅");
+		inputbtn = new JButton("넣기");
+		outputbtn = new JButton("빼기");
+		mapsetbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				
+				JFrame mframe = new JFrame("맵세팅");
+				mframe.setSize(500,400);
+				mframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				mframe.setLocation(300,300);
+				mframe.getContentPane().setLayout(new BoxLayout(mframe.getContentPane(),BoxLayout.Y_AXIS));
+				JLabel mmapxlabel = new JLabel("mapX크기 : ");
+				mmapxlabel.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField mmapxtxt = new JTextField(6);
+				mmapxtxt.setFont(new Font("Serif",Font.PLAIN,14));
+				mmapxtxt.setText(Integer.toString(qpgx_num));
+				JLabel mmapylabel = new JLabel("mapY크기 : ");
+				mmapylabel.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField mmapytxt = new JTextField(6);
+				mmapytxt.setFont(new Font("Serif",Font.PLAIN,14));
+				mmapytxt.setText(Integer.toString(qpgy_num));
+				JPanel mmappanel = new JPanel();
+				mmappanel.setLayout(new FlowLayout());
+				mmappanel.add(mmapxlabel);
+				mmappanel.add(mmapxtxt);
+				mmappanel.add(mmapylabel);
+				mmappanel.add(mmapytxt);
+				mframe.add(mmappanel);
+				JLabel mmapwidthlabel = new JLabel("map너비view : ");
+				mmapwidthlabel.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField mmapwidthtxt = new JTextField(6);
+				mmapwidthtxt.setText(Integer.toString(qpgwidth_num));
+				mmapwidthtxt.setFont(new Font("Serif",Font.PLAIN,14));
+				JLabel mmapheightlabel = new JLabel("map높이view : ");
+				mmapheightlabel.setFont(new Font("Serif",Font.PLAIN,14));
+				JTextField mmapheighttxt = new JTextField(6);
+				mmapheighttxt.setFont(new Font("Serif",Font.PLAIN,14));
+				mmapheighttxt.setText(Integer.toString(qpgheight_num));
+				
+				JPanel mmappanel2 = new JPanel();
+				mmappanel2.setLayout(new FlowLayout());
+				mmappanel2.add(mmapwidthlabel);
+				mmappanel2.add(mmapwidthtxt);
+				mmappanel2.add(mmapheightlabel);
+				mmappanel2.add(mmapheighttxt);
+				mframe.add(mmappanel2);
+				
+				JButton confirmbtn = new JButton("확인");
+				confirmbtn.setFont(new Font("Serif",Font.PLAIN,14));
+				confirmbtn.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent cone)
+					{
+						tmpx = qpgx_num;
+						tmpy = qpgy_num;
+						qpgx_num = Integer.parseInt(mmapxtxt.getText());
+						qpgy_num = Integer.parseInt(mmapytxt.getText());
+						qpgwidth_num = Integer.parseInt(mmapwidthtxt.getText());
+						qpgheight_num = Integer.parseInt(mmapheighttxt.getText());
+						
+						BufferedImage tmpimage = new BufferedImage(3,3,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = tmpimage.createGraphics();
+						g2d.setColor(Color.BLACK);
+						g2d.fillRect(0,0,3,3);
+						g2d.dispose();
+						String tmpqpgstr = qpSaveMethod(tmpimage);
+						System.out.println("qpgx_num : " + qpgx_num + " qpgy_num : " + qpgy_num );
+						System.out.println("qpglist size0 : " + qpglist.size() + " qpgimagelist size : " + qpgimagelist.size() + " tmpx : " + tmpx + " tmpy : " + tmpy);
+						if(tmpx <qpgx_num && tmpy < qpgy_num)
+						{
+							int listsel = 0;
+							for(int i = 0 ; i < qpgy_num ; i++)
+							{
+								for (int j =0 ;j<qpgx_num ; j++ )
+								{
+									if(tmpx < j+1 || tmpy < i+1)
+									{
+										qpglist.add(listsel,tmpqpgstr);
+										qpgimagelist.add(listsel,tmpimage);
+									}
+									if(listsel <qpgy_num*qpgx_num)
+									{
+										listsel++;
+									}
+								}
+								
+							}
+							System.out.println("qpglist size1 : " + qpglist.size() + " qpgimagelist size : " + qpgimagelist.size() + " tmpx : " + tmpx + " tmpy : " + tmpy);
+						}else if(tmpx <qpgx_num && tmpy >qpgy_num)
+						{
+							
+						}else if(tmpx> qpgx_num && tmpy < qpgy_num || tmpx <qpgx_num && tmpy >qpgy_num)
+						{	
+							int tmpsize = qpglist.size();
+							int[] listindex = setNumberListIndex(tmpsize,tmpx,tmpy,qpgx_num,qpgy_num);
+							boolean isindex = false;
+							for(int i=tmpsize-1; i>=0; i--)
+							{
+								isindex = false;
+								for (int j =0 ;j<listindex.length ; j++ )
+								{
+									if( i == listindex[j])
+									{
+										isindex = true;
+										break;
+									}
+								}
+								if(!isindex)
+								{
+									qpglist.remove(i);
+									qpgimagelist.remove(i);
+									
+								}
+							}
+							for(int i =0; i< listindex.length;i++)
+							{
+								if(listindex[i] == -1)
+								{
+									if(tmpsize <i)
+									{
+									qpglist.add(i,tmpqpgstr);
+									qpgimagelist.add(i,tmpimage);
+									}else
+									{
+									qpglist.add(tmpqpgstr);
+									qpgimagelist.add(tmpimage);
+									}
+								}
+							}
+							
+							System.out.println("qpgx_num : " + qpgx_num + " qpgy_num : " + qpgy_num );
+							System.out.println("qpglist size2 : " + qpglist.size() + " qpgimagelist size : " + qpgimagelist.size() + " tmpx : " + tmpx + " tmpy : " + tmpy);
+						}else if(tmpx > qpgx_num && tmpy > qpgy_num)
+						{
+							int tmpsize = qpglist.size();
+							
+							System.out.println("tmpsize : " + tmpsize);
+							int[] listindex = setNumberListIndex(tmpsize,tmpx,tmpy,qpgx_num,qpgy_num);
+							boolean isindex = false;
+							for(int i=tmpsize-1; i>=0; i--)
+							{
+								isindex = false;
+								for (int j =0 ;j<listindex.length ; j++ )
+								{
+									if( i == listindex[j])
+									{
+										isindex = true;
+										break;
+									}
+								}
+								if(!isindex)
+								{
+									qpglist.remove(i);
+									qpgimagelist.remove(i);
+									
+								}
+							}
+							
+							System.out.println("qpgx_num : " + qpgx_num + " qpgy_num : " + qpgy_num );
+							System.out.println("qpglist size3 : " + qpglist.size() + " qpgimagelist size : " + qpgimagelist.size() + " tmpx : " + tmpx + " tmpy : " + tmpy);
+						}
+							
+						qpgpanel.removeAll();
+					qpglabels.clear();
+					qpgpanel.setLayout(new GridLayout(qpgy_num,qpgx_num));
+					for(int i =0; i< qpglist.size();i++)
+		{
+			
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpgimagelist.get(i).getScaledInstance((int)qpgwidth_num, (int)qpgheight_num, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//JLabel label = qpglabels.get(i);
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qpglabels.add(label);
+			qpglabels.get(i).setPreferredSize(new Dimension(qpgwidth_num+5, qpgheight_num+5)); // 너비 200, 높이 100
+			qpglabels.get(i).setSize(qpgwidth_num+5, qpgheight_num+5); // 너비 200, 높이 100
+			qpglabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qpglabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qpglabels.get(i).setOpaque(true);
+			qpglabels.get(i).setBackground(Color.WHITE);
+			qpglabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndexg != -1 && qpgx_num*qpgy_num > oldIndex)
+						{
+							qpglabels.get(oldIndexg).setBackground(Color.WHITE);
+						}
+						
+						oldIndexg = imageIndex;
+						qpgselIndex = imageIndex;
+						qpglabels.get(imageIndex).setBackground(Color.GRAY);
+						
+						qpgpanel.repaint();
+						
+						qpgselx_num = (oldIndexg%qpgx_num)+1;
+						qpgsely_num = (oldIndexg/qpgx_num)+1;
+						String statusText = String.format("상태표시줄입니다. mapwidth : %d mapheight : %d mapX : %d mapY : %d",qpgx_num,qpgy_num,qpgselx_num,qpgsely_num);
+						statusLabel.setText(statusText);
+						frame.revalidate();
+						frame.repaint();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				
+				//labels.add(label);
+				qpgpanel.add(label);
+		}
+				qppanel.removeAll();
+				qplabels.clear();
+						qpy_num = (qpimagelist.size()/qpx_num)+1;
+						
+		qppanel.setLayout(new GridLayout(qpy_num,qpx_num));
+		for(int i =0; i< qpimagelist.size();i++)
+		{
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpimagelist.get(i).getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qplabels.add(i,label);
+			qplabels.get(i).setPreferredSize(new Dimension(158, 158)); // 너비 200, 높이 100
+			qplabels.get(i).setSize(158,158); // 너비 200, 높이 100
+			qplabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setOpaque(true);
+			qplabels.get(i).setBackground(Color.WHITE);
+			qplabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndex != -1)
+						{
+							qplabels.get(oldIndex).setBackground(Color.WHITE);
+						}
+						if(oldIndex == imageIndex)
+						{
+							qplabels.get(imageIndex).setBackground(Color.GRAY);
+						}
+						oldIndex = imageIndex;
+						qpselIndex = imageIndex;
+						qplabels.get(imageIndex).setBackground(Color.GRAY);
+						qppanel.repaint();
+						
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				//labels.add(label);
+				
+						
+				qppanel.add(label);
+		}
+					if(qpselIndex == oldIndex && qpselIndex != -1)
+						{
+							qplabels.get(oldIndex).setBackground(Color.GRAY);
+		
+						}
+					qppanel.repaint();
+					qpgpanel.repaint();
+					frame.revalidate();
+					frame.repaint();	
+						
+					mframe.dispose();
+					
+					}
+				});
+				JButton cancelbtn = new JButton("취소");
+				cancelbtn.setFont(new Font("Serif",Font.PLAIN,14));
+				cancelbtn.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent cane)
+					{
+						mframe.dispose();
+					}
+				});
+				
+				JPanel mbtnpanel = new JPanel();
+				mbtnpanel.setLayout(new FlowLayout());
+				mbtnpanel.add(confirmbtn);
+				mbtnpanel.add(cancelbtn);
+				mframe.add(mbtnpanel);
+				
+					mframe.setVisible(true);
+			}
+		});
+		inputbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				
+				if(oldIndex != -1 && oldIndexg != -1)
+				{
+					
+					qpgimagelist.set(oldIndexg,qpimagelist.get(oldIndex));
+					qpglist.set(oldIndexg,qplist.get(oldIndex));
+					qpglabels.set(oldIndexg,qplabels.get(oldIndex));
+					qpgpanel.removeAll();
+					qpglabels.clear();
+					qpgpanel.setLayout(new GridLayout(qpgy_num,qpgx_num));
+					for(int i =0; i< qpgy_num*qpgx_num;i++)
+		{
+			
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpgimagelist.get(i).getScaledInstance((int)qpgwidth_num, (int)qpgheight_num, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//JLabel label = qpglabels.get(i);
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qpglabels.add(label);
+			qpglabels.get(i).setPreferredSize(new Dimension(qpgwidth_num+5, qpgheight_num+5)); // 너비 200, 높이 100
+			qpglabels.get(i).setSize(qpgwidth_num+5, qpgheight_num+5); // 너비 200, 높이 100
+			qpglabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qpglabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qpglabels.get(i).setOpaque(true);
+			qpglabels.get(i).setBackground(Color.WHITE);
+			qpglabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndexg != -1)
+						{
+							qpglabels.get(oldIndexg).setBackground(Color.WHITE);
+						}
+						oldIndexg = imageIndex;
+						qpgselIndex = imageIndex;
+						qpglabels.get(imageIndex).setBackground(Color.GRAY);
+						qpgpanel.repaint();
+						
+						qpgselx_num = (oldIndexg%qpgx_num)+1;
+						qpgsely_num = (oldIndexg/qpgx_num)+1;
+						String statusText = String.format("상태표시줄입니다. mapwidth : %d mapheight : %d mapX : %d mapY : %d",qpgx_num,qpgy_num,qpgselx_num,qpgsely_num);
+						statusLabel.setText(statusText);
+						frame.revalidate();
+						frame.repaint();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				
+				//labels.add(label);
+				qpgpanel.add(label);
+		}
+				qppanel.removeAll();
+				qplabels.clear();
+						qpy_num = (qpimagelist.size()/qpx_num)+1;
+						
+		qppanel.setLayout(new GridLayout(qpy_num,qpx_num));
+		for(int i =0; i< qpimagelist.size();i++)
+		{
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpimagelist.get(i).getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qplabels.add(i,label);
+			qplabels.get(i).setPreferredSize(new Dimension(158, 158)); // 너비 200, 높이 100
+			qplabels.get(i).setSize(158,158); // 너비 200, 높이 100
+			qplabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setOpaque(true);
+			qplabels.get(i).setBackground(Color.WHITE);
+			qplabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndex != -1)
+						{
+							qplabels.get(oldIndex).setBackground(Color.WHITE);
+						}
+						if(oldIndex == imageIndex)
+						{
+							qplabels.get(imageIndex).setBackground(Color.GRAY);
+						}
+						oldIndex = imageIndex;
+						qpselIndex = imageIndex;
+						qplabels.get(imageIndex).setBackground(Color.GRAY);
+						qppanel.repaint();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				//labels.add(label);
+				
+						
+				qppanel.add(label);
+		}
+		if(qpselIndex == oldIndex)
+						{
+							qplabels.get(oldIndex).setBackground(Color.GRAY);
+		if(qpgselIndex == oldIndexg)
+						{
+							qpglabels.get(oldIndexg).setBackground(Color.GRAY);
+						}
+						}
+					qppanel.repaint();
+					qpgpanel.repaint();
+					frame.revalidate();
+					frame.repaint();
+				}
+			}
+		});
+		outputbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if(oldIndex != -1 && oldIndexg != -1)
+				{
+					BufferedImage tmpimage = new BufferedImage(3,3,BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g2d = tmpimage.createGraphics();
+			g2d.setColor(Color.BLACK);
+			g2d.fillRect(0,0,3,3);
+			g2d.dispose();
+				String tmpqpgstr = qpSaveMethod(tmpimage);
+				qpgimagelist.set(oldIndexg,tmpimage);
+				qpglist.set(oldIndexg,tmpqpgstr);
+					qpgpanel.removeAll();
+					qpglabels.clear();
+					qpgpanel.setLayout(new GridLayout(qpgy_num,qpgx_num));
+					for(int i =0; i< qpgy_num*qpgx_num;i++)
+		{
+			
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpgimagelist.get(i).getScaledInstance((int)qpgwidth_num, (int)qpgheight_num, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//JLabel label = qpglabels.get(i);
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qpglabels.add(label);
+			qpglabels.get(i).setPreferredSize(new Dimension(qpgwidth_num+5, qpgheight_num+5)); // 너비 200, 높이 100
+			qpglabels.get(i).setSize(qpgwidth_num+5, qpgheight_num+5); // 너비 200, 높이 100
+			qpglabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qpglabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qpglabels.get(i).setOpaque(true);
+			qpglabels.get(i).setBackground(Color.WHITE);
+			qpglabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndexg != -1)
+						{
+							qpglabels.get(oldIndexg).setBackground(Color.WHITE);
+						}
+						oldIndexg = imageIndex;
+						qpgselIndex = imageIndex;
+						qpglabels.get(imageIndex).setBackground(Color.GRAY);
+						qpgpanel.repaint();
+						qpgselx_num = (oldIndexg%qpgx_num)+1;
+						qpgsely_num = (oldIndexg/qpgx_num)+1;
+						String statusText = String.format("상태표시줄입니다. mapwidth : %d mapheight : %d mapX : %d mapY : %d",qpgx_num,qpgy_num,qpgselx_num,qpgsely_num);
+						statusLabel.setText(statusText);
+						frame.revalidate();
+						frame.repaint();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				
+				//labels.add(label);
+				qpgpanel.add(label);
+		}
+				qppanel.removeAll();
+				qplabels.clear();
+						qpy_num = (qpimagelist.size()/qpx_num)+1;
+						
+		qppanel.setLayout(new GridLayout(qpy_num,qpx_num));
+		for(int i =0; i< qpimagelist.size();i++)
+		{
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpimagelist.get(i).getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qplabels.add(i,label);
+			qplabels.get(i).setPreferredSize(new Dimension(158, 158)); // 너비 200, 높이 100
+			qplabels.get(i).setSize(158,158); // 너비 200, 높이 100
+			qplabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setOpaque(true);
+			qplabels.get(i).setBackground(Color.WHITE);
+			qplabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndex != -1)
+						{
+							qplabels.get(oldIndex).setBackground(Color.WHITE);
+						}
+						if(oldIndex == imageIndex)
+						{
+							qplabels.get(imageIndex).setBackground(Color.GRAY);
+						}
+						oldIndex = imageIndex;
+						qpselIndex = imageIndex;
+						qplabels.get(imageIndex).setBackground(Color.GRAY);
+						qppanel.repaint();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				//labels.add(label);
+				
+						
+				qppanel.add(label);
+		}
+		if(qpselIndex == oldIndex)
+						{
+							qplabels.get(oldIndex).setBackground(Color.GRAY);
+		if(qpgselIndex == oldIndexg)
+						{
+							qpglabels.get(oldIndexg).setBackground(Color.GRAY);
+						}
+						}
+					qppanel.repaint();
+					qpgpanel.repaint();
+					frame.revalidate();
+					frame.repaint();
+				}
+			}
+		});
+		//옵션버튼
+		optionsetbtn = new JButton("기본설정");
+		fileinfobtn = new JButton("파일정보");
+		optionsetbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				JFrame oframe = new JFrame("기본설정");
+				oframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				oframe.getContentPane().setLayout(new BoxLayout(oframe.getContentPane(),BoxLayout.Y_AXIS));
+				oframe.setSize(400,500);
+				oframe.setLocation(200,300);
+				
+				JPanel panel1 = new JPanel();
+				panel1.setLayout(new FlowLayout());
+				JLabel widthsetlabel = new JLabel("너비설정 : ");
+				widthsetlabel.setFont(new Font("Serif",Font.PLAIN,15));
+				JTextField widthsettxt = new JTextField(10);
+				widthsettxt.setFont(new Font("Serif",Font.PLAIN,15));
+				widthsettxt.setText(String.valueOf(qpgwidth_num));
+				panel1.add(widthsetlabel);
+				panel1.add(widthsettxt);
+				
+				JPanel panel2 = new JPanel();
+				panel2.setLayout(new FlowLayout());
+				JLabel heightsetlabel = new JLabel("높이설정 : ");
+				heightsetlabel.setFont(new Font("Serif",Font.PLAIN,15));
+				JTextField heightsettxt = new JTextField(10);
+				heightsettxt.setFont(new Font("Serif",Font.PLAIN,15));
+				heightsettxt.setText(String.valueOf(qpgheight_num));
+				panel2.add(heightsetlabel);
+				panel2.add(heightsettxt);
+				
+				JPanel panel3 = new JPanel();
+				panel3.setLayout(new FlowLayout());
+				JLabel qpxsetlabel = new JLabel("qpX설정 : ");
+				qpxsetlabel.setFont(new Font("Serif",Font.PLAIN,15));
+				JTextField qpxsettxt = new JTextField(10);
+				qpxsettxt.setFont(new Font("Serif",Font.PLAIN,15));
+				qpxsettxt.setText(String.valueOf(qpx_num));
+				panel3.add(qpxsetlabel);
+				panel3.add(qpxsettxt);
+				
+				oframe.add(panel1);
+				oframe.add(panel2);
+				oframe.add(panel3);
+				
+				JPanel btnpanel = new JPanel();
+				btnpanel.setLayout(new FlowLayout());
+				JButton confirmbtn = new JButton("확인");
+				confirmbtn.setFont(new Font("Serif",Font.PLAIN,15));
+				confirmbtn.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent e)
+					{
+						qpx_num = Integer.parseInt(qpxsettxt.getText());
+						qpgwidth_num = Integer.parseInt(widthsettxt.getText());
+						qpgheight_num = Integer.parseInt(heightsettxt.getText());
+						oframe.dispose();
+						labelViewSet();
+						
+					}
+				});
+				JButton cancelbtn = new JButton("취소");
+				cancelbtn.setFont(new Font("Serif",Font.PLAIN,15));
+				cancelbtn.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent e)
+					{
+						oframe.dispose();
+					}
+				});
+				btnpanel.add(confirmbtn);
+				btnpanel.add(cancelbtn);
+				oframe.add(btnpanel);
+				
+				oframe.setVisible(true);
+			}
+		});
+		fileinfobtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				JFrame fframe = new JFrame("파일정보");
+				fframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				fframe.getContentPane().setLayout(new BoxLayout(fframe.getContentPane(),BoxLayout.Y_AXIS));
+				fframe.setSize(400,500);
+				fframe.setLocation(200,300);
+				String str = String.format("filePath : %s",getfilepath);
+				JLabel pathinfolabel = new JLabel(str);
+				pathinfolabel.setFont(new Font("Serif",Font.PLAIN,15));
+				str = String.format("mapX : %d",qpgx_num);
+				JLabel mapxinfolabel = new JLabel(str);
+				mapxinfolabel.setFont(new Font("Serif",Font.PLAIN,15));
+				str = String.format("mapY: %d",qpgy_num);
+				JLabel mapyinfolabel = new JLabel(str);
+				mapyinfolabel.setFont(new Font("Serif",Font.PLAIN,15));
+				str = String.format("너비 : %d",qpgwidth_num);
+				JLabel widthinfolabel = new JLabel(str);
+				widthinfolabel.setFont(new Font("Serif",Font.PLAIN,15));
+				str = String.format("높이 : %d",qpgheight_num);
+				JLabel heightinfolabel = new JLabel(str);
+				heightinfolabel.setFont(new Font("Serif",Font.PLAIN,15));
+				fframe.add(pathinfolabel);
+				fframe.add(mapxinfolabel);
+				fframe.add(mapyinfolabel);
+				fframe.add(widthinfolabel);
+				fframe.add(heightinfolabel);
+				
+				JButton okbtn = new JButton("확인");
+				okbtn.setFont(new Font("Serif",Font.PLAIN,15));
+				okbtn.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent e)
+					{
+						fframe.dispose();
+					}
+				});
+				fframe.add(okbtn);
+				fframe.setVisible(true);
+			}
+		});
+		//보기버튼
+		statebarbtn = new JButton("상태표시줄");
+		statebarbtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if(statusbarPanel != null)
+				{
+					statusbar = statusbarPanel.isVisible();
+					statusbarPanel.setVisible(!statusbar);
+					frame.revalidate();
+					frame.repaint();
+					System.out.println("btnstatusbar : " + statusbar);
+				}else{
+					System.out.println("statusbarPanel이 null입니다.");	
+				}
+			}
+		});
+		//도움말버튼
+		licensebtn = new JButton("약관");
+		qpginfobtn = new JButton("qpg정보");
+		useinfobtn = new JButton("사용정보");
+		appinfobtn = new JButton("제품정보");
+		licensebtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				 // 새로운 JFrame 생성
+                JFrame licenseFrame = new JFrame("라이센스");
+                licenseFrame.setSize(500, 400);
+                licenseFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                licenseFrame.setLayout(new BorderLayout());
+
+                // TextArea와 스크롤바 추가
+                JTextArea licenseTextArea = new JTextArea();
+                licenseTextArea.setText("이 앱은 자유앱입니다. 자유앱이며 사용하는것은 자유입니다.\n 만약 이 앱으로 인한 금전적인 손해나 어떤 손해도 책임을 지지 않습니다.\n이 앱에 대한 사용료나 법적인 문제는 이 앱과 전혀 관계가 없습니다.\n감사합니다.");
+                licenseTextArea.setLineWrap(true); // 텍스트 줄 바꿈
+                licenseTextArea.setWrapStyleWord(true); // 단어 단위로 줄 바꿈
+                licenseTextArea.setEditable(false); // 텍스트 수정 불가
+				
+				// 폰트 변경
+				licenseTextArea.setFont(new Font("Serif", Font.PLAIN, 20)); // Serif 폰트, 크기 20
+                JScrollPane scrollPane = new JScrollPane(licenseTextArea);
+                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // 항상 스크롤바 보이기
+
+                // 확인 버튼 추가
+                JButton confirmButton = new JButton("확인");
+                confirmButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        licenseFrame.dispose(); // 창 닫기
+                    }
+                });
+
+                // 컴포넌트 배치
+                licenseFrame.add(scrollPane, BorderLayout.CENTER); // TextArea (스크롤 포함) 중앙
+                licenseFrame.add(confirmButton, BorderLayout.SOUTH); // 확인 버튼 아래
+
+                // 창 표시
+                licenseFrame.setVisible(true);
+			}
+		});
+		qpginfobtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				// 새로운 JFrame 생성
+                JFrame useFrame = new JFrame("qpd파일정보");
+                useFrame.setSize(500, 400);
+                useFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                useFrame.setLayout(new BorderLayout());
+
+                // TextArea와 스크롤바 추가
+                JTextArea useTextArea = new JTextArea();
+                useTextArea.setText("");
+				useTextArea.append("qpd파일정보입니다.\n");
+				useTextArea.append("qp\n");
+				useTextArea.append("4425(1)4989(2)6989(3)4548(4)17시작지점정보(5)0시작지점정보2(6)가로크기(7)세로크기(8)imgx(9)imgy(10)정보1(11)정보2(12)정보3(13)정보4(14)정보5(15)정보6(16)정보7(17)투명도,레드(18)그린,블루(19)투명도,레드(20)그린,블루(21)........\n");
+				useTextArea.append("qpd\n");
+				useTextArea.append("21242(1)25442(2)26785(3)27888(4)mapx크기(5)mapy크기(6)mapx1너비(7)mapy1높이(8)mapx2너비(9)mapy2높이...qp1(x)qp2(x2)qp3(x3).........\n");
+				useTextArea.append("");
+				useTextArea.append("");
+                useTextArea.setLineWrap(true); // 텍스트 줄 바꿈
+                useTextArea.setWrapStyleWord(true); // 단어 단위로 줄 바꿈
+                useTextArea.setEditable(false); // 텍스트 수정 불가
+				
+				// 폰트 변경
+				useTextArea.setFont(new Font("Serif", Font.PLAIN, 20)); // Serif 폰트, 크기 20
+                JScrollPane scrollPane = new JScrollPane(useTextArea);
+                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // 항상 스크롤바 보이기
+
+                // 확인 버튼 추가
+                JButton confirmButton = new JButton("확인");
+                confirmButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        useFrame.dispose(); // 창 닫기
+                    }
+                });
+
+                // 컴포넌트 배치
+                useFrame.add(scrollPane, BorderLayout.CENTER); // TextArea (스크롤 포함) 중앙
+                useFrame.add(confirmButton, BorderLayout.SOUTH); // 확인 버튼 아래
+
+                // 창 표시
+                useFrame.setVisible(true);
+			}
+		});
+		useinfobtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				// 새로운 JFrame 생성
+                JFrame useFrame = new JFrame("사용법");
+                useFrame.setSize(500, 400);
+                useFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                useFrame.setLayout(new BorderLayout());
+
+                // TextArea와 스크롤바 추가
+                JTextArea useTextArea = new JTextArea();
+                useTextArea.setText("");
+				useTextArea.append("qp파일열기,지우기,qpg파일저장,qpg파일열기,qp파일회전,정보세팅,맵넣기,맵빼기,상태표시줄,기본설정을 만들었습니다.\n");
+				useTextArea.append("v0.001버전이 초기버전입니다.");
+                useTextArea.setLineWrap(true); // 텍스트 줄 바꿈
+                useTextArea.setWrapStyleWord(true); // 단어 단위로 줄 바꿈
+                useTextArea.setEditable(false); // 텍스트 수정 불가
+				
+				// 폰트 변경
+				useTextArea.setFont(new Font("Serif", Font.PLAIN, 20)); // Serif 폰트, 크기 20
+                JScrollPane scrollPane = new JScrollPane(useTextArea);
+                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // 항상 스크롤바 보이기
+
+                // 확인 버튼 추가
+                JButton confirmButton = new JButton("확인");
+                confirmButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        useFrame.dispose(); // 창 닫기
+                    }
+                });
+
+                // 컴포넌트 배치
+                useFrame.add(scrollPane, BorderLayout.CENTER); // TextArea (스크롤 포함) 중앙
+                useFrame.add(confirmButton, BorderLayout.SOUTH); // 확인 버튼 아래
+
+                // 창 표시
+                useFrame.setVisible(true);
+			}
+		});
+		appinfobtn.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				JFrame cframe = new JFrame("APP 정보");
+				cframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				cframe.setSize(500, 500);
+				cframe.setLayout(new BoxLayout(cframe.getContentPane(), BoxLayout.Y_AXIS));
+				JLabel label1 = new JLabel("제품명 : 콰라포도디자인v0.001");
+				label1.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+				cframe.add(label1);
+				JLabel label2 = new JLabel("버전 : 미완성버전 v0.001");
+				label2.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+				cframe.add(label2);
+				JLabel label3 = new JLabel("만든이 : 컴퓨터판타지연구소");
+				label3.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+				cframe.add(label3);
+				JLabel label4 = new JLabel("저작권은 컴퓨터판타지연구소에 있습니다.");
+				label4.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+				cframe.add(label4);
+				// 확인 버튼 생성
+				JButton confirmButton = new JButton("확인");
+				confirmButton.setAlignmentX(JButton.CENTER_ALIGNMENT);
+				cframe.add(confirmButton);
+
+				// 확인 버튼 동작: 창 종료
+				confirmButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						cframe.dispose();
+					}
+				});
+				cframe.setVisible(true);
+			}
+		});
+		rightpanel = new JPanel();
+		rightpanel.setLayout(new BoxLayout(rightpanel,BoxLayout.Y_AXIS));
+		rightpanel.setPreferredSize(new Dimension(180,800));
+		rightpanel.setBackground(Color.GREEN);
+		switch(right_num)
+		{
+			case 0:
+				rightpanel.removeAll();
+				rightpanel.add(newfilebtn);
+				rightpanel.add(qpfileopenbtn);
+				rightpanel.add(qpfiledelbtn);
+				rightpanel.add(qpgfileopenbtn);
+				rightpanel.add(qpgfilesavebtn);
+				rightpanel.add(exitbtn);
+				
+			break;
+			
+			case 1:
+				rightpanel.removeAll();
+				rightpanel.add(rotatebtn);
+				rightpanel.add(inforsetbtn);
+				rightpanel.add(qpinfobtn);
+			break;
+			
+			case 2:
+				rightpanel.removeAll();
+				rightpanel.add(mapsetbtn);
+				rightpanel.add(inputbtn);
+				rightpanel.add(outputbtn);
+			break;
+			
+			case 3:
+				rightpanel.removeAll();
+				rightpanel.add(optionsetbtn);
+				rightpanel.add(fileinfobtn);
+			break;
+			
+			case 4:
+				rightpanel.removeAll();
+				rightpanel.add(statebarbtn);
+			break;
+			
+			case 5:
+				rightpanel.removeAll();
+				rightpanel.add(licensebtn);
+				rightpanel.add(qpginfobtn);
+				rightpanel.add(useinfobtn);
+				rightpanel.add(appinfobtn);
+			break;
+			
+			default:
+				
+			break;
+		}
+		frame.add(rightpanel,BorderLayout.EAST);
+		
+		midpanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		midpanel.setPreferredSize(new Dimension(1700,1100));
+		midpanel.setBackground(Color.GRAY);
+		
+		qpgpanel = new JPanel(new GridLayout(qpgx_num,qpgy_num)){
+			@Override
+			protected void paintComponent(Graphics g)
+			{
+				super.paintComponent(g);
+				g.setColor(Color.WHITE); // 배경 색상 설정
+				g.fillRect(0, 0, 500, 1024); // 전체 영역을 덮음
+				
+			}
+		};
+		//qpgpanel.setPreferredSize(new Dimension(1000,800));
+		//qpgpanel.setSize(1000,800);
+		qpgpanel.setBackground(Color.WHITE);
+		qppanel = new JPanel(new GridLayout(qpx_num,qpy_num)){
+			@Override
+			protected void paintComponent(Graphics g)
+			{
+				super.paintComponent(g);
+				g.setColor(Color.WHITE); // 배경 색상 설정
+				g.fillRect(0, 0, 400, 1024); // 전체 영역을 덮음
+			}
+		};
+		//qppanel.setPreferredSize(new Dimension(400,700));
+		//qppanel.setSize(400,700);
+		qppanel.setBackground(Color.WHITE);
+		
+		
+		
+		File folder = new File(qpfoldername);
+		if (!folder.exists()) { // 폴더가 존재하지 않으면
+            if (folder.mkdir()) { // 폴더 생성
+                System.out.println("폴더 생성됨: " + qpfoldername);
+            } else {
+                System.out.println("폴더 생성 실패!");
+            }
+        } else {
+            System.out.println("폴더가 이미 존재합니다: " + qpfoldername);
+        }
+		
+		// 파일 객체 생성
+        File file = new File(qpfilesettingpath);
+        if (!file.exists()) { // 파일이 존재하지 않으면
+            try {
+                if (file.createNewFile()) { // 파일 생성
+                    System.out.println("파일 생성됨: " + qpfilesettingpath);
+					String tmpstr = "";
+					int tmp;
+					tmp = 4268;//초기번호
+					tmpstr+= String.valueOf((char)tmp);	
+					tmp = 0;//qplist수
+					tmpstr+= String.valueOf((char)tmp);	
+					tmp = 3;//qpx수
+					tmpstr+= String.valueOf((char)tmp);		
+					tmp = 100;//너비
+					tmpstr+= String.valueOf((char)tmp);		
+					tmp = 100;//높이
+					tmpstr+= String.valueOf((char)tmp);	
+					tmp = 10;//qpgx
+					tmpstr+= String.valueOf((char)tmp);	
+					tmp = 10;//qpgy
+					tmpstr+= String.valueOf((char)tmp);	
+					
+					
+					try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(qpfilesettingpath), "UTF-8"))) {
+						
+						
+						writer.write(tmpstr); // 숫자를 문자열로 저장
+						System.out.println("파일에 문자열이 성공적으로 기록되었습니다: " + qpfilesettingpath);
+					} catch (IOException e2) {
+						e2.printStackTrace(); // 예외 처리
+					}
+
+                } else {
+                    System.out.println("파일 생성 실패!");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+		} else {
+            System.out.println("파일이 이미 존재합니다: " + qpfilesettingpath);
+        }
+		char[] setchar;
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(qpfilesettingpath), "UTF-8"))) {
+            // 파일의 내용을 StringBuilder로 읽어오기
+            StringBuilder content = new StringBuilder();
+            int ch;
+            while ((ch = reader.read()) != -1) { // 한 글자씩 읽음
+                content.append((char) ch);
+            }
+
+            // StringBuilder 내용을 char 배열로 변환
+			
+            setchar = content.toString().toCharArray();
+			System.out.println("여기에 들어왔어?" + (int)setchar[1]);
+			if(setchar[0]==4268)
+			{
+				
+				qplist_num = setchar[1];
+				qpx_num = setchar[2];
+				qpgwidth_num = setchar[3];
+				qpgheight_num = setchar[4];
+				qpgx_num = setchar[5];
+				qpgy_num = setchar[6];
+				
+				System.out.println("qpwidth : " + qpgwidth_num + " qpheight : " + qpgheight_num);
+				String tmpstr = "";
+				tmpstr = new String(setchar);
+				// '\n'을 기준으로 문자열을 나눔
+				String[] splitArray = tmpstr.split("\n"+String.valueOf((char)33232));
+
+				// 배열을 List로 변환
+				qplist = new ArrayList<>();
+				for(int i=1;i<splitArray.length;i++)
+				{
+					settingqpfilelist.add(splitArray[i]);
+					//System.out.println("settingqpfilelist : " + splitArray[i]);
+					
+				}
+				// 결과 출력
+				System.out.println("문자열을 나눈 후 List:");
+				for (String line : qplist) {
+					System.out.println(line);
+				}
+
+			}
+            // 결과 출력
+            //System.out.println("파일에서 읽어들인 내용:");
+            //System.out.println(setchar);
+        } catch (IOException e) {
+            e.printStackTrace(); // 예외 처리
+        }
+
+
+		try{
+            // Example BufferedImage 생성
+            //ArrayList<BufferedImage> images = new ArrayList<>();
+			char[] tc;
+			int[] color;
+			int dpwidth,dpheight;
+			StringBuilder readTemp;
+			BufferedReader br = null;
+			int readC = 0;
+			long qpfs = 0;
+			File[] qpFiles = new File[settingqpfilelist.size()];
+            for (int i = 0; i < settingqpfilelist.size(); i++) {
+				//System.out.println("settingqpfilelist get : " + i + " : " + settingqpfilelist.get(i));
+				qpFiles[i] = new File(settingqpfilelist.get(i));
+			}
+
+				if (qpFiles != null && qpFiles.length > 0) {
+							//System.out.println(".qp 파일 목록:");
+							int filesys = 0;
+							for (File file2 : qpFiles) {
+								//System.out.println(filesys + " : " + file2.getAbsolutePath());
+								if(file2 != null)
+								{
+									String filePath = file2.getAbsolutePath();
+									System.out.println(filePath);
+									//filename = filePath;
+									if(!filePath.endsWith(".qp"))
+									{
+										filePath += ".qp";	
+									}
+									br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),"utf-8"));
+									//File file = new File(filePath);
+									if(file2.exists() && file2.isFile())
+									{
+										qpfs = file.length();	
+							
+										//System.out.println("size : " + qpfs);
+									}
+									readTemp = new StringBuilder();
+									while((readC = br.read())!=-1)
+									{
+										readTemp.append((char)readC);
+					
+									}
+									br.close();
+									
+									qplist.add(readTemp.toString());
+									tc = new char[readTemp.length()];
+									tc = readTemp.toString().toCharArray();
+									
+									//qplist.add(filesys,filelist);//List qplist에 filelist List 넣음
+									if(tc[0]==(char)4425 && tc[1] == (char)4989 && tc[2] == (char)6989 && tc[3] == (char)4548)
+									{
+							
+							
+										int start = (tc[5]<<8)+tc[4];
+										color = new int[(tc.length-start)/2];
+										int colorarray=0;
+										String hexString;
+										for(int q=0;q< tc.length-start;q+=2)
+										{
+											//hexString = Integer.toUnsignedString((int)((tc[start+i]<<8)+tc[start+i+1]), 16);
+											//color[colorarray] = Integer.parseInt(hexString,16);
+								
+											color[colorarray] = (int)((-0x00000000)^((tc[start+q]<<8)+tc[start+q+1]));
+											colorarray++;
+										}
+										//System.out.println("color:"+color[110]);
+										dpwidth = tc[6];
+										dpheight = tc[7];
+										//drawPanel.setPreferredSize(new Dimension(dpwidth,dpheight));
+										//drawPanel.setSize(dpwidth,dpheight);
+										//drawPanel.setBackground(Color.WHITE);
+										//drawPanel.setOpaque(true); // 불투명 설정
+										//frame.revalidate();
+										//frame.repaint();
+										//drawPanel.setBackground(Color.WHITE);
+										BufferedImage image;
+										image = new BufferedImage(dpwidth, dpheight, BufferedImage.TYPE_INT_ARGB);
+										Graphics g = image.getGraphics();
+										g.setColor(Color.WHITE);
+										g.fillRect(0,0,dpwidth, dpheight);
+							
+							
+										/*try{
+											Thread.sleep(100);
+										}catch(InterruptedException ie)
+										{
+								
+										}*/
+										colorarray=0;
+										for(int q=0;q<tc[7];q++)
+										{
+											for (int p=0;p<tc[6] ;p++ )
+											{
+									
+												//image.setRGB(j,i,color[colorarray]);
+									
+												g.setColor(new Color(color[colorarray]));
+												g.drawLine(p,q,p,q);
+												colorarray++;
+											}	
+										}
+										g.dispose();
+										
+										qpimagelist.add(image);
+										//if(imagelist!=null) System.out.println("imagelist가 null X");
+										//imagelist.add(filesys,image);//imagelist에 image를 넣음filesys번째에...
+										//filesys++;
+									}
+								}
+							}
+                }
+                
+				
+				
+			
+		}catch(IndexOutOfBoundsException|IOException fjse)
+		{
+			
+		}
+		/*for (int i = 0; i < 30; i++) {
+                BufferedImage image = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2d = image.createGraphics();
+                g2d.setColor(Color.RED);
+                g2d.fillRect(0, 0, 3, 3);
+                g2d.setColor(Color.WHITE);
+                //g2d.drawString("Image " + i, 25, 50);
+                g2d.dispose();
+				
+                qpimagelist.add(image);
+				
+				
+            }*/
+		qpy_num = (qpimagelist.size()/qpx_num)+1;
+		qppanel.setLayout(new GridLayout(qpy_num,qpx_num));
+		for(int i =0; i< qpimagelist.size();i++)
+		{
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpimagelist.get(i).getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qplabels.add(label);
+			qplabels.get(i).setPreferredSize(new Dimension(158, 158)); // 너비 200, 높이 100
+			qplabels.get(i).setSize(158,158); // 너비 200, 높이 100
+			qplabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setOpaque(true);
+			qplabels.get(i).setBackground(Color.WHITE);
+			qplabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndex != -1)
+						{
+							qplabels.get(oldIndex).setBackground(Color.WHITE);
+						}
+						oldIndex = imageIndex;
+						
+						qplabels.get(imageIndex).setBackground(Color.GRAY);
+						qppanel.repaint();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				//labels.add(label);
+				qppanel.add(label);
+		}
+		
+		//여기서부터 새로움.
+		qpgpanel.setLayout(new GridLayout(qpgy_num,qpgx_num));
+		for(int i=0; i<qpgy_num*qpgx_num;i++)
+		{
+			BufferedImage tmpimage = new BufferedImage(3,3,BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g2d = tmpimage.createGraphics();
+			g2d.setColor(Color.BLACK);
+			g2d.fillRect(0,0,3,3);
+			g2d.dispose();
+			qpgimagelist.add(i,tmpimage);
+			
+			qpglist.add(i,qpd.qpSaveMethod(tmpimage));
+		}
+		for(int i =0; i< qpgy_num*qpgx_num;i++)
+		{
+			
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpgimagelist.get(i).getScaledInstance((int)qpgwidth_num, (int)qpgheight_num, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qpglabels.add(label);
+			qpglabels.get(i).setPreferredSize(new Dimension(qpgwidth_num+5, qpgheight_num+5)); // 너비 200, 높이 100
+			qpglabels.get(i).setSize(qpgwidth_num+5, qpgheight_num+5); // 너비 200, 높이 100
+			qpglabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qpglabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qpglabels.get(i).setOpaque(true);
+			qpglabels.get(i).setBackground(Color.WHITE);
+			qpglabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndexg != -1)
+						{
+							qpglabels.get(oldIndexg).setBackground(Color.WHITE);
+						}
+						oldIndexg = imageIndex;
+						
+						qpglabels.get(imageIndex).setBackground(Color.GRAY);
+						
+						qpgpanel.repaint();
+						qpgselx_num = (oldIndexg%qpgx_num)+1;
+						qpgsely_num = (oldIndexg/qpgx_num)+1;
+						System.out.println("qpgselx : " + qpgselx_num + " qpgsely : " + qpgsely_num);
+						String statusText = String.format("상태표시줄입니다. mapwidth : %d mapheight : %d mapX : %d mapY : %d",qpgx_num,qpgy_num,qpgselx_num,qpgsely_num);
+						statusLabel.setText(statusText);
+						frame.revalidate();
+						frame.repaint();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				//labels.add(label);
+				qpgpanel.add(label);
+		}
+		frame.add(new JScrollPane(qppanel),BorderLayout.WEST);
+		frame.add(new JScrollPane(qpgpanel),BorderLayout.CENTER);
+		
+		// 상태 표시줄 생성
+        statusbarPanel = new JPanel(new BorderLayout());
+        statusLabel = new JLabel("상태 표시줄 메시지");
+        
+		statusLabel.setFont(new Font("Serif", Font.BOLD, 20)); // 크기 30의 폰트 설정statusbarPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        statusbarPanel.add(statusLabel, BorderLayout.WEST);
+		qpgselx_num = (oldIndexg%qpgx_num);
+		qpgsely_num = (oldIndexg/qpgx_num);
+		String statusText = String.format("상태표시줄입니다. mapwidth : %d mapheight : %d mapX : %d mapY : %d",qpgx_num,qpgy_num,qpgselx_num,qpgsely_num);
+		statusLabel.setText(statusText);
+        // 프레임의 하단에 추가
+        frame.add(statusbarPanel, BorderLayout.SOUTH);
+		
+		frame.setVisible(true);
+		frame.revalidate();
+		frame.repaint();
+
+	}
+	public static void labelViewSet()
+	{
+		qpy_num = (qpimagelist.size()/qpx_num)+1;
+		qppanel.removeAll();
+		qppanel.setLayout(new GridLayout(qpy_num,qpx_num));
+		
+		qplabels.clear();
+		for(int i =0; i< qpimagelist.size();i++)
+		{
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpimagelist.get(i).getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qplabels.add(label);
+			qplabels.get(i).setPreferredSize(new Dimension(158, 158)); // 너비 200, 높이 100
+			qplabels.get(i).setSize(158,158); // 너비 200, 높이 100
+			qplabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qplabels.get(i).setOpaque(true);
+			qplabels.get(i).setBackground(Color.WHITE);
+			qplabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndex != -1)
+						{
+							qplabels.get(oldIndex).setBackground(Color.WHITE);
+						}
+						oldIndex = imageIndex;
+						
+						qplabels.get(imageIndex).setBackground(Color.GRAY);
+						qppanel.repaint();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				//labels.add(label);
+				qppanel.add(label);
+		}
+		
+		//여기서부터 새로움.
+				
+		
+		
+		/*for(int i=0; i<qpgy_num*qpgx_num;i++)
+		{
+			BufferedImage tmpimage = new BufferedImage(3,3,BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g2d = tmpimage.createGraphics();
+			g2d.setColor(Color.BLACK);
+			g2d.fillRect(0,0,3,3);
+			g2d.dispose();
+			qpgimagelist.add(i,tmpimage);
+			
+			qpglist.add(i,qpd.qpSaveMethod(tmpimage));
+		}*/
+		qpgpanel.removeAll();
+		qpgpanel.setLayout(new GridLayout(qpgy_num,qpgx_num));
+		qpglabels.clear();
+		System.out.println("size qpg : " + qpgimagelist.size());
+		for(int i =0; i< qpgy_num*qpgx_num;i++)
+		{
+			
+						/*BufferedImage resizeimage = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
+						Graphics2D g2d = resizeimage.createGraphics();
+						g2d.drawImage(imagelist.get(i), 0, 0, 200, 200, null);
+						g2d.dispose();*/
+						
+			Image resizeimage = qpgimagelist.get(i).getScaledInstance((int)qpgwidth_num, (int)qpgheight_num, Image.SCALE_SMOOTH);
+			int imageIndex = i;
+			JLabel label = new JLabel(new ImageIcon(resizeimage));
+			//qplabels.get(i).setIcon(new ImageIcon(resizeimage));
+			qpglabels.add(label);
+			qpglabels.get(i).setPreferredSize(new Dimension(qpgwidth_num+5, qpgheight_num+5)); // 너비 200, 높이 100
+			qpglabels.get(i).setSize(qpgwidth_num+5, qpgheight_num+5); // 너비 200, 높이 100
+			qpglabels.get(i).setHorizontalAlignment(SwingConstants.CENTER);
+			qpglabels.get(i).setVerticalAlignment(SwingConstants.CENTER);
+			qpglabels.get(i).setOpaque(true);
+			qpglabels.get(i).setBackground(Color.WHITE);
+			qpglabels.get(i).addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        //JOptionPane.showMessageDialog(frame,"You clicked on Image " + imageIndex,"Image Clicked",JOptionPane.INFORMATION_MESSAGE);
+						// 선택 상태 토글
+						
+						
+						if(oldIndexg != -1)
+						{
+							qpglabels.get(oldIndexg).setBackground(Color.WHITE);
+						}
+						oldIndexg = imageIndex;
+						
+						qpglabels.get(imageIndex).setBackground(Color.GRAY);
+						
+						qpgpanel.repaint();
+						qpgselx_num = (oldIndexg%qpgx_num)+1;
+						qpgsely_num = (oldIndexg/qpgx_num)+1;
+						System.out.println("qpgselx : " + qpgselx_num + " qpgsely : " + qpgsely_num);
+						String statusText = String.format("상태표시줄입니다. mapwidth : %d mapheight : %d mapX : %d mapY : %d",qpgx_num,qpgy_num,qpgselx_num,qpgsely_num);
+						statusLabel.setText(statusText);
+						frame.revalidate();
+						frame.repaint();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+						
+                        //label.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경 변경
+						
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+						
+                        //label.setBackground(Color.WHITE); // 마우스가 떠날 때 배경 복구
+						
+                    }
+                });
+				//labels.add(label);
+				qpgpanel.add(label);
+		}
+		frame.revalidate();
+		frame.repaint();
+	}
+	public static String qpSaveMethod(BufferedImage tmpimage)
+	{
+				StringBuilder writeTemp;
+				String tmp="";
+				try{
+					int testRGB = 0;
+					int paste =0; //임시저장공간
+					int[] nd = new int[4];//nd는 not dead 아직 죽지 않았다.
+					char[] savetemp = new char[2];
+					
+					writeTemp = new StringBuilder();
+					writeTemp.append((char)4425);//처음 파일인것을 인식
+					writeTemp.append((char)4989);//처음 파일인것을 인식
+					writeTemp.append((char)6989);//처음 파일인것을 인식
+					writeTemp.append((char)4548);//처음 파일인것을 인식
+					writeTemp.append((char)17);//시작지점1
+					writeTemp.append((char)0);//시작지점2(<<16)
+					writeTemp.append((char)tmpimage.getWidth());//가로크기
+					writeTemp.append((char)tmpimage.getHeight());//세로크기
+					writeTemp.append((char)0);//이미지좌표x
+					writeTemp.append((char)0);//이미지좌표y
+					writeTemp.append((char)0);//imfor1
+					writeTemp.append((char)0);//imfor2
+					writeTemp.append((char)0);//imfor3
+					writeTemp.append((char)0);//imfor4
+					writeTemp.append((char)0);//imfor5
+					writeTemp.append((char)0);//imfor6
+					writeTemp.append((char)0);//imfor7
+					for(int i =0; i<tmpimage.getHeight(); i++)
+					{
+						for(int j=0; j<tmpimage.getWidth(); j++)
+						{
+							testRGB = tmpimage.getRGB(j,i);
+							if(testRGB == -0x00000000) testRGB = 0xffffffff;
+							nd[0] = (int)((testRGB & 0xff000000));
+							nd[1] = (int)((testRGB & 0x00ff0000));
+							nd[2] = (int)((testRGB & 0x0000ff00));
+							nd[3] = (int)(testRGB & 0x000000ff);
+							savetemp[0] = (char)((nd[0]+nd[1])>>8);
+							savetemp[1] = (char)(nd[2]+nd[3]);
+							writeTemp.append((char)savetemp[0]);
+							writeTemp.append((char)savetemp[1]);
+						}
+					}
+					//System.out.println(Integer.toHexString(image.getRGB(100,100)));
+					tmp = "";
+					tmp = writeTemp.toString();
+					
+			
+				}catch(Exception ioe)
+				{
+			
+				}
+			return tmp;
+	}
+	public static int[] setNumberListIndex(int size,int prewidth,int preheight,int setwidth,int setheight)
+	{
+		// 0부터 99까지의 숫자를 가진 배열
+        int[] tmp = new int[10000];
+		int[] returntmp = new int[setwidth*setheight];
+        for (int i = 0; i < size; i++) {
+            tmp[i] = i;
+        }
+
+        // 10x10 배열로 변환
+        int[][] grid = new int[preheight][prewidth];
+		int inc=0;
+        for (int i = 0; i < preheight; i++) {
+            for (int j = 0; j < prewidth; j++) {
+                grid[i][j] = tmp[i*prewidth+j];
+				inc++;
+            }
+        }
+
+        // 4x4 영역 추출 (예: (3, 3)부터 (6, 6)까지)
+        int startRow = 0;
+        int startCol = 0;
+        
+		int[][] subGrid = new int[setheight][setwidth];
+        
+		for (int i = 0; i < setheight; i++) {
+            for (int j = 0; j < setwidth; j++) {
+                
+				if(i<preheight && j<prewidth)
+				{
+					subGrid[i][j] = grid[startRow + i][startCol + j];
+				}else
+				{
+					subGrid[i][j] = -1;
+				}
+            }
+        }
+
+        // 4x4 영역 출력
+        //System.out.println("4x4 영역:");
+		int listinc = 0;
+        for (int i = 0; i < setheight; i++) {
+            for (int j = 0; j < setwidth; j++) {
+                returntmp[listinc] = subGrid[i][j];
+				listinc++;
+            }
+            
+        }
+		for(int i =0; i<returntmp.length;i++)
+		{
+			System.out.print(returntmp[i] + ",");	
+		}
+		System.out.println();
+		return returntmp;
+	}
+	public static String qpOpenMethod(BufferedImage tmpimage)
+	{
+		return "";
+	}
+	
+	public static String[] qpgFileOpen(File file)
+	{
+		String[] str = {""};
+		
+		char[] tc;
+		int[] color;
+		int getpoints =0,getpointe  =0;
+		try
+		{
+			StringBuilder readTemp;
+			BufferedReader br = null;
+			int readC = 0;
+			long qpfs = 0;
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(file.getAbsolutePath()),"utf-8"));
+			//File file = new File(file.getAbsolutePath());
+			
+			if(file.exists() && file.isFile())
+			{
+				qpfs = file.length();	
+							
+							//System.out.println("size : " + qpfs);
+			}
+			readTemp = new StringBuilder();
+			while((readC = br.read())!=-1)
+			{
+				readTemp.append((char)readC);
+					
+			}
+			br.close();
+						
+			tc = new char[readTemp.length()];
+			tc = readTemp.toString().toCharArray();
+			
+			if(tc[0]==(char)21242 && tc[1] == (char)25442 && tc[2] == (char)26785 && tc[3] == (char)27888)
+			{
+				str = new String[tc[4]*tc[5]];
+				getpoints = 0;
+				getpointe = 6+str.length*2;
+				
+				System.out.println("strlength : " + str.length);
+				for(int i=0;i<str.length;i++)
+				{
+					if (getpoints < 0 || getpointe < 0 || getpointe > readTemp.length() || getpoints > getpointe) {
+						System.out.println("잘못된 인덱스 범위: getpoints = " + getpoints + ", getpointe = " + getpointe);
+						break; // 루프를 중단하거나 예외를 처리
+					}
+					
+					getpoints=getpointe;
+					getpointe += 17+((int)tc[6+(i*2)]*(int)tc[7+(i*2)]*2);
+					
+					str[i] = readTemp.substring(getpoints,getpointe);
+					//System.out.println("i : " + i + ":getpoints " + getpoints + ":getpointe " + getpointe + " ");
+				}
+				//System.out.println("--------------------a--------------");
+				
+				//여기서부터 mapx mapy설정
+				qpgx_num = tc[4];
+				qpgy_num = tc[5];
+				return str;
+				
+			}
+		}catch(IOException ioe)
+		{
+			
+		}
+		return str;
+	}
+	public static void qpgFileSave(File file,String[] tmpstr)
+	{
+		
+		
+		StringBuilder writeTemp;
+		writeTemp = new StringBuilder();
+		String tmp = "";
+		StringBuilder tmpbuild = new StringBuilder();
+		writeTemp = new StringBuilder();
+		
+		writeTemp.append((char)21242);//처음 파일인것을 인식
+		writeTemp.append((char)25442);
+		writeTemp.append((char)26785);//처음 파일인것을 인식
+		writeTemp.append((char)27888);//처음 파일인것을 인식
+		writeTemp.append((char)qpgx_num);//mapx크기
+		writeTemp.append((char)qpgy_num);//mapy크기
+		//System.out.println(tmpstr[4]);
+		for(int i =0 ; i<tmpstr.length;i++)
+		{
+			if(tmpstr[i]!=null)
+			{
+			writeTemp.append((char)tmpstr[i].charAt(6));//qp너비
+			writeTemp.append((char)tmpstr[i].charAt(7));//qp높이
+			}else
+			{
+				//System.out.println(i +"번째가 null입니다.");	
+			}
+		}
+		//System.out.println("------------------------- ");
+		int getpoint = 0;
+		int[] nd = new int[2];
+		getpoint = 6+(2*tmpstr.length);
+		for(int i =0;i<tmpstr.length;i++)
+		{
+			tmpbuild = new StringBuilder(tmpstr[i]);
+			Point p = new Point();
+			p.x = i%qpgx_num;
+			p.y = i/qpgx_num;
+			tmpbuild.setCharAt(8,(char)p.x);//mapx좌표
+			tmpbuild.setCharAt(9,(char)p.y);//mapy좌표
+			getpoint+=17;
+			nd[0] = (int)(getpoint& 0x0000ffff);
+			nd[1] = (int)((getpoint&0xffff0000)>>8);
+			tmpbuild.setCharAt(4,(char)nd[0]);//시작지점
+			tmpbuild.setCharAt(4,(char)nd[1]);//시작지점
+			writeTemp.append(tmpbuild.toString());
+			getpoint+=tmpstr[i].charAt(6)*tmpstr[i].charAt(7)*2;
+			
+		}
+		
+		try{
+			System.out.println("try에 들어왔어: ");
+			tmp = "";
+			tmp = writeTemp.toString();
+			String filePath = file.getAbsolutePath();
+					
+			if(!filePath.endsWith(".qpd"))
+			{
+				filePath += ".qpd";	
+			}
+			File fw = new File(filePath);
+			//System.out.println("savefilepath : " + filePath);
+			if(fw.exists()){
+				FileOutputStream fos = new FileOutputStream(fw);
+				fos.write(new byte[0]);
+				fos.close();
+			}
+			if (!fw.exists()) {
+				fw.createNewFile(); // 파일이 없으면 생성
+			}
+
+			RandomAccessFile raf = new RandomAccessFile(fw,"rw");
+			FileChannel channel = raf.getChannel();
+			MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_WRITE,0,tmp.getBytes("utf-8").length);
+			buffer.clear();
+			byte[] data = tmp.getBytes("UTF-8");
+			if(buffer.remaining()>=data.length){
+				
+				buffer.put(data);
+			}else
+			{
+				System.out.println("버퍼에 충분한 공간이 없습니다.");
+			}
+			channel.close();
+			
+			raf.close();
+		}catch(IOException ioe)
+		{
+			ioe.printStackTrace();
+			System.out.println("IO에 문제가 나타났습니다.");
+		}
+	}
+	public static void main(String[] args) 
+	{
+		SwingUtilities.invokeLater(new Runnable(){
+			@Override
+			public void run()
+			{
+				qpd = new QPDv0_001();
+				qpd.Init();
+				qpd.frame.revalidate();
+				qpd.frame.repaint();
+			}
+		});
+		System.out.println("안녕세계");
+	}
+}
