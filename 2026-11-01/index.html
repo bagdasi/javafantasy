@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="컴퓨터판타지연구소">
+  <meta name="Keywords" content="java,자바,JAVA,코딩,취미,mmorpg,개발자,게임,게임개발,자바판타지,javafantasy">
+  <meta name="Description" content="자바판타지입니다. 개인이 만든 사이트입니다.자바작품들을 만나보세요">
+  <meta name="naver-site-verification" content="cab33d9ec47b1b6f3470c4e90c51171884fe816b" />
+  <meta name="google-site-verification" content="De29qBzKy_4KvEZhVZovhoNUwOvLaMOQwOJorYXVSBk" />
+  <link rel="icon" href="icon/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/icon/favicon.ico">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="자바판타지(javaFantasy)">
+  <meta property="og:description" content="자바로 만든 작품을 자랑하기 위해 개인이 만든 사이트입니다">
+  <meta property="og:image" content="http://www.javafantasy.kr/icon/favicon.ico">
+  <meta property="og:url" content="http://www.javafantasy.kr">
+  <title>자바판타지-개인이 만든 자바작품입니다.</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+	li{
+		list-style: none;
+	}
+	a{
+		text-decoration: underline;
+		color: inherit;
+	}
+    .top {
+		background-color: #f2f2f2;
+		height: 160px;
+		text-align: center;
+		padding-top: 2em;
+	}
+
+	.top h1 {
+		margin: 0;
+		font-size: 2em;
+		color: #333;
+	}
+
+	.top p {
+		margin: 0.5em 0 0;
+		font-size: 1.2em;
+		color: #666;
+	}
+
+
+    .middle {
+	
+     
+	  background-color: #90ee90; /* 라이트그린 */
+
+
+      flex: 1;
+      display: flex;
+	  justify-content: center;   /* 가로 가운데 정렬 */
+	  font-size: 1.5em;
+
+    }
+	.middle-content img{
+		width: 100%;
+		max-width: 1000px;
+		border-radius: 20px;
+		box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+	}
+	.middle-content{
+		text-align: center;
+		margin: 50px auto;
+	}
+    .left {
+	display: none; /* 처음엔 숨김 */
+
+      background-color: #d9eaff;
+      width: 20%;
+      padding: 1em;
+    }
+	.left ul {
+		list-style-type: square;
+		padding-left: 1em;
+	}
+
+	.left li {
+		margin: 0.5em 0;
+	}
+	.left p {
+		margin: 0.5em 0 0;
+		font-size: 1.2em;
+		
+	}
+    .right {
+	display: none; /* 처음엔 숨김 */
+
+      background-color: #ffe6e6;
+      width: 80%;
+      padding: 1em;
+	  text-align: left;
+    }
+	.right h1 {
+		margin: 0;
+		font-size: 1.2em;
+		color: #333;
+	}
+
+	.right p {
+		margin: 0.5em 0 0;
+		font-size: 1.5em;
+		
+	}
+	.right ul {
+		list-style-type: square;
+		padding-left: 1.0em;
+	}
+
+	.right li {
+		margin: 0.5em 0;
+		font-size: 1.2em;
+	}
+
+
+    .bottom {
+		display: flex;
+      background-color: #cccccc;
+      height: 120px;
+      text-align: center;
+      
+    }
+	.bottom img{
+		margin-left: 30px;
+		max-width: 260px;
+	}
+	.bottom h1 {
+		margin: 0;
+		font-size: 20px;
+		color: #333;
+	}
+
+	.bottom p {
+		margin: auto;
+		font-size: 20px;
+		color: #333;
+	}
+	.navbar {
+		background-color: #333;
+		text-align: center;
+	}
+
+	.navbar ul {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		display: inline-flex;
+	}
+
+	.navbar li {
+		margin: 0;
+	}
+
+	.navbar a {
+		display: block;
+		padding: 14px 20px;
+		color: white;
+		text-decoration: none;
+		font-weight: bold;
+	}
+
+	.navbar a:hover {
+		background-color: #555;
+	}
+
+  </style>
+  
+
+</head>
+<body>
+  <div class="top">
+	  <h1><a href="http://javafantasy.kr"><img src="picture/logo.png" alt="자바판타지로고"></a></h1>
+	  <p>이 사이트에 오신것을 환영합니다<br>다양한 자바작품들을 만나보세요.</p>
+
+	
+  </div>
+  <div class="navbar">
+  <ul>
+    <li><a href="#" onclick="showMenu('site')">사이트소개</a></li>
+    <li><a href="#" onclick="showMenu('app')">앱소개</a></li>
+    <li><a href="#" onclick="showMenu('download')">다운로드</a></li>
+    <li><a href="#" onclick="showMenu('policy')">방침</a></li>
+    <li><a href="#" onclick="showMenu('guestbook')">방명록</a></li>
+</ul>
+</div>
+
+  <div class="middle">
+	<!-- 초기 화면: 이미지 + 설명 -->
+    <div id="middle-content">
+      <img src="picture/javafantasy_main.png?v=3" alt="환영 이미지"style="max-width:1000px;">
+      <p>다양한자바작품을 만나보세요.<br>포트폴리오입니다. 많은 기대는 하지 말아주세요. 
+		<br>저의 자바 세계관을 만나보실 수 있습니다.<br>앱이름을 소개하자면...
+		<br>앤트(Ant) : 개미처럼 꾸준히 노력하자는 의미
+		<br>미러(Mirror) : 거울처럼 스스로를 되돌아보자는 의미
+		<br>퓨즈(Fuse) : 쇠가 녹았다 붙여지는것처럼 융합과 결합을 상징
+		<br>콰라포도(Qualla for 刀) : 검을 위한 하나님..... 신의검이라는 세계관 설정
+		<br>지난 1년동안 다양한 기능과 설정을 추가하여, JavaFantasy를 발전시켜 왔습니다.
+		<br>앞으로도 꾸준히 개선하며 더욱 완성도 높은 프로젝트로 만들어 나갈 계획입니다.</p>
+    </div>
+
+    <div class="left" id="left-panel">LEFT 영역</div>
+    <div class="right" id="right-panel">RIGHT 영역</div>
+  </div>
+  <div class="bottom">
+	  <img src = "picture/flogo.png" alt = "푸터로고">
+	  <p>사이트 개설일 : 2025년 11월 03일<br>Copyright &copy 2025-2026, 컴퓨터판타지연구소 All Rights Reserved.</p>
+  </div>
+</body>
+</html>
+
+<script>
+  function showMenu(type) {
+	  
+    const panel = document.getElementById("left-panel");
+	const panel2 = document.getElementById("right-panel");
+	panel.style.display = 'block';
+	panel2.style.display = 'block';
+	// middle의 초기 이미지/설명 숨기기
+      document.getElementById("middle-content").style.display = "none";
+
+	
+    let content = "";
+	let content2 = "";
+    switch (type) {
+      case "site":
+		    content = '<ul><li><a href="#" onclick="viewMenu(\'sitemeet\')">사이트소개</a></li><li><a href="#" onclick="viewMenu(\'developermeet\')">개발자 소개</a></li><li><a href="#" onclick="viewMenu(\'environment\')">개발환경</a></li><li><a href="#" onclick="viewMenu(\'developerwrite\')">개발자글</a></li></ul>';
+		content2 = '<p>사이트소개페이지입니다.<br>제 포트폴리오를 위한 소개를 하겠습니다.</p>';
+        break;
+      case "app":
+		    content = '<p>앤트</p><ul><li><a href="#" onclick="viewMenu(\'appAnt1\')">앤트EXE파일생성기</a></li><li><a href="#" onclick="viewMenu(\'appAnt2\')">앤트헥사뷰어</a></li><li><a href="#" onclick="viewMenu(\'appAnt3\')">앤트ICO파일메이커</a></li><li><a href="#" onclick="viewMenu(\'appAnt4\')">앤트JAR파일생성기</a></li><li><a href="#" onclick="viewMenu(\'appAnt5\')">앤트java에디터</a></li><li><a href="#" onclick="viewMenu(\'appAnt6\')">앤트java실행기</a></li><li><a href="#" onclick="viewMenu(\'appAnt7\')">앤트녹음기</a></li><li><a href="#" onclick="viewMenu(\'appAnt8\')">앤트스크린캡쳐</a></li><li><a href="#" onclick="viewMenu(\'appAnt9\')">앤트비디오플레이어</a></li><li><a href="#" onclick="viewMenu(\'appAnt10\')">앤트v레코딩</a></li><li><a href="#" onclick="viewMenu(\'appAnt11\')">앤트치트에디터</a></li><li><a href="#" onclick="viewMenu(\'appAnt12\')">앤트JLIB생성기</a></li><li><a href="#" onclick="viewMenu(\'appAnt13\')">앤트생상정보기</a></li></ul><p>퓨즈</p><ul><li><a href="#" onclick="viewMenu(\'appFuse1\')">퓨즈DB관리기</a></li><li><a href="#" onclick="viewMenu(\'appFuse2\')">퓨즈자바탭정리기</a></li></ul><p>미러</p><ul><li><a href="#" onclick="viewMenu(\'appMirror1\')">미러그림연습기</a></li><li><a href="#" onclick="viewMenu(\'appMirror2\')">미러단어학습기</a></li><li><a href="#" onclick="viewMenu(\'appMirror3\')">미러연설학습기</a></li><li><a href="#" onclick="viewMenu(\'appMirror4\')">미러디컴파일러</a></li></ul><p>콰라포도</p><ul><li><a href="#" onclick="viewMenu(\'appQP1\')">콰라포도qp변환기</a></li><li><a href="#" onclick="viewMenu(\'appQP2\')">콰라포도디자인</a></li><li><a href="#" onclick="viewMenu(\'appQP3\')">콰라포도프로젝트</a></li></ul><p>API</p><ul><li><a href="#" onclick="viewMenu(\'appAPI1\')">qpSystem</a></li><li><a href="#" onclick="viewMenu(\'appAPI2\')">FuseDB</a></li></ul>';
+		content2 = '<p>앱소개페이지입니다<br>제 포트폴리오를 위한 소개를 하겠습니다.</p>';
+        break;
+      case "download":
+		    content = '<p>다운로드</p><p>앤트</p><ul><li><a href="#" onclick="viewMenu(\'downloadAnt1\')">앤트EXE파일생성기</a></li><li><a href="#" onclick="viewMenu(\'downloadAnt2\')">앤트헥사뷰어</a></li><li><a href="#" onclick="viewMenu(\'downloadAnt3\')">앤트ICO파일메이커</a></li><li><a href="#" onclick="viewMenu(\'downloadAnt4\')">앤트JAR파일생성기</a></li><li><a href="#" onclick="viewMenu(\'downloadAnt5\')">앤트java에디터</a></li><li><a href="#" onclick="viewMenu(\'downloadAnt6\')">앤트java실행기</a></li><li><a href="#" onclick="viewMenu(\'downloadAnt7\')">앤트녹음기</a></li><li><a href="#" onclick="viewMenu(\'downloadAnt8\')">앤트스크린캡쳐</a></li><li><a href="#" onclick="viewMenu(\'downloadAnt9\')">앤트비디오플레이어</a></li><li><a href="#" onclick="viewMenu(\'downloadAnt10\')">앤트v레코딩</a></li><li><a href="#" onclick="viewMenu(\'downloadAnt11\')">앤트치트에디터</a></li><li><a href="#" onclick="viewMenu(\'downloadAnt12\')">앤트JLIB생성기</a></li><li><a href="#" onclick="viewMenu(\'downloadAnt13\')">앤트생상정보기</a></li></ul><p>퓨즈</p><ul><li><a href="#" onclick="viewMenu(\'downloadFuse1\')">퓨즈DB관리기</a></li><li><a href="#" onclick="viewMenu(\'downloadFuse2\')">퓨즈자바탭정리기</a></li></ul><p>미러</p><ul><li><a href="#" onclick="viewMenu(\'downloadMirror1\')">미러그림연습기</a></li><li><a href="#" onclick="viewMenu(\'downloadMirror2\')">미러단어학습기</a></li><li><a href="#" onclick="viewMenu(\'downloadMirror3\')">미러연설학습기</a></li><li><a href="#" onclick="viewMenu(\'downloadMirror4\')">미러디컴파일러</a></li></ul><p>콰라포도</p><ul><li><a href="#" onclick="viewMenu(\'downloadQP1\')">콰라포도qp변환기</a></li><li><a href="#" onclick="viewMenu(\'downloadQP2\')">콰라포도디자인</a></li><li><a href="#" onclick="viewMenu(\'downloadQP3\')">콰라포도프로젝트</a></li></ul><p>API</p><ul><li><a href="#" onclick="viewMenu(\'downloadAPI1\')">qpSystem</a></li><li><a href="#" onclick="viewMenu(\'downloadAPI2\')">FuseDB</a></li></ul>';
+		content2 = '<p>앱 다운로드페이지입니다</p>';
+        break;
+      case "policy":
+        content = '<ul><li><a href="#" onclick="viewMenu(\'sitepolicy\')">사이트운영정책</a></li><li><a href="#" onclick="viewMenu(\'updatepolicy\')">업데이트정책</a></li><li><a href="#" onclick="viewMenu(\'license\')">라이선스 안내</a></li></ul>';
+		content2 = '<p>정책페이지입니다</p>';
+        break;
+      case "guestbook":
+        content = '<ul><li><a href="#" onclick="viewMenu(\'guestview\')">방명록</a></li></ul>';
+		content2 = '<p>방명록페이지입니다</p>';
+        break;
+    }
+
+    panel.innerHTML = content;
+	panel2.innerHTML = content2;
+  }
+  
+  function viewMenu(type) {
+    const panel = document.getElementById("right-panel");
+    let content = "";
+	switch(type)
+	{
+		
+		case "sitemeet":
+		content = '<p>소개글(2026-10-31)</p><ul><li>2024년 5월 AI가 뉴스에 나오기 시작했습니다.<br>그 때는 관심을 안가졌습니다.<br>하지만 2024년 11월 AI를 테스트 해보고, 정말 앱을 만들 수 있겠다고 생각해, 프로젝트를 시작했습니다.<br>처음은 게임을 만드는 것을 목표로 삼았고, 지금은 포트폴리오입니다.<br>내가 하고 싶은 개발을 시작했고 하나씩 앱을 완성했습니다.<br>1년이 지났을 때 웹사이트를 만들기로 했습니다.<br>그리고 AI와 함께 자바판타지 웹사이트를 만들었습니다.<br>바이브코딩의 좋은 점은 좋은 앱을 빨리 만들 수 있다는 점에 있습니다.<br>1년 개발이 API를 써서 하루개발로 단축되는 경우도 있었습니다.<br></li><li>AI가 굉장히 많은 것을 도와줍니다.<br>영어도 모르는 제가 검색을 하는 불편이 있었지만, AI는 공장자동화 수준의 검색을 통하여 저에게 결과물을 내놓습니다.<br>코딩도 어떻게 만들어달라고 해주면 바로 결과물을 내놓습니다.<br>제가 1년동안 취미활동으로 개발을 했지만, 웹사이트를 만든 후 돈을 벌지 않지만 부업이 되었습니다.<br>지금 1년이 지난 후 저는 더 많은 것을 배웠습니다.<br>저는 비전문가입니다. 회사경력이 없습니다. <br></li><li>하지만 자격이 있습니다. 시작할 때는 없었지만 지금은 자격이 있습니다.<br>2026년 2회 정보처리기사시험에 합격했습니다.<br>자격이 있는 사람이 만든 것이 된 것입니다.<br>이전에는 자격이 없었지만 지금은 자격이 있습니다.<br>원래 못하는 일을 AI의 도움으로 이정도로 만들었습니다.</li><li>이제는 포트폴리오로 사용하려고 합니다.<br>제가 이정도 만들었다. 자신있다 이정도로 표현할려고 합니다.<br>이만 소개를 마치겠습니다.</li></ul>';
+		break;
+		case "developermeet":
+		content = '<p>개발자소개(2026-10-31)</p><ul><li>학력 : 4년제대학 졸업(동양대학교 컴퓨터정보전학과)<br>나이 : 40대<br>자격증 : 정보처리기사(2026년 2회 합격) <br>성별 : 남자<br>취미 : 커피한잔 마시며 망상하기<br>좋아하는 게임 : 디아블로2<br>좋아하는 가수 : 나훈아<br>활동명 : 컴퓨터판타지연구소<br></li><li>개발장소 : 마이홈<br>사용언어 : temurin java 21<br>주특기 : GUI앱개발 <br>목표 : 돈벌기</li></ul>';
+		break;
+		case "environment":
+		content = '<p>개발환경(2026-10-31)</p><ul><li>개발환경은 노트북으로 개발했습니다.<br>레노버 씽크패드 E14-20T6S04X00 (SSD 256GB)<br>노트북 / 운영체제(OS): 윈도우11프로페셔널(64bit) / 용도: 사무/인강용 / [화면정보] 35.56cm(14인치) / 1920x1080(FHD) / 250nit /<br> [CPU] AMD / 라이젠5-3세대 / 4500U (2.3GHz) / 헥사(6)코어 / [램] DDR4 / 램 용량: 16GB / 3200MHz / [그래픽] 내장그래픽 / Radeon Graphics / [저장장치] M.2(NVMe) / 256GB / 저장 슬롯: 2개 / <br>[네트워크] 무선랜: 802.11ax(Wi-Fi 6) / 유선랜: 지원 / [영상입출력] HDMI / 웹캠(HD) / [단자] USB-C: 지원 /<br> [파워] 배터리: 45Wh / 전원: USB-PD / [주요제원] 두께: 18.9mm / 무게: 1.59kg / 색상: 블랙 </li><li>지금은 테무린자바21을 사용합니다.<br>사용툴은 제가 만든 앤트자바에디터, 웹페이지는 vscode, c언어는 devc++IDE, 그외 gcc나 파이썬,루비는 EditPlus6.0<br>AI는 주로 Copilot(마이크로오피스365 개인), 리눅스환경에서는 chatGPT(웹사이트에서 질문)<br>2d그래픽 까지는 만들어볼 생각입니다.<br></li><li>IaaS : 구글클라우드콘솔(거의 최고 Low급 사양)<br>dns lending site : 호스팅kr<br>java21아래의 버전은 실행이 안될 가능성이 큽니다.</li>';
+			
+		content += '</ul>';
+		break;
+		case "developerwrite":
+		content = '<ul><li>개발자글(2026-10-31)</li>';
+		content += '<li>여기는 테무린자바21을 사용하고 있습니다.<br>자바25가 나오면 업데이트 하겠습니다.</li>';
+		content += '<li>지난 2년동안 정말 열심히 만들었습니다.<br>구경한번 해주십시요.</li>';
+		content += '<li>앱개발은 계속하겠습니다.</li>';
+			content += '<li><br>특히 앤트자바에디터는 이 사이트의 자랑입니다.<br>충분히 써도 됩니다.<br>github에 버전관리를 늦게나마 다 해놓았습니다.<br>필요하면 다운로드하면 됩니다.(public으로 올렷습니다.)<br>소스코드는 github에서 받으면 됩니다.<br><a href = "https://github.com/bagdasi/javafantasy">https://github.com/bagdasi/javafantasy</a><br>앞으로 계속 코딩활동을 이어가겠습니다.</li>';
+		content += '</ul>';
+		break;
+		case "appAnt1":
+			content = '<p>앤트EXE파일생성기</p><ul><li>앤트EXE파일생성기는 java실행파일을 EXE파일로 만들어서 실행하는 것입니다.<br>바로 더블클릭으로 자바앱을 실행할 수 있습니다.<br></li></ul><img src="picture/AntEXECreaterv0_0027.png" alt="앤트 EXE 생성기 설명 이미지" width="500"><ul><li>앤트EXE파일 생성기는 gcc를 사용합니다. <a href="https://gcc.gnu.org/mirrors.html" target="_blank">gcc다운로드</a><br>gcc경로는 gcc.exe가 있는 디렉토리로 해주세요.<br>ico파일은 한글디렉토리 또는 한글 exe파일이름일때 ico파일은 제대로 작동되지 않습니다.</li><li>0.0024버전:경로를 선택할때 이전경로를 저장하여 이전경로로 파일선택창을 띄웁니다.</li>';
+			content += '<li>0.0027버전 : java exe경로와 명령인수 추가했습니다. 파일생성위치도 추가했습니다.</li>'
+				content += '<ul>';
+		break;
+		case "appAnt2":
+			content = '<p>앤트헥사뷰어</p><ul><li>앤트헥사뷰어는 파일의 내용을 16진수로 변환해서 출력하는 것입니다.<br>필요해서 만들어놓고, 한번도 사용해본적이 없습니다.<br>오류가 많을 수 있습니다.</li></ul><img src="picture/anthexaviewerv0_001.png" alt="앤트헥사뷰어 설명 이미지" width="500"><ul><li>파일을 열어서 8비트로 볼수 있습니다. <br>실제로 사용을 안해봐서 정확하게 출력이 되는지 모르겠습니다.</li><li>0.0021버전으로 오류가 많았던 부분은 모두 수정되었습니다.</li></ul>';
+		break;
+		case "appAnt3":
+		content = '<p>앤트ICO파일메이커</p><ul><li>앤트ICO파일메이커는 아이콘파일인 ico파일을 만드는 앱입니다. 일단 그림을 그릴수 있고, 기본적인 페인트기능을 제공합니다.</li></ul><img src="picture/AntICOFileMakerv0_0024.png" alt="앤트ICO파일생성기 설명 이미지" width="500"><ul><li>간단한 페인트기능이 있고 ico파일로 저장할 수 있습니다. <br>ico파일을 열수도 있고 이미지 파일을 작게 만들어서 ico파일로 저장할수 있습니다.<br>앞으로 직선그리기기능도 추가할 생각입니다.</li><li>0.0021버전에서는 파일선택에서 이전폴더를 엽니다.</li>';
+		content += '<li>0.0024버전 : 키보드 컨트롤, zoom기능 추가했습니다. 그리고 투명색도 만들 수 있습니다.</li>';
+		content += '</ul>';
+		break;
+		case "appAnt4":
+			content = '<p>앤트JAR파일생성기</p><ul><li>앤트JAR파일생성기는 class파일들을 jar파일로 묶어서 java로 바로 실행시킬 수 있는 앱입니다.<br>자바개발에서 굉장히 편해질 수 있다는것을 증명할수 있습니다.</li></ul><img src="picture/AntJARCreaterv0_0028.png" alt="앤트JAR파일생성기 설명 이미지" width="500"><ul><li>메인클래스를 지정할 수 있고, jar파일을 만들 수 있습니다.<br>폴더를 선택하면 class파일이 폴더내에 있는 모든 추가가 됩니다.<br>자바개발에서 굉장히 유용한 앱이었습니다.</li><li>0.0023버전:경로를 선택할때 이전선택경로를 저장하여 이전선택경로를 먼저 띄웁니다.</li>';
+			content += '<li>0.0024버전에서는 처음 경로 선택시 선택이 안되는 부분 수정하였습니다.</li>';
+			content += '<li>0.0026버전에서는 클래스패스추가하였습니다.</li>';
+			content += '<li>0.0028버전에서는 cp선택버튼을 추가하였습니다.';
+			content += '</ul>';
+		break;
+		case "appAnt5":
+			content = '<p>앤트java에디터</p><ul><li>앤트 java에디터는 에디트플러스의 불편함이, 다른 어플리케이션을 써서 컴파일이 안되는 불편함이 있었습니다.<br>그래서 완성도는 낮으나, 그래도 조금 더 편하게 할 수 있는 에디터를 만들었습니다.<br>테스트는 해보지 않아서 오류도 많을 것이지만, 그래도 내가 에디터를 만들었다는 것을 만족하고 있습니다.<br>richfx API를 썼고, 코파일럿이 거의 짰다고 봐도 무관합니다.</li></ul><img src="picture/AntJavaEditerv0_0049B.png" alt="앤트java에디터 설명 이미지" width="800"><ul><li>코드는 칠 수 있고, 클래스나 메소드의 자동완성기능이 있습니다.<br>System같은경우에 붉은색으로 되지 않는 문제점이 있습니다.<br>오류가 많이 발생하겠지만, 계속 업데이트 할 생각입니다.<br>옵션에 명령인수를 넣을 수 있습니다.<br>java파일은 utf-8형식으로 저장했습니다.</li><li>0.0022버전은 일단 최대한 ui를 수정하였고, 옵션에 사용하기를 누르면, jar파일들 안에 class파일에 메소드를 list에 검색됩니다. <br>색깔변환은 힘들어서 조금더 연구하겠습니다.</li><li>이 앱으로 실제 작업을 해보고 수정하겠습니다.</li><li>0.0023버전에서는 찾기기능과 여러 클래스메소드필드검색기능을 작동되게 수정하였습니다.</li><li>0.0024버전에서는 색깔을 업데이트했습니다.이제 간단한작업정도는 할수있다 생각이 듭니다.</li>';
+			content+= '<li>0.0026버전에서 스타일설정기능을 추가했습니다. 너무 많은 코드면 스타일을 끄면 그래도 버벅거리지 않습니다.</li>';
+			content += '<li>0.0027버전에서는 키 누른후 0.8초마다 팝업이벤트발생,3초마다 줄 스타일이벤트 발생, 7초마다 토탈리스트에 다시 넣음, 12초마다 전체 스타일이벤트 발생<br>코드수정후 기다리면 이벤트발생합니다.<br>옵션에 모두지우기버튼추가,"}"키 누르면 자동완성됩니다.</li>';
+			content += '<li>0.0027B버전에서는 컴파일을 실시간으로 업데이트하도록 바꾸었고,<br> 스타일을 20줄이하는 1초 80줄 이하는 2초 200줄 이하는 4초 800줄 이하는 8초 2000줄 이하는 16초 <br> 8000줄 이하는 32초 8000줄 이상은 64초마다 업데이트하게 바꿨습니다.</li>'; 
+			content += '<li>0.0030버전에서는 java.lang.*로 처음 입력클래스를 모두 넣었습니다.<br>스톱기능을 추가하였고, 콘솔입력을 추가하였습니다. 콘솔입력시스타일에서  문자보임도 선택할수 있습니다.<br>이제 어느정도 간단한 자바작업정도는 가능하다고 생각합니다. </li>';
+	  content += '<li>0.0036버전까지, 스크롤 맨위로 튀는 현상을 해결했고, 팝업리스트 정리했고,<br>창여러개 켰을 때 저장 잘못되는 문제 해결했고, 검색 위로 안되는거 수정했고,옵션에 저장할때 문제 해결했고, <br>계속 오류를 해결했습니다.마우스 오른쪽 클릭기능 넣었고, 이전파일 기능 넣었습니다.<br>콘솔 입력할 때는 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); 으로 하십시요.<br>Scanner를 사용하면 엔터를 치면 입력은 되는데 한번 더 입력해야 합니다.<br>String line =  reader.readLine();  // 한 줄 입력 받기<br>richfx에 TextArea와 java에 BufferedWriter를 사용해서 Scanner는엔터  입력이 잘 안되고, BufferedReader을 사용해야 합니다.<br>그냥 코드를 Scanner가 아닌 BufferedReader을 사용해주십시요.<br>코드 스타일에 "I don\'t Message"할때 뒤에도 텍스트로 표시됩니다. 이럴 때는 \'앞에 \\를 넣어 \\\'로 사용해 주십시요. <br>String에\'를 써도 되지만 \\\'로 맞춰주십시요.(예:I don\\\'t Message) </li>';
+	  		content += '<li>0.0036B버전은 정말 작품의 완성단계입니다. 스타일의 \'문제만 해결되면 좋겠습니다. stop을 누르면 java가 여러번 run 했을 때 모두 종료되도록 수정하였고, 종료버튼을 눌러도 모두 종료되게 수정했습니다.</li>';
+			content += '<li>0.0037버전은 스타일의 "\'" 문제가 해결되었고, 굳이 "\\\'"이렇게 쓰지 않아도 됩니다. stop할때 Process를 List에서 Queue로 바꿨고, 대기시간도 0.5초에서 0.1초로 바꿨습니다.<br>스타일 색상을 추가하였습니다.</li>';
+			content += '<li>0.0040A버전은 javafx17에서 21로 바꾸는데 성공했고, 처음으로 리눅스에서 실행시키는데 성공했습니다.<br>java는 한번만들어 놓으면 리눅스,윈도우,맥OS모두 실행이 가능하다고 했는데, 그건 거짓말같습니다.<br>윈도우즈용으로 만들어서 리눅스에서는 동작이 완벽하지 않습니다.모두 실행이 가능하게 업데이트하겠습니다.</li>';
+			content += '<li>0.0049B버전은 jar,extenallist,network,tabclean,style기능을 추가했습니다. Welcome.txt는 sytle,pupup적용안되게 했습니다.</li>'
+			content += '</ul>';
+		break;
+		case "appAnt6":
+			content = '<p>앤트java실행기</p><ul><li>앤트java실행기는 에디트플러스가 외부의 API를 사용하면 컴파일이 안되는 문제점이 있어, 제가 따로 실행기를 만들었습니다.<br>이것도 미완성이고, ctrl+a를 누르면 경로 자동완성이 됩니다.<br>ctrl+1을 누르면 javac실행디고, ctrl+2를 누르면 java가 실행됩니다.</li></ul><img src="picture/antjavaexcutev0_0022.png" alt="앤트java실행기 설명 이미지" width="500"><ul><li>명령인수1은 메인클래스 앞에 적는 명령인수고, 명령인수2는 메인클래스 뒤에 적는 명령인수입니다.<br>그렇게 보면 되고, 이것은 업데이트를 계속 할 생각이나, 앤트java에디터에 이 기능을 넣어서, 중복사용이 되는 셈입니다.<br>하지만 계속 업데이트 할 생각입니다.</li><li>버전(0.0023):currentDir.txt에 파일선택경로를 저장하여, 이전에 열었던 폴더를 선택합니다.<br>출력 JTextArea에 자동줄바꿈 기능을 끄고 스크롤바로 이동되게 하였습니다.</li></ul>';
+		break;
+		case "appAnt7":
+		content = '<p>앤트녹음기</p><ul><li>앤트녹음기는 마이크로 녹음하기 위해 만들었습니다.<br>완성도는 떨어지고, 간단한테스트는 되었지만, 그래도 오류는 있을거 같습니다.<br>게임을 만들 때, 멜로디언을 사서 연주해서 브금으로 사용할 생각으로 만들었습니다.<br>음악공부,그림공부 많이 해야 한다고 생각합니다.<br>AI로 캐릭터를 만들어봤는데, 차라리 그리는 것이 나은지, 그런 생각이 들었습니다.<br>AI는 질문을 잘 하면 완성도가 높겠지만, AI에게 질문하는것도 연습 많이 해야겠습니다.</li></ul><img src="picture/antrecorderv0_001.png" alt="앤트녹음기 설명 이미지" width="500"><ul><li>녹음,재생,wav파일저장,불러오기 기능이 있습니다. 일지정지,음량,음소거기능이 있습니다.</li><li>0.0021버전에서 이전에 사용했던 디렉토리를 엽니다.</li></ul>';
+		break;
+		case "appAnt8":
+		content = '<p>앤트스크린캡쳐</p><ul><li>앤트스크린캡쳐는 재미로 만든 앱입니다. 어디 쓸수 없을까? 생각해서 만들었습니다.<br>하지만 지금 캡쳐는 윈도우즈기능 캡쳐를 쓰고 있습니다.<br>훨씬 안전하고 편안합니다.</li></ul><img src="picture/antscreencapturev0_0021.png" alt="앤트스크린캡쳐 설명 이미지" width="500"><ul><li>이미지저장과 qp파일저장을 할수 있습니다.<br>참고로 qp파일 저장은 제가 만든 파일형식입니다.</li></ul>';
+		break;
+		case "appAnt9":
+		content = '<p>앤트비디오플레이어</p><ul><li>앤트비디오플레이어는 javafx로 간단하게 만든 앱입니다.<br>앤트v레코딩앱을 mp4로 저장하였고, 그것을 재생시킬 만한 앱을 찾을 수 없어, 제가 만들었습니다.<br>mp4만 재생이 되고 다른확장자파일은 거의 재생이 안된다고 볼 수 있습니다.</li></ul><img src="picture/antvideoplayerv0_001.png" alt="앤트비디오플레이어 설명 이미지" width="500"><ul><li>재생,일시정지,정지 버튼이 있고 음량을 조절할수 있고, 위치이동이 가능합니다.<br>AI에게 질문하고 그대로 복사 붙여놓기 한것이라, 거의 교육용소스가 아닐가 생각이 듭니다.</li></ul>';
+		break;
+		case "appAnt10":
+		content = '<p>앤트v레코딩</p><ul><li>앤트v레코딩은 비디오 녹음기입니다. 웹캠으로 볼수 있는 기능도 있고, 화면을 녹음할 수 있습니다.<br>오류가 많겠지만, 이것으로 녹화해서 유튜브에 올릴려고 만들었지만, 사용할 일이 있을지 모르겠습니다.<br>녹화할 수 있고, mp4로 저장이 됩니다.<br>컴퓨터 내부 소리를 녹음하는 기능은 넣지 못했습니다.<br>노트북에 컴퓨터내부소리를 녹음하는 기능은 장치가 없어서 기능을 넣지 못했습니다.</li></ul><img src="picture/antvrecordingv0_0021.png" alt="앤트v레코딩 설명 이미지" width="500"><ul><li>일단 만들어 봤는데 사용할 일이 있을지 모르겠습니다.</li></ul>';
+		break;
+		case "appAnt11":
+			content = '<p>앤트치트에디터</p><ul><li>앤트치트에디터는 프로세스를 불러와 치트를 하는 앱인데, 실제로는 사용할 수 있을지 생각이 듭니다.<br> 요즘컴퓨터는 치트오매틱도 안되고 메모리 용량을 300mb씩 잡아먹고,메모리주소도 계속 변경됩니다. 사용할 수 있는 앱인가 하는 생각이 듭니다.</li></ul><img src="picture/AntCheatEditerv0_001.png" alt="앤트치트에디터 설명 이미지" width="500"><ul><li>그냥 옛날 추억을 생각하여 만들었으니깐 재미있게 봐주세요.<br>루비로 만들었습니다. ruby3.2버전으로 만들었습니다. ai가 있으니깐 ruby를 몰라도 만들 수 있네요.</li></ul>'; 
+		break;
+	  	case "appAnt12":
+		content = '<p>앤트JLIB생성기</p><ul><li>앤트JLIB생성기는 jlink명령을 사용하기 쉽게 하기 위해 만들었습니다. 많은 기능은 아니더라도 간단하고 강력한 앱이라고 생각합니다.';
+		content += '<br><img src="picture/AntJLibCreaterv0_001.png" alt = "앤트Lib생성기 이미지파일"><br>자바런타임 생성기입니다.자바런타임을 만들 때 쉽게 사용하기 위해 만들었습니다.';
+	  	content += '</li>';
+	  	content += '</ul>';
+	  	break;
+	  	case "appAnt13":
+		content = '<p>앤트생상정보기</p><ul><li>앤트생상정보기는 색상표입니다. <br>그냥 있으면 좋겠다는 생각에 만들어 봤습니다.';
+		content += '<br><img src="picture/AntColorInfov0_001.png" alt = "앤트색상정보기 이미지파일">';
+	  	content += '</li>';
+	  	content += '</ul>';
+	  	break;
+		case "appFuse1":
+		content = '<p>퓨즈DB관리기</p><ul><li>퓨즈db관리기는 게임을 만들 때 필요해서 만들었습니다.mmorpg에 db가 없으면 만들기 힘듭니다. <br>json API를 사용할려고 했으나, 오류관계로 API를 제가 직접 만들었습니다.<br>테스트까지 마친 상태고, 아주 기본적인 기능밖에 없지만, 모든 앱이 그렇지만, ai가 도움을 많이 줬습니다.</li></ul><img src="picture/FuseDBAdminerv0_0022A.png" alt="퓨즈DB관리기 설명 이미지" width="500"><ul><li>create table 테이블명 { name String , age int , num int primary key },String,int,char,double,float,boolean이 있습니다. not null,primary key,unique가 있습니다. primary key는 일반db와 달리 그냥 같은값을 입력못하는 기능만 있습니다. unique는 not null+primary key입니다.<br>alter table 테이블명 { add number int},add,<br>alter table test { add constraint number primary key }<br>insert into test ( name , age ) values ( ddd , 33 )<br>update test set name = aba , age = 35 where num = 3<br>delete from test where num = 4<br>select * from test<br>view table<br>명령어들입니다. >,<이렇게 크고 작은값에 대한 조건문은 넣지 않았습니다.<br>단순히 =만 사용할 수 있습니다.<br>db를 사용할 줄 아는 분들은 이 명령어만 보고 사용할 수 있습니다.<br>만약 안되면 FuseDB API를 참고하여 주십시요.</li>';
+			content += '<li>0.0022A버전 : show view viewname<br>show column tablename추가되었고, primary key는 중복과 null방지, unique는 중복방지, not null은 null방지로 바꿨습니다.<br> create view { select * from tablename }도 추가되었습니다. <br> view table도 있습니다.</li>';
+		content += '</ul>';
+		break;
+	  	case "appFuse2":
+	  content = '<p>퓨즈자바탭정리기</p><ul><li>퓨즈자바탭정리기는 자바에디터로 작업을 할때, ai가 탭을 자꾸 스페이스로 해서 줘서,<br> 탭으로 변경하는 앱을 만들었습니다.<br>아직 초기버전이라 작동이 잘 될지 모르지만, 앞으로 계속 업데이트 하겠습니다. </li></ul><img src="picture/FuseJavaTabCleanerv0_001.png" alt="퓨저자바탭정리기 설명 이미지" width="500"><ul><li>생각보다 씨름을 많이 한 앱입니다. 6시간정도 걸렸네요.</li></ul>';
+	  	break;
+		case "appMirror1":
+		content = '<p>미러그림연습기</p><ul><li>미러그림연습기는 그림을 연습하기 위해 만들었습니다.<br>그림실력이 딸려서 게임만들 때 도움이 될까 싶어서 만들었습니다.</li></ul><img src="picture/MirrorPaintPracticerv0_0023A.png" alt="미러그림연습기 설명 이미지" width="500"><ul><li>연습그림보기가 있고, 따라 그릴수 있습니다. <br>단축키를 넣었습니다. </li><li>0.0022버전은 크기500x500고정과 이전폴더를 바로 열수 있는 파일선택창입니다.</li></ul>';
+		break;
+		case "appMirror2":
+		content = '<p>미러단어학습기</p><ul><li>미러단어학습기는 단어를 연습하기 위해 만들었습니다.<br>단어공부를 할 때 도움이 될까 싶어서 만들었습니다.</li></ul><img src="picture/mirrorwordpracticev0_0025.png" alt="미러단어학습기 설명 이미지" width="500"><ul><li>미러단어학습기는 추가,수정,단어만 보이게 할 수도 있습니다.<br>테이블을 클릭하면 단어가 이동됩니다.</li></ul>';
+		break;
+		case "appMirror3":
+		content = '<p>미러연설학습기</p><ul><li>미러연설학습기는 연설을 편하게 읽고 공부하기 위해 만들었습니다.<br>영어공부를 할 때 도움이 될까 싶어서 만들었습니다.<br>실제로 영어공부는 하지 않지만, 앞으로 영어공부도 많이 할 생각입니다.</li><li><img src="picture/MLSPv0_001.png" alt="미러연설학습기 설명 이미지" width="800"></li><li>미러연설학습기는 클릭하면 단어가 보이고 드래그로 문장을 선택하면 구글번역기로 번역이 됩니다.<br>처음에는 네이버사전도 해보고 다음사전도 해봤는데 잘 되지 않아서, 그냥 스타딕트라는 데이터사전을 사용했습니다.</li>';
+	  	content += '<li>0.0021버전에서는 대문자 검색이 안될때 소문자로 다시검색하도록 수정했고 라이선스파일도 추가했고, 연설문도 몇개 추가했습니다.</li>';
+		content += '</ul>';
+		break;
+	  	case "appMirror4":
+	  	content = '<p>미러디컴파일러</p><ul><li>미러디컴파일러는 디컴파일 한번 해보기 위해 만들었습니다.<br>그런 기능이 있다고 해서 한번 만들어봤습니다.<br>디컴파일러는 되고 전역변수는 그대로 나오고 나머지는 난독되어서 나옵니다.</li><li><img src="picture/MirrorDecompilerv0_001.png" alt="미러디컴파일러 설명이미지" width ="800"></li><li>그냥 한번 만들어보았습니다. 간단하게 만들어보았고 AI로 작업시간을 극한으로 빠르게 하는 방법도 연구할 생각입니다.</li>';
+	  	
+		content += '</ul>';
+	  	break;
+		case "appQP1":
+		content = '<p>콰라포도qp파일변환기</p><ul><li>이미지파일을 qp파일로 변환하는 앱입니다.qp파일은 제가 임의로 만든 그림파일시스템입니다.</li></ul><img src="picture/qpcv0_0022.png" alt="콰라포도qp파일변환기 설명 이미지" width="500"><ul><li>이미지파일을 qp파일로 변환하는 앱입니다.</li></ul>';
+		break;
+		case "appQP2":
+		content = '<p>콰라포도디자인</p><ul><li>qp파일을 여러개 합쳐서 qpd파일로 만드는 앱입니다.<br>qpd파일로 qpSystem API를 사용할 수 있습니다.</li></ul><img src="picture/qpdv0_0021.png" alt="콰라포도디자인 설명 이미지" width="500"><ul><li>이것으로 맵도 만들 수 있고, 캐릭터모션도 만들수 있습니다.<br>테스트 해봤습니다. 가장 스트레스가 많았던 개발이었던것 같습니다.</li></ul>';
+		break;
+		case "appQP3":
+		content = '<p>콰라포도프로젝트</p><ul><li>콰라포도 프로젝트는 qp파일을 생성하는 앱입니다. <br>간단한 그림기능이 있어서 그림을 그릴 수 있습니다. 하지만 실용으로 쓰기에는 아쉽습니다.<br>간단하게 만들수는 있어서 가벼운 마음으로 사용할 수 있습니다.</li></ul><img src="picture/qppv0_0026.png" alt="콰라포도프로젝트 설명 이미지" width="500"><ul><li>간단한 그림기능이 있고, 이것도 만드는데 굉장한 스트레스를 받은것 같습니다.<br>하지만 사용하는데는 무리가 없다고 생각이 듭니다.</li></ul>';
+		break;
+		case "appAPI1":
+		content = '<p>qpSystem</p><ul><li>qpSystem API는 qp파일 및 qpd파일에 대한 API입니다.<br>qpd파일을 불러오기 및 여러 기능이 있습니다. 자세한 내용은 doc을 참고하세요.</li></ul>';
+		break;
+		case "appAPI2":
+		content = '<p>FuseDB</p><ul><li>FuseDB API는 FuseDB에 대한 api입니다. <br>거의 excute만 쓰면 될것입니다. 자세한 내용은 doc을 참고하세요.</li></ul>';
+		break;
+		case "downloadAnt1":
+			content = '<ul><li>앤트EXE파일생성기입니다. <br><a href="download/AntEXECreatev0_0023.zip" download>다운로드(버전:0.0023)</a><br><a href="download/AntEXECreatev0_0024.zip" download>다운로드(버전:0.0024)<-2025-11-10</a></li>';
+			content += '<li><a href="download/AntEXECreaterv0_0025.zip" download>다운로드(버전:0.0025)<-2026-04-11(키인증)</a></li>';
+			content += '<li>JavaPath를 추가하였습니다. 배포할 때 도움이 될 수 있습니다.<br><a href="download/AntEXECreaterv0_0026.zip" download>다운로드(버전:0.0026)<-2026-04-12(키인증)</a></li>';
+	  		content += '<li>JChooserFile이 뜨지 않는것을 해결했습니다.<br><a href="download/AntEXECreaterv0_0027.zip" download>다운로드(버전:0.0027)<-2026-09-13(키인증)</a></li>';
+			content += '</ul>';
+		break;
+		case "downloadAnt2":
+			content = '<ul><li>앤트헥사뷰어입니다. <br><a href="download/AntHexaViewerv0_001.zip" download>다운로드(버전:0.001)</a><br><a href="download/AntHexaViewerv0_0021.zip" download>다운로드(버전 : 0.0021)<-2025-11-09</a></li></ul>';
+		break;
+		case "downloadAnt3":
+		content = '<ul><li>앤트ICO파일생성기입니다. <br><a href="download/AntICOFileMakerv0_0021.zip" download>다운로드(버전:0.0021)</a><br><a href="download/AntICOFileMakerv0_0022.zip" download>다운로드(버전:0.0022)<-2025-11-12</a></li>';
+	  	content += '<li>엄청 오랜만에 업데이트합니다.투명색 추가했습니다.<br><a href="download/AntICOFileMakerv0_0023.zip" download>다운로드(버전:0.0023)<-2026-10-21</a></li>';
+		content += '<li>키보드입력과 돋보기 추가했습니다.<br><a href="download/AntICOFileMakerv0_0024.zip" download>다운로드(버전:0.0024)<-2026-10-23</a></li>';
+		content += '</ul>';
+		break;
+		case "downloadAnt4":
+			content = '<ul><li>앤트JAR파일생성기입니다. <br><a href="download/AntJARCreatev0_0022.zip" download>다운로드(버전:0.0022)</a><br><a href="download/AntJARCreatev0_0023.zip" download>다운로드(버전:0.0023)<-2025-11-10</a>';
+			content += '<br><a href="download/AntJARCreatev0_0024.zip" download>다운로드(버전:0.0024)<-2025-11-30(키인증)</a>';
+			content += '<br><a href="download/AntJARCreatev0_0025.zip" download>다운로드(버전:0.0025)<-2026-01-15(키인증)</a>';
+			content += '<br><a href="download/AntJARCreatev0_0026.zip" download>다운로드(버전:0.0026)<-2026-03-21(키인증)</a>';
+			content += '<br>0027버전은 0026버전에서 오류를 수정하였습니다.<br><a href="download/AntJARCreatev0_0027.zip" download>다운로드(버전:0.0027)<-2026-03-21(키인증)</a>';
+			content += '<br><a href="download/AntJARCreaterv0_0028.zip" download>다운로드(버전:0.0028)<-2026-03-25(키인증)</a>';
+	  	
+	  		content += '</li>';
+			content += '</ul>';
+		break;
+		case "downloadAnt5":
+			content = '<ul><li>앤트Java에디터입니다. <br>앞에 버전은 많이 삭제 했습니다. 최신버전만 올렸습니다.<br>많이 업그레이드했습니다. 자바스프링코드에 맞춤으로 업데이트하겠습니다.</li>';
+			content += '<li>네번째 삭제했습니다. 앞에 버전은 최대한 삭제하고 최신버전만 올려놓겠습니다.';
+			
+			
+			content += '<br><a href = "download/AntJavaEditer(windows)v0_0048.zip" download>다운로드(버전:0.0048(Windows))<-2026-09-28</a>';
+			content += '<br>tabclean tab불러오기 오류 해결<br><a href = "download/AntJavaEditerv0_0048A(jar).zip" download>다운르도(버전:0.0048A(jar))<-2026-10-03</a>';
+	  		content += '<br>Linux에도 작동이 되도록 조금 수정했습니다.리눅스는 불안정합니다.<br><a href = "download/AntJavaEditerv0_0048B(jar).zip" download>다운로드(버전:0.0048B(jar))<-2026-10-11</a>';
+			content += '<br>타이핑색변경 수정되었습니다. 한글은 불안정합니다.<br><a href="download/AntJavaEditerv0_0049(jar).zip" download>다운로드(버전0.0049(jar))<-2026-10-25</a>';
+			content += '<br>열기오류,스타일오류수정했습니다. <br>테무린OpenJDK21로 자바런타임을 바꿨습니다.<br><a href = "download/AntJavaEditer(windows)v0_0049A.zip" download>다운로드(버전:0.0049A(Windows))<-2026-10-25</a>';
+			content += '<br>메인화면 Welcome.txt화면은 style과 pupup이 적용 안되게 했습니다.<br><a href = "download/AntJavaEditerv0_0049B(jarfile)" download>다운로드(버전:0.0049B(jarfile))<-2026-11-01</a>';
+			content += '</li>';
+			content += '</ul>';
+		break;
+		case "downloadAnt6":
+			content = '<ul><li>앤트java실행기입니다. <br><a href="download/AntJavaExcutev0_0022.zip" download>다운로드(버전:0.0022)</a><br><a href="download/AntJavaExcutev0_0023.zip" download>다운로드(버전:0.0023)<-2025-11-11</a></li></ul>';
+		break;
+		case "downloadAnt7":
+		content = '<ul><li>앤트녹음기입니다. <br><a href="download/AntRecoderv0_001.zip" download>다운로드(버전:0.001)</a><br><a href="download/AntRecoderv0_0021.zip" download>다운로드(버전:0.0021)<-2025-11-12</a></li></ul>';
+		break;
+		case "downloadAnt8":
+		content = '<ul><li>앤트스크린캡쳐입니다. <br><a href="download/AntScreenCapturev0_0021.zip" download>다운로드(버전:0.0021)</a></li></ul>';
+		break;
+		case "downloadAnt9":
+		content = '<ul><li>앤트비디오플레이어입니다. <br><a href="download/AntVideoPlayerv0_001.zip" download>다운로드(버전:0.001)</a></li></ul>';
+		break;
+		case "downloadAnt10":
+		content = '<ul><li>앤트v레코딩입니다. <br><a href="download/AntVRecordingv0_0021.zip" download>다운로드(버전:0.0021)</a></li></ul>';
+		break;
+		case "downloadAnt11":
+		content = '<ul><li>앤트치트에디터입니다.<br><a href= "download/AntCheatEditerv0_001.zip" download>다운로드(버전:0.001)<-2026-03-07</a></li></ul>';
+		break;
+	  	case "downloadAnt12":
+	  content = '<ul><li>앤트JLIB생성기입니다.<br><a href = "download/AntJLibCreaterv0_001.zip" download>다운로드(버전:0.001)<-2026-04-18</a></li>';
+	  content += '</ul>';
+	  	break;
+	  	case "downloadAnt13":
+		content = '<ul><li>앤트생상정보기입니다.<br><a href = "download/AntColorInfov0_001.zip" download>다운로드(버전 : 0.001)<-2026-09-12</a></li>';
+	  	content += '</ul>';
+	  	break;
+		case "downloadFuse1":
+			content = '<ul><li>퓨즈DB관리기입니다. <br>대규모 업데이트입니다.<br><a href="download/FuseDBAdminer(windows)v0_0022.zip" download>다운로드(버전:0.0022)<-2026-10-04</a></li>';
+			content += '<li>문자 크기를 조금 크게 했습니다.<br><a href = "download/FuseDBAdminerv0_0022A(jar).zip" download>다운로드(버전:0.0022A)<-2026-10-04</a></li>';
+			content += '</ul>';
+		break;
+	  	case "downloadFuse2":
+	  content = '<ul><li>퓨즈자바탭정리기입니다. <br><a href="download/FuseJavaTabCleanerv0_001.zip" download>다운로드(버전:0.001)<-2026-02-01(키인증)</a><br>소괄호도 탭에 추가하였습니다.<br><a href="download/FuseJavaTabCleanerv0_0021.zip" download>다운로드(버전:0.0021)<-2026-03-10(키인증)</a></li>';
+	  content += '<li><a href="download/FuseJavaTabCleanerv0_0022.zip" download>다운로드(버전:0.0022)<-2026-03-14(키인증)</a>';
+	  content += '</li></ul>';
+	  	break;
+		case "downloadMirror1":
+		content = '<ul><li>미러그림연습기입니다. <br><a href="download/MirrorPaintPracticev0_0021.zip" download>다운로드(버전:0.0021)</a><br><a href="download/MirrorPaintPracticev0_0022.zip" download>다운로드(버전:0.0022)<-2025-11-15</a></li>';
+			content += '<li>오랜만에 업데이트합니다.1년만에 업데이트하네요.<br>돋보기 추가했습니다.<br><a href ="download/MirrorPaintPracticerv0_0023.zip" download>다운로드(버전:0.0023)<-2026-10-23</a></li>';
+	  content += '<li>연습그림보기와 위치 수정했습니다.<br><a href="download/MirrorPaintPracticerv0_0023A.zip" download>다운로드(버전:0.0023A)<-2026-10-25</a></li>';
+	  	content += '</ul>';
+		break;
+		case "downloadMirror2":
+		content = '<ul><li>미러단어학습기입니다. <br><a href="download/MirrorWordPracticev0_0025.zip" download>다운로드(버전:0.0025)</a></li></ul>';
+		break;
+		case "downloadMirror3":
+		content = '<ul><li>미러연설학습기입니다. <br> <a href="download/MLSPv0_001.zip" download>다운로드(버전:0.001)</a></li>';
+	  	content += '<li>라이센스파일이 추가되었습니다.<br><a href="download/MLSPv0_0021A.zip" download>다운로드(버전:0.0021A)</a></li>';
+	  	content += '<li>수정할것이 굉장히 많습니다. 검색안되는거 조금 수정했습니다.<br>복수형,최상급,진행형,이런거도 검색되게 조금 수정했습니다. 아직 확실히 동작하지는 않습니다.<br>많은 연구가 필요합니다.<br><a href ="download/MLSPv0_0021B.zip" download>다운로드(버전:0.0021B)</a></li>';
+	  	content += '<li>단어검색 조금 수정했습니다.<br><a href="download/MLSPv0_0022.zip" download>다운로드(버전:0.0022)<-2026-10-21</a></li>';
+		content += '</ul>';
+		break;
+	  	case "downloadMirror4":
+	  content = '<ul><li>미러디컴파일러입니다. <br> <a href="download/MirrorDecompilerv0_001.zip" download>다운로드(버전:0.001)</a></li>';
+	  	content += '<li>호리존탈스크롤바 되게 했습니다.<br><a href = "download/MirrorDecompilerv0_0021.zip" download>다운로드(버전0.0021)</a></li>';
+	  	content += '</ul>';
+	  	break;
+		case "downloadQP1":
+		content = '<ul><li>콰라포도qp파일변환기입니다. <br><a href="download/QPCv0_0022.zip" download>다운로드(버전:0.0022)</a></li></ul>';
+		break;
+		case "downloadQP2":
+		content = '<ul><li>콰라포도디자인입니다. <br><a href="download/QPDv0_0021.zip" download>다운로드(버전:0.0021)</a></li>';
+		content += '<li><a href="download/QPDv0_0022.zip" download>다운로드(버전:0.0022)<-2026-01-03(키인증)</a></li>';
+		content += '</ul>';
+		break;
+		case "downloadQP3":
+		content = '<ul><li>콰라포도프로젝트입니다. <br><a href="download/QPPv0_0026.zip" download>다운로드(버전:0.0026)</a></li>';
+			content += '<li><a href="download/QPPv0_0027.zip" download>다운로드(버전:0.0027)<-2026-01-03(키인증)</a></li>';
+			content += '<li>회전기능 추가했습니다.<br><a href="download/QPPv0_0028.zip" download>다운로드(버전:0.0028)<-2026-01-10(키인증)</a></li>';
+		content += '<li>돋보기 추가했습니다.<br><a href="download/QPPv0_0029.zip" download>다운로드(버전:0.0029)<-2026-01-15(키인증)</a></li>';
+	  	content += '<li>오랜만에 업데이트했습니다.<br><a href="download/QPPv0_0030.zip" download>다운로드(버전:0.0030)<-2026-10-23</a></li>';
+		content += '</ul>';
+		break;
+		case "downloadAPI1":
+		content = '<ul><li>qpSystem입니다. <br><a href="download/qpSystemv0_001.jar" download>다운로드(jar)(버전:0.001)</a><br><a href="download/qpSystem(docs)v0_001.zip" download>다운로드(doc)(버전:0.001)</a><br><a href="download/qpSystemv0_001.zip" download>다운로드(source)(버전:0.001)</a></li></ul>';
+		break;
+		case "downloadAPI2":
+		content = '<ul><li>fuseDB입니다. <br><a href="download/fuseDBv0_001.jar" download>다운로드(jar)(버전:0.001)</a><br><a href="download/fuseDB(docs)v0_001.zip" download>다운로드(doc)(버전:0.001)</a><br><a href="download/fuseDBv0_001.zip" download>다운로드(source)(버전:0.001)</a></li></ul>';
+		break;
+		case "sitepolicy":
+			content = '<p>사이트운영정책</p><ul><li>사이트운영정책은 사이트는 구글클라우드버추어머신에서 가상 머신 환경을 사용할 생각이고, 데비안서버를 사용할 생각입니다. <br>거기서 spring boot를 돌릴 생각입니다. 월 1만원정도의 사용료를 지불 할 생각입니다.<br>지금 exe파일 인증서를 받아야 하는데, exe파일인증서는 연 18만 2천원정도 합니다.인증중입니다.<br>ssl.com에서 받을 생각이며, 기본적인것 월 20회 인증서사용하는 인증서를 받을 생각입니다.지금 이정도 방침이며,호스팅kr에서 도메인주소도 빌렸습니다.<br>도메인주소는 구글과, 네이버에 노출시킬수 있는 방법을 알아보겠습니다.</li><li>2025-11-20 : ssl.com코드인증을 18만원 구매했지만 19일이 지난 지금도 인증이 되지 않고, 환불을 요청했습니다. <br>일단 환불요청만으로도 뭔가 한 기분입니다.<br>10월 31일 자바스프링으로 테스트 했을 때, 다운로하면 바이러스때문에 다운로드가 안되었습니다.<br>그래서 코파이럿과 이야기하고 코드인증을 구매했습니다.<br>하지만 11월 2일, 다시 테스트 했을때 다운로드가 되었습니다. 실제로 인증은 필요없습니다.</li>';
+			content += '<li>2025-11-22 : ssl.com에서 인증이 완료되었다고 이메일로 왔습니다. 당연히 등록을 했고, jar파일에 인증을 받았습니다.<br> 이제 개인개발자로 등록된것이나 마찬가지입니다. 이제 제이름으로 된 앱이 만들어지고 있는것입니다.<br>취미생활로 만들지만, 그래도 뿌듯합니다.앤트자바에디터 0.0026버전에 처음으로 인증을 받은 앱을 올렸습니다.</li>';
+			content += '<li>2026-02-08 : 나중에 앱을 올리면 업그레이드 앱도 넣어서 수동업그레이드를 할 수 있으면 일일이 다운받지 않아도 되고,<br> 편하게 작업할 수 있겠다는 생각이 들어 올립니다. 일일이 다운받는 모습을 생각하니깐, 업그레이드앱을 끼워서 자동 업그레이드 되게 정책을 세워보겠습니다.</li>';
+			content += '<li>2026-02-22 : 일단 3월까지 코딩을 쉴 생각입니다. 그 동안 tv와 넷플릭스를 보고 유튜브도 보면서, 정신을 회복하고, 독서를 해서 개인발전을 할 생각입니다.<br>너무 회사일과 코딩작업을 함께 하니깐, 취미생활이 투잡이 되는것 같기도 하고, 코딩한다고 너무 무리하기도 해서,<br>차라리 휴식시간을 가져서 앞으로 어떻게 할지 생각을 정리하겠습니다.</li>';
+			content += '<li>2026-03-29 : 지금은 정보처리기사를 준비하고 있습니다. 아무래도 이쪽길로 갈려면 있어야 해서, 지금 준비하고 있습니다. 그래서 코딩할 시간이 없습니다.<br>앤트EXECreater가 지금 오류가 나서 안되고 있어 수정해야 하고, 앤트자바에디터는 퓨즈탭정리기의 기능을 추가할 생각입니다.<br>그리고 콰라포도는 3D그래픽툴을 만들 생각입니다. 하지만 업데이트는 늦어질 예정입니다.</li>';
+			content += '<li>2026-05-11 : 지금 정보처리기사 준비하고 있습니다. 필기는 무난히 합격했습니다. 앞으로도 공부에 집중하고 자격증을 여러개 더 생각학 있어서,<br>업데이트가 늦어질 예정입니다. 지금 콘솔에서 TextEditer를 할 수 있는 앱을 구상하고 있고, 제가 사용할 예정이지만, IAAS인 구글 쿨라우드 콘솔 컴퓨터엔진에 사용하기 편리한 에디터로 코딩작업을 더욱 편하게 할 수 있게 만들겠습니다.<br>마이크로소프트 애저로 옮겨서 다시 웹페이지 코딩을 해서 새로운 모습으로 보일까 생각도 해보았습니다. 하지만 귀찮은 관계로 계속 사용하겠습니다.</li>';
+	  content += '<li>2026-09-12 : 6개월동안 자격증공부한다고 신경 안썼지만, 이제 자격증 공부를 그만 두고, 다시 앱 활동을 이어가겠습니다. <br>프로젝트도 준비하고, 코딩을 계속 하겠습니다. <br>오랜만에 온거라 정해놓은것은 없지만, 앞으로 이어가겠습니다.<br>자랑이지만 정보처리기사는 최종합격했고, 웹디자인개발기능사는 실기 중도포기하고, 기회는 2년이지만 공부는 그만하고 앞으로 계속 앱을 만들면서, 수익창출을 위한 노력을 하겠습니다.</li>';
+			content += '<li>2026-10-06 : 자바로 게임 만드는 것은 그만하고, 이제 앱을 테스트 및 유지보수만 할 생각입니다. <br> 사업 및 생산계획은 모두 접고, 자격증공부와 공무원공부를 할 생각입니다.<br>자바판타지는 계속 유지보수하고, 업데이트도 할 생각이지만, 앱을 테스트하고 수정하고 업데이트 하는 것만 할 생각이고, 실제로 프로젝트나 게임개발등은 하지 않겠습니다.<br> 업데이트가 이제 늦어질 것입니다. 유지보수도 늦어질수 있습니다.</li>';
+	  		content += '<li>2026-10-17 : 자격증은 정보처리산업기사 하나만 따고 제 코딩 실력을 키우기 위해 이 사이트를 이용하겠습니다. <br> 정말 나중에 AI만 활용을 잘해도, 돈을 벌수 있다는 생각이 듭니다.<br>학업은 40대지만 다시 이어갈 생각이고, AI강의를 들어보고 싶습니다. AI책과 강의로 공부도 따로 할 생각입니다.<br>학점은행제를 등록해서 학사를 몇개 더 딸 생각입니다.</li>';
+			content += '<li>2026-11-01 : 이제는 제 포트폴리오가 되었습니다. 포트폴리오로 관리하겠습니다.</li>';
+	  		content += '</ul>';
+			
+		break;
+		case "updatepolicy":
+			content = '<p>업데이트 정책</p><ul><li>향후 앱업데이트와 사이트업데이트도 함께 하겠습니다.</li><li>앱업데이트는 opencv,ffmpeg,javafx는 용량이 너무 커서,구글클라우드콘솔 네트워크 요금문제도 생길거 같아서, 일단 최대한 만들지 않고, <br>java Swing으로 만들 수 있는것을 중심으로 만들겠습니다.javafx를 전혀 사용하지 않겠다는것은 아닙니다.(2025-11-11)</li><li>일단 대충 수정작업을 하였고, 다른 앱을 만들기 위해, 연구하겠습니다.(2025-11-15)</li>';
+			content += '<li>앤트자바에디터로 작업할려고 계속 수정작업을 하였습니다. 아직 작업은 안해봤지만 이제 된다고 생각하고,<br> 그 다음은 java swing으로 3d에디터 앱을 만들 생각입니다. <br>그 다음은 qpd파일로 만드는 참고용 앱을 만들 생각입니다.(2025-11-27)</li>';
+	  		content += '<li>3D에디터툴은 JMonkeyEngine을 사용할 예정입니다. 지금 만들고 있고 연구하고 있습니다. 참고로 저는 3D툴을 한번도 사용을 안해봤습니다. 전혀 모르는 단계에서 만들고 있습니다. 작업은 굉장히 느리고, 공부와 연구를 병행해야 합니다. 시간이 걸릴 것 같습니다.(2026-02-01)</li>';
+			content += '<li>3D에디터툴을 JMonkeyEngine으로 만들다가, 다시 javax.swing으로 만들 생각입니다.<br>3D에디터툴로 게임을 개발하여 출시하는것이 목표가 아닌, 그냥 재미로 만드는것으로 목표를 변경했습니다.<br>다시 개발을 경험을 삼아 다시 개발할 생각입니다.일단 MMORPG를 만드는것을 목표로 하는것은 동일합니다.<br>이미 앱은 한번도 3D툴을 사용해본적이 없는 경험이기 때문에, 모두 뜯어고쳐야 해서, 다시 만들어보려 합니다.(2026-03-14)</li>';
+			content += '<li>앤트자바에디터 압축파일이 100mb를 넘어가는 지금, 라이브러리를 사용하면 업데이트 할 때마다 너무 많은 용량이 될거 같습니다.<br>그래서 실행,라이브러리,옵션파일들을 묶어서 따로 다운로드 하고, 실제 제가 작성한 jar파일만 따로 다운로드 하여 복사,붙여놓기만 하면 적은 용량으로 실행 할 수 있게 업데이트를 진행하겠습니다.<br>3D그래픽툴은 jocl과 javafx또는 javax.swing을 써서 도전해볼 생각이고, 일단 jocl을 연구하면서 간단한 게임을 만들면서, 퓨즈DB관리기를 사용해보고 업데이트 할생각입니다.<br> 기본키와 외래키를 활성화 하고 여러가지 업데이트를 확인하고 DB관리기를 완성해 갈 생각입니다.(2026-04-19)</li>';
+			content += '<li>그래픽은 2D정도에서 끝내고, 공부위주로 필요한 앱을 만들고 업데이트 하는 방향으로 가겠습니다.(2026-11-01)</li>'
+			content += '</ul>';
+		break;
+		case "license":
+		content = '<p>라이센스</p><ul><li>저는 모두 아파치2.0라이센스를 따를 것입니다.<br>아파치2.0라이센스는 상업용으로 쓸 수있고, 소스는 공개의무가 없고, 저작권 및 라이선스는 고지의무가 있습니다.<br>라이선스는 아파치2.0라이센스를 따를 것이고 저작권은 컴퓨터판타지연구소에서 만들었습니다.</li></ul>';
+		break;
+		case "guestview":
+		content = '<div id="right-panel"><iframe src="/guest" width="100%" height="600px"></iframe></div>';
+		break;
+		case "guestwrite":
+		content = '';
+		break;
+		
+	}
+	panel.innerHTML = content;
+  }
+  
+  
+    
+
+</script>
+
+
